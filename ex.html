@@ -1,0 +1,61 @@
+<html>
+<head>
+  <title>htmltmpl usage example</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <script type="text/javascript" src="htmltmpl.js"></script>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
+  <script type="text/javascript">
+    function add()
+    {
+      var tmpl;
+      var el;
+
+
+      tmpl = new htmltmpl(document.getElementById("tbody_tmpl"));
+      el = tmpl.apply({ id: document.getElementById("id").value,
+                        name: document.getElementById("name").value,
+                        fields: [ { title: "First parameter",
+                                    name: "prm1" },
+                                  { title: "Second parameter",
+                                    name: "prm2" } ] });
+      document.getElementById("cntr").appendChild(el);
+    }
+  </script>
+</head>
+<body>
+  <table id="tbody_tmpl" style="display: none"><tbody>
+      <tr>
+        <td>id:</td>
+	<td><%TMPL_VAR NAME=id%></td>
+      </tr>
+      <tr>
+        <td>name:</td>
+	<td><%TMPL_VAR NAME=name%></td>
+      </tr>
+      <!--<%TMPL_LOOP NAME=fields%>-->
+      <tr>
+	<td><%TMPL_VAR NAME=title%></td>
+	<td><input type="text" name="<%TMPL_VAR NAME=name%>" value=""/></td>
+      </tr>
+      <!--<%/TMPL_LOOP%>-->
+  </tbody></table>
+
+  <table>
+    <tbody>
+      <tr>
+	<td>id:</td>
+	<td><input type="text" id="id" value=""/></td>
+      </tr>
+      <tr>
+	<td>name:</td>
+	<td><input type="text" id="name" value=""/></td>
+      </tr>
+    </tbody>
+  </table>
+  <input type="button" onclick="add()" value="add"/>
+
+  <table id="cntr">
+  </table>
+</body>
+</html>
+
