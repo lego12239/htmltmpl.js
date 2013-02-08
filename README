@@ -2,7 +2,11 @@ htmltmpl.js
 ===========
 
 htmltmpl.js is the javascript html template library. It must has capabilities
-similar to HTML::Template perl module, but now it support only next constructs:
+similar to HTML::Template perl module, but now it support only the next
+constructs:
 
 <%TMPL_VAR NAME=var_name%>
-<%TMPL_LOOP NAME=loop_name%><%/TMPL_LOOP%>
+<%TMPL_LOOP NAME=loop_name%>...<%/TMPL_LOOP%>
+<%TMPL_IF NAME=bool_var%>...<%TMPL_ELSE%>...<%/TMPL_IF%>
+
+See ex.html for the example of use.
