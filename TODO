@@ -1,0 +1,7 @@
+1. Process at the first level only <%TMPL_ constructs, and only after it
+   a match switches to the next level, where process the all <%TMPL_* constructs.
+2. Added phrase name into the priv, to detect current processing phrase and 
+   template phrases errors (where phrases are intermixed, like <1> <2> </1> </2>).
+3. Some handlers of different phrases are equal. So, we can several common
+   handlers and use it in various phrases.
+4. Make more expressive ex.html.
