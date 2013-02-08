@@ -5,9 +5,10 @@
   <script type="text/javascript" src="htmltmpl.js"></script>
   <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
   <script type="text/javascript">
+    var tmpl;  // make tmpl a global var for debug purposes
+
     function add()
     {
-      var tmpl;
       var el;
 
 
@@ -16,7 +17,8 @@
                         name: document.getElementById("name").value,
                         fields: [ { title: "First parameter",
                                     name: "prm1" },
-                                  { title: "Second parameter",
+                                  { is_exist: 1,
+                                    title: "Second parameter",
                                     name: "prm2" } ] });
       document.getElementById("cntr").appendChild(el);
     }
@@ -33,10 +35,16 @@
 	<td><%TMPL_VAR NAME=name%></td>
       </tr>
       <!--<%TMPL_LOOP NAME=fields%>-->
-      <tr>
-	<td><%TMPL_VAR NAME=title%></td>
-	<td><input type="text" name="<%TMPL_VAR NAME=name%>" value=""/></td>
-      </tr>
+        <!--<%TMPL_IF NAME=is_exist%>-->
+          <tr>
+	    <td><%TMPL_VAR NAME=title%></td>
+	    <td><input type="text" name="<%TMPL_VAR NAME=name%>" value=""/></td>
+	  </tr>
+	<!--<%TMPL_ELSE%>-->
+	  <tr>
+	    <td cols="2">no title</td>
+	  </tr>
+	<!--<%/TMPL_IF%>-->
       <!--<%/TMPL_LOOP%>-->
   </tbody></table>
 

@@ -63,7 +63,55 @@ function htmltmpl(tmpl, prms)
 		      { phrase: "&lt;--&lt;%/TMPL_LOOP%&gt;--&gt;",
 			is_match: 1,
 			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_loop_1_2_end } ]];
+			hdlr_1_2: this.hdlr_tmpl_loop_1_2_end },
+		      { phrase: "<%TMPL_IF NAME=",
+			is_match: 1,
+			oref: this,
+			hdlr_1_2: this.hdlr_tmpl_if_1_2 },
+		      { phrase: "&lt;%TMPL_IF NAME=",
+			is_match: 1,
+			oref: this,
+			hdlr_1_2: this.hdlr_tmpl_if_1_2 },
+		      { phrase: "<!--<%TMPL_IF NAME=",
+			is_match: 1,
+			oref: this,
+			hdlr_1_2: this.hdlr_tmpl_if_1_2 },
+		      { phrase: "&lt;--&lt;%TMPL_IF NAME=",
+			is_match: 1,
+			oref: this,
+			hdlr_1_2: this.hdlr_tmpl_if_1_2 },
+		      { phrase: "<%/TMPL_IF%>",
+			is_match: 1,
+			oref: this,
+			hdlr_1_2: this.hdlr_tmpl_if_1_2_end },
+		      { phrase: "&lt;%/TMPL_IF%&gt;",
+			is_match: 1,
+			oref: this,
+			hdlr_1_2: this.hdlr_tmpl_if_1_2_end },
+		      { phrase: "<!--<%/TMPL_IF%>-->",
+			is_match: 1,
+			oref: this,
+			hdlr_1_2: this.hdlr_tmpl_if_1_2_end },
+		      { phrase: "&lt;--&lt;%/TMPL_IF%&gt;--&gt;",
+			is_match: 1,
+			oref: this,
+			hdlr_1_2: this.hdlr_tmpl_if_1_2_end },
+		      { phrase: "<%TMPL_ELSE%>",
+			is_match: 1,
+			oref: this,
+			hdlr_1_2: this.hdlr_tmpl_if_1_2_else },
+		      { phrase: "&lt;%TMPL_ELSE%&gt;",
+			is_match: 1,
+			oref: this,
+			hdlr_1_2: this.hdlr_tmpl_if_1_2_else },
+		      { phrase: "<!--<%TMPL_ELSE%>-->",
+			is_match: 1,
+			oref: this,
+			hdlr_1_2: this.hdlr_tmpl_if_1_2_else },
+		      { phrase: "&lt;--&lt;%TMPL_ELSE%&gt;--&gt;",
+			is_match: 1,
+			oref: this,
+			hdlr_1_2: this.hdlr_tmpl_if_1_2_else } ]];
     if ( typeof(tmpl) === "undefined" ) {
 	this.tmpl[0] = { str: "" };
     } else if ( typeof(tmpl) === "string" ) {
@@ -386,6 +434,7 @@ htmltmpl.prototype.hdlr_tmpl_loop_1_2_tail = function ()
 	this.hdlrs.unshift({ hdlr_0_1: this.hdlr_tmpl_loop_eat,
 			     hdlr_1_0: this.hdlr_tmpl_loop_eat });
 	return;
+	this._match_reset();
     }
     lname = this.priv[0].loopname;
     this.priv.shift();
@@ -446,6 +495,176 @@ htmltmpl.prototype.hdlr_tmpl_loop_1_2_end = function ()
     this.tmpl[0].pos[0].start = this.tmpl[0].pos[1].start;
 
     this._match_reset();
+}
+
+/**********************************************************************
+ * TMPL_IF HANDLERS
+ **********************************************************************/
+htmltmpl.prototype.hdlr_tmpl_if_1_2 = function ()
+{
+//    alert("tmpl_if_1_2");
+    this.phrases.unshift([ { phrase: "%>",
+			     is_match: 1,
+			     oref: this,
+			     hdlr_1_2: this.hdlr_tmpl_if_1_2_tail },
+			   { phrase: "%&gt;",
+			     is_match: 1,
+			     oref: this,
+			     hdlr_1_2: this.hdlr_tmpl_if_1_2_tail },
+			   { phrase: "%>-->",
+			     is_match: 1,
+			     oref: this,
+			     hdlr_1_2: this.hdlr_tmpl_if_1_2_tail },
+			   { phrase: "%&gt;--&gt;",
+			     is_match: 1,
+			     oref: this,
+			     hdlr_1_2: this.hdlr_tmpl_if_1_2_tail } ]);
+
+    this.hdlrs.unshift({ hdlr_0_1: this.hdlr_tmpl_if_0_1,
+			 hdlr_1_0: this.hdlr_tmpl_if_1_0 });
+    this.priv.unshift({ phrase: "if",
+			varname: new String() });
+    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
+
+    this._match_reset();
+}
+
+htmltmpl.prototype.hdlr_tmpl_if_0_1 = function ()
+{
+    this.priv[0].varname += this.tmpl[0].str.substring(this.tmpl[0].pos[0].start, this.tmpl[0].pos[0].cur);
+//    alert("tmpl_if_0_1: " + this.priv[0].varname);
+}
+
+htmltmpl.prototype.hdlr_tmpl_if_1_0 = function ()
+{
+    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur;
+    this.priv[0].varname += this.match.str;
+//    alert("tmpl_if_1_0: " + this.priv[0].varname);
+}
+
+htmltmpl.prototype.hdlr_tmpl_if_1_2_tail = function ()
+{
+    var varname;
+    var i;
+
+
+//    alert("tmpl_if_1_2_tail: " + this.priv[0].varname + "("+this.data[0][this.priv[0].varname] +")");
+    this.phrases.shift();
+    this.hdlrs.shift();
+
+    this.priv[0].var_is_true = 0;
+    for(i = 0; i < this.data.length; i++) {
+	if ( this.data[i][this.priv[0].varname] ) {
+	    this.priv[0].var_is_true = 1;
+	    break;
+	}
+    }
+
+    if ( ! this.priv[0].var_is_true ) {
+	this.phrases.unshift([ { phrase: "<%/TMPL_IF%>",
+				 is_match: 1,
+				 oref: this,
+				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat },
+			       { phrase: "&lt;%/TMPL_IF%&gt;",
+				 is_match: 1,
+				 oref: this,
+				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat },
+			       { phrase: "<!--<%/TMPL_IF%>-->",
+				 is_match: 1,
+				 oref: this,
+				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat },
+			       { phrase: "&lt;--&lt;%/TMPL_IF%&gt;--&gt;",
+				 is_match: 1,
+				 oref: this,
+				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat },
+			       { phrase: "<%TMPL_ELSE%>",
+				 is_match: 1,
+				 oref: this,
+				 hdlr_1_2: this.hdlr_tmpl_if_1_2_else },
+			       { phrase: "&lt;%TMPL_ELSE%&gt;",
+				 is_match: 1,
+				 oref: this,
+				 hdlr_1_2: this.hdlr_tmpl_if_1_2_else },
+			       { phrase: "<!--<%TMPL_ELSE%>-->",
+				 is_match: 1,
+				 oref: this,
+				 hdlr_1_2: this.hdlr_tmpl_if_1_2_else },
+			       { phrase: "&lt;--&lt;%TMPL_ELSE%&gt;--&gt;",
+				 is_match: 1,
+				 oref: this,
+				 hdlr_1_2: this.hdlr_tmpl_if_1_2_else } ]);
+	this.hdlrs.unshift({ hdlr_0_1: this.hdlr_tmpl_if_eat,
+			     hdlr_1_0: this.hdlr_tmpl_if_eat });
+	this._match_reset();
+	return;
+    }
+
+    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
+
+    this._match_reset();
+}
+
+htmltmpl.prototype.hdlr_tmpl_if_eat = function ()
+{
+    return;
+}
+
+htmltmpl.prototype.hdlr_tmpl_if_1_2_eat = function ()
+{
+//    alert("tmpl_if_1_2_eat: ");
+    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
+
+    this.priv.shift();
+    this.phrases.shift();
+    this.hdlrs.shift();
+
+    this._match_reset();
+}
+
+htmltmpl.prototype.hdlr_tmpl_if_1_2_else = function ()
+{
+//    alert("tmpl_if_1_2_else: " + this.priv[0].varname + "("+this.data[0][this.priv[0].varname] +")");
+
+    if ( this.priv[0].var_is_true ) {
+	this.phrases.unshift([ { phrase: "<%/TMPL_IF%>",
+				 is_match: 1,
+				 oref: this,
+				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat },
+			       { phrase: "&lt;%/TMPL_IF%&gt;",
+				 is_match: 1,
+				 oref: this,
+				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat },
+			       { phrase: "<!--<%/TMPL_IF%>-->",
+				 is_match: 1,
+				 oref: this,
+				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat },
+			       { phrase: "&lt;--&lt;%/TMPL_IF%&gt;--&gt;",
+				 is_match: 1,
+				 oref: this,
+				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat } ]);
+	this.hdlrs.unshift({ hdlr_0_1: this.hdlr_tmpl_if_eat,
+			     hdlr_1_0: this.hdlr_tmpl_if_eat });
+	this._match_reset();
+	return;
+    }
+    this.phrases.shift();
+    this.hdlrs.shift();
+
+    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
+
+    this._match_reset();
+}
+
+htmltmpl.prototype.hdlr_tmpl_if_1_2_end = function ()
+{
+//    alert("tmpl_if_1_2_end: " + this.priv[0].phrase + "(" + this.priv[0].varname + ")");
+
+    if ( this.priv[0].phrase == "if" ) {
+	this.priv.shift();
+	this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
+	this._match_reset();
+	return;
+    }
 }
 
 }
