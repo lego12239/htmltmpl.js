@@ -34,18 +34,18 @@
         <td>name:</td>
 	<td><%TMPL_VAR NAME=name%></td>
       </tr>
-      <!--<%TMPL_LOOP NAME=fields%>-->
-        <!--<%TMPL_IF NAME=is_exist%>-->
+      <!--%TMPL_LOOP NAME=fields%-->
+        <!--%TMPL_IF NAME=is_exist%-->
           <tr>
 	    <td><%TMPL_VAR NAME=title%></td>
 	    <td><input type="text" name="<%TMPL_VAR NAME=name%>" value=""/></td>
 	  </tr>
-	<!--<%TMPL_ELSE%>-->
+	<!--%TMPL_ELSE%-->
 	  <tr>
 	    <td cols="2">no title</td>
 	  </tr>
-	<!--<%/TMPL_IF%>-->
-      <!--<%/TMPL_LOOP%>-->
+	<!--%/TMPL_IF%-->
+      <!--%/TMPL_LOOP%-->
   </tbody></table>
 
   <table>
