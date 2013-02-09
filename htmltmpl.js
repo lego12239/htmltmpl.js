@@ -107,6 +107,38 @@ function htmltmpl(tmpl, prms)
 			is_match: 1,
 			oref: this,
 			hdlr_1_2: this.hdlr_tmpl_if_1_2_end },
+		      { phrase: "<%TMPL_UNLESS NAME=",
+			is_match: 1,
+			oref: this,
+			hdlr_1_2: this.hdlr_tmpl_unless_1_2 },
+		      { phrase: "&lt;%TMPL_UNLESS NAME=",
+			is_match: 1,
+			oref: this,
+			hdlr_1_2: this.hdlr_tmpl_unless_1_2 },
+		      { phrase: "<!--%TMPL_UNLESS NAME=",
+			is_match: 1,
+			oref: this,
+			hdlr_1_2: this.hdlr_tmpl_unless_1_2 },
+		      { phrase: "&lt;--%TMPL_UNLESS NAME=",
+			is_match: 1,
+			oref: this,
+			hdlr_1_2: this.hdlr_tmpl_unless_1_2 },
+		      { phrase: "<%/TMPL_UNLESS%>",
+			is_match: 1,
+			oref: this,
+			hdlr_1_2: this.hdlr_tmpl_if_1_2_end },
+		      { phrase: "&lt;%/TMPL_UNLESS%&gt;",
+			is_match: 1,
+			oref: this,
+			hdlr_1_2: this.hdlr_tmpl_if_1_2_end },
+		      { phrase: "<!--%/TMPL_UNLESS%-->",
+			is_match: 1,
+			oref: this,
+			hdlr_1_2: this.hdlr_tmpl_if_1_2_end },
+		      { phrase: "&lt;--%/TMPL_UNLESS%--&gt;",
+			is_match: 1,
+			oref: this,
+			hdlr_1_2: this.hdlr_tmpl_if_1_2_end },
 		      { phrase: "<%TMPL_ELSE%>",
 			is_match: 1,
 			oref: this,
@@ -579,7 +611,7 @@ htmltmpl.prototype.hdlr_tmpl_loop_1_2_end = function ()
 }
 
 /**********************************************************************
- * TMPL_IF HANDLERS
+ * TMPL_IF AND TMPL_UNLESS HANDLERS
  **********************************************************************/
 htmltmpl.prototype.hdlr_tmpl_if_1_2 = function ()
 {
@@ -610,6 +642,35 @@ htmltmpl.prototype.hdlr_tmpl_if_1_2 = function ()
     this._match_reset();
 }
 
+htmltmpl.prototype.hdlr_tmpl_unless_1_2 = function ()
+{
+//    alert("tmpl_unless_1_2");
+    this.phrases.unshift([ { phrase: "%>",
+			     is_match: 1,
+			     oref: this,
+			     hdlr_1_2: this.hdlr_tmpl_if_1_2_tail },
+			   { phrase: "%&gt;",
+			     is_match: 1,
+			     oref: this,
+			     hdlr_1_2: this.hdlr_tmpl_if_1_2_tail },
+			   { phrase: "%-->",
+			     is_match: 1,
+			     oref: this,
+			     hdlr_1_2: this.hdlr_tmpl_if_1_2_tail },
+			   { phrase: "%--&gt;",
+			     is_match: 1,
+			     oref: this,
+			     hdlr_1_2: this.hdlr_tmpl_if_1_2_tail } ]);
+
+    this.hdlrs.unshift({ hdlr_0_1: this.hdlr_tmpl_if_0_1,
+			 hdlr_1_0: this.hdlr_tmpl_if_1_0 });
+    this.priv.unshift({ phrase: "unless",
+			varname: new String() });
+    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
+
+    this._match_reset();
+}
+
 htmltmpl.prototype.hdlr_tmpl_if_0_1 = function ()
 {
     this.priv[0].varname += this.tmpl[0].str.substring(this.tmpl[0].pos[0].start, this.tmpl[0].pos[0].cur);
@@ -628,9 +689,10 @@ htmltmpl.prototype.hdlr_tmpl_if_1_2_tail = function ()
     var varname;
     var i;
     var len;
+    var phrase;
 
 
-//    alert("tmpl_if_1_2_tail: " + this.priv[0].varname + "("+this.data[0][this.priv[0].varname] +")");
+//    alert("tmpl_if_1_2_tail(" + this.priv[0].phrase + "): " + this.priv[0].varname + "("+this.data[0][this.priv[0].varname] +")");
     this.phrases.shift();
     this.hdlrs.shift();
 
@@ -648,20 +710,25 @@ htmltmpl.prototype.hdlr_tmpl_if_1_2_tail = function ()
 	}
     }
 
-    if ( ! this.priv[0].var_is_true ) {
-	this.phrases.unshift([ { phrase: "<%/TMPL_IF%>",
+    if ((( this.priv[0].phrase == "if" ) && ( ! this.priv[0].var_is_true )) ||
+	(( this.priv[0].phrase == "unless" ) && ( this.priv[0].var_is_true ))) {
+	if ( this.priv[0].phrase == "if" )
+	    phrase = "TMPL_IF";
+	else
+	    phrase = "TMPL_UNLESS";
+	this.phrases.unshift([ { phrase: "<%/" + phrase + "%>",
 				 is_match: 1,
 				 oref: this,
 				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat },
-			       { phrase: "&lt;%/TMPL_IF%&gt;",
+			       { phrase: "&lt;%/" + phrase + "%&gt;",
 				 is_match: 1,
 				 oref: this,
 				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat },
-			       { phrase: "<!--%/TMPL_IF%-->",
+			       { phrase: "<!--%/" + phrase + "%-->",
 				 is_match: 1,
 				 oref: this,
 				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat },
-			       { phrase: "&lt;--%/TMPL_IF%--&gt;",
+			       { phrase: "&lt;--%/" + phrase + "%--&gt;",
 				 is_match: 1,
 				 oref: this,
 				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat },
@@ -699,7 +766,7 @@ htmltmpl.prototype.hdlr_tmpl_if_eat = function ()
 
 htmltmpl.prototype.hdlr_tmpl_if_1_2_eat = function ()
 {
-//    alert("tmpl_if_1_2_eat: ");
+//    alert("tmpl_if_1_2_eat(" + this.priv[0].phrase + "): ");
     this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
 
     this.priv.shift();
@@ -711,22 +778,30 @@ htmltmpl.prototype.hdlr_tmpl_if_1_2_eat = function ()
 
 htmltmpl.prototype.hdlr_tmpl_if_1_2_else = function ()
 {
-//    alert("tmpl_if_1_2_else: " + this.priv[0].varname + "("+this.data[0][this.priv[0].varname] +")");
+    var phrase;
 
-    if ( this.priv[0].var_is_true ) {
-	this.phrases.unshift([ { phrase: "<%/TMPL_IF%>",
+
+//    alert("tmpl_if_1_2_else(" + this.priv[0].phrase + "): " + this.priv[0].varname + "("+this.data[0][this.priv[0].varname] +")");
+
+    if ((( this.priv[0].phrase == "if" ) && ( this.priv[0].var_is_true )) ||
+	(( this.priv[0].phrase == "unless" ) && ( ! this.priv[0].var_is_true ))) {
+	if ( this.priv[0].phrase == "if" )
+	    phrase = "TMPL_IF";
+	else
+	    phrase = "TMPL_UNLESS";
+	this.phrases.unshift([ { phrase: "<%/" + phrase + "%>",
 				 is_match: 1,
 				 oref: this,
 				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat },
-			       { phrase: "&lt;%/TMPL_IF%&gt;",
+			       { phrase: "&lt;%/" + phrase + "%&gt;",
 				 is_match: 1,
 				 oref: this,
 				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat },
-			       { phrase: "<!--%/TMPL_IF%-->",
+			       { phrase: "<!--%/" + phrase + "%-->",
 				 is_match: 1,
 				 oref: this,
 				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat },
-			       { phrase: "&lt;--%/TMPL_IF%--&gt;",
+			       { phrase: "&lt;--%/" + phrase + "%--&gt;",
 				 is_match: 1,
 				 oref: this,
 				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat } ]);
@@ -745,9 +820,10 @@ htmltmpl.prototype.hdlr_tmpl_if_1_2_else = function ()
 
 htmltmpl.prototype.hdlr_tmpl_if_1_2_end = function ()
 {
-//    alert("tmpl_if_1_2_end: " + this.priv[0].phrase + "(" + this.priv[0].varname + ")");
+//    alert("tmpl_if_1_2_end(" + this.priv[0].phrase + "): " + this.priv[0].phrase + "(" + this.priv[0].varname + ")");
 
-    if ( this.priv[0].phrase == "if" ) {
+    if (( this.priv[0].phrase == "if" ) ||
+	( this.priv[0].phrase == "unless" )) {
 	this.priv.shift();
 	this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
 	this._match_reset();

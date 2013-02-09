@@ -8,5 +8,8 @@ constructs:
 <%TMPL_VAR NAME=var_name%>
 <%TMPL_LOOP NAME=loop_name%>...<%/TMPL_LOOP%>
 <%TMPL_IF NAME=bool_var%>...<%TMPL_ELSE%>...<%/TMPL_IF%>
+<%TMPL_UNLESS NAME=bool_var%>...<%TMPL_ELSE%>...<%/TMPL_UNLESS%>
 
-See ex.html for the example of use.
+See ex*.html files for examples of use.
+
+

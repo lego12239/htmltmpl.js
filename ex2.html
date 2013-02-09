@@ -33,7 +33,7 @@
 </head>
 <body>
   <div>
-    Example of using nested TMPL_LOOP and TMPL_IF with global_vars option.
+    Example of using nested TMPL_LOOP and TMPL_UNLESS with global_vars option.
   </div>
 
   <table id="tbody_tmpl" style="display: none"><tbody>
@@ -42,8 +42,7 @@
         <td>array values:</td>
 	<td>
 	  <%TMPL_LOOP NAME=array%>
-	    <%TMPL_IF NAME=__inner__%>,<%/TMPL_IF%>
-	    <%TMPL_IF NAME=__last__%>,<%/TMPL_IF%>
+	    <%TMPL_UNLESS NAME=__first__%>,<%/TMPL_UNLESS%>
 	    <%TMPL_VAR NAME=val%>
 	  <%/TMPL_LOOP%>
 	</td>
