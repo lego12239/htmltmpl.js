@@ -1,0 +1,66 @@
+<html>
+<head>
+  <title>htmltmpl loop_context_vars option example</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <script type="text/javascript" src="htmltmpl.js"></script>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
+  <script type="text/javascript">
+    var tmpl;  // make tmpl a global var for debug purposes
+
+    function run(small)
+    {
+      var el;
+      var data = {};
+
+
+      if ( small )
+        data.fields = [ { val: "a" }, { val: "b" } ];
+      else
+        data.fields = [ { val: "a" }, { val: "b" }, { val: "c" }, { val: "d" } ];
+
+      tmpl = new htmltmpl(document.getElementById("tmpl"), { loop_context_vars: 1 });
+      el = tmpl.apply(data);
+      document.getElementById("cntr").appendChild(el);
+    }
+  </script>
+</head>
+<body>
+  <div>
+    Example of using loop_context_vars option.
+  </div>
+
+  <div id="tmpl" style="display: none"><div style="border: 1px solid green; margin-bottom: 10px">
+    <%TMPL_LOOP NAME=fields%>
+      <div style="margin-bottom: 20px">
+	<div>val: <%TMPL_VAR NAME=val%></div>
+	Loop counter and index is <%TMPL_VAR NAME=__counter__%>/<%TMPL_VAR NAME=__index__%>
+	<%TMPL_IF NAME=__first__%>
+          <div>This is the first pass of the loop</div>
+	<%/TMPL_IF%>
+	<%TMPL_IF NAME=__inner__%>
+          <div>This is the inner pass of the loop</div>
+	<%/TMPL_IF%>
+	<%TMPL_IF NAME=__outer__%>
+	  <div>This is the outer pass of the loop</div>
+	<%/TMPL_IF%>
+	<%TMPL_IF NAME=__odd__%>
+	  <div>This is the odd pass of the loop</div>
+	<%/TMPL_IF%>
+	<%TMPL_IF NAME=__even__%>
+	  <div>This is the even pass of the loop</div>
+	<%/TMPL_IF%>
+	<%TMPL_IF NAME=__last__%>
+	  <div>This is the last pass of the loop</div>
+	<%/TMPL_IF%>
+      </div>
+    <%/TMPL_LOOP%>
+  </div></div>
+
+  <input type="button" onclick="run(0)" value="run big loop"/>
+  <input type="button" onclick="run(1)" value="run small loop"/>
+
+  <div id="cntr">
+  </div>
+</body>
+</html>
+

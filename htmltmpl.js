@@ -16,11 +16,20 @@
     "use strict";
 /*
   prms = { ph_case_sensitive: 0/1,
-           global_vars: 0/1 }
+           global_vars: 0/1,
+	   loop_context_vars: 0/1 }
 
   Process the tmpl as string or as html element.
-  ph_case_sensitive - process template constructs in case-sensitive mode.
-  global_vars - make variables defined outside a loop visible.
+  ph_case_sensitive
+        process template constructs in case-sensitive mode.
+	1 by default.
+  global_vars
+        make variables defined outside a loop visible.
+        0 by default.        
+  loop_context_vars
+        Enable loop variables (__first__, __last__, __inner__,
+	__outer__, __odd__, __even__, __counter__, __index__).
+	0 by default.
 */
 function htmltmpl(tmpl, prms)
 {
@@ -126,11 +135,14 @@ function htmltmpl(tmpl, prms)
 			  start: 0 }];
     this.p.ph_case_sensitive = 1;
     this.p.global_vars = 0;
+    this.p.loop_context_vars = 0;
     if ( prms != undefined ) {
 	if ( prms.ph_case_sensitive != undefined )
 	    this.p.ph_case_sensitive = prms.ph_case_sensitive;
 	if ( prms.global_vars != undefined )
 	    this.p.global_vars = prms.global_vars;
+	if ( prms.loop_context_vars != undefined )
+	    this.p.loop_context_vars = prms.loop_context_vars;
     }
     // Set default handlers. It is an optional step. If a handler is ommited,
     // then a default handler is used instead.
@@ -416,6 +428,44 @@ htmltmpl.prototype.hdlr_tmpl_loop_1_0 = function ()
 //    alert("tmpl_loop_1_0: " + this.priv[0].loopname);
 }
 
+htmltmpl.prototype.set_loop_context_vars = function ()
+{
+    if ( this.priv[0].loop == undefined ) {
+	alert("set_loop_context_vars() is called outside a loop.");
+	return;
+    }
+
+    // Reset the vars
+    this.data[0].__first__ = 0;
+    this.data[0].__last__ = 0;
+    this.data[0].__inner__ = 0;
+    this.data[0].__outer__ = 0;
+
+    // Set the vars
+    if ( this.priv[0].loopidx == 0 ) {
+	this.data[0].__first__ = 1;
+	this.data[0].__outer__ = 1;
+    }
+    if ( this.priv[0].loopidx == (this.priv[0].loop.length - 1) ) {
+	this.data[0].__last__ = 1;
+	this.data[0].__outer__ = 1;
+    }
+
+    if ( ! this.data[0].__outer__ )
+	this.data[0].__inner__ = 1;
+
+    if ( (this.priv[0].loopidx + 1) % 2 == 0 ) {
+	this.data[0].__odd__ = 0;
+	this.data[0].__even__ = 1;
+    } else {
+	this.data[0].__odd__ = 1;
+	this.data[0].__even__ = 0;
+    }
+
+    this.data[0].__index__ = this.priv[0].loopidx;
+    this.data[0].__counter__ = this.priv[0].loopidx + 1;
+}
+
 htmltmpl.prototype.hdlr_tmpl_loop_1_2_tail = function ()
 {
     var loop;
@@ -468,6 +518,9 @@ htmltmpl.prototype.hdlr_tmpl_loop_1_2_tail = function ()
 			loopidx: 0 });
     this.data.unshift(loop[0]);
 
+    if ( this.p.loop_context_vars )
+	this.set_loop_context_vars();
+
     this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
     this.tmpl[0].pos.unshift({ cur: this.tmpl[0].pos[0].cur,
 			       start: this.tmpl[0].pos[0].start });
@@ -515,6 +568,9 @@ htmltmpl.prototype.hdlr_tmpl_loop_1_2_end = function ()
     // If not, prepare to the next iteration of a loop
     this.data.shift();
     this.data.unshift(this.priv[0].loop[this.priv[0].loopidx]);
+
+    if ( this.p.loop_context_vars )
+	this.set_loop_context_vars();
 
     this.tmpl[0].pos[0].cur = this.tmpl[0].pos[1].cur;
     this.tmpl[0].pos[0].start = this.tmpl[0].pos[1].start;
