@@ -268,6 +268,8 @@ htmltmpl.prototype.apply = function(data)
 	}
     }
 
+    // Append last characters if we still in state 0
+    this.out_str += this.tmpl[0].str.substring(this.tmpl[0].pos[0].start, this.tmpl[0].pos[0].cur);
     out_el = $.parseHTML(this.out_str);
 
     if ( out_el.length == 1 )
