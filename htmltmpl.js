@@ -583,8 +583,9 @@ htmltmpl.prototype.hdlr_tmpl_if_1_2_tail = function ()
 
     this.priv[0].var_is_true = 0;
     for(i = 0; i < len; i++) {
-	if ( this.data[i][this.priv[0].varname] ) {
-	    this.priv[0].var_is_true = 1;
+	if ( this.data[i][this.priv[0].varname] != undefined ) {
+	    if ( this.data[i][this.priv[0].varname] )
+		this.priv[0].var_is_true = 1;
 	    break;
 	}
     }
