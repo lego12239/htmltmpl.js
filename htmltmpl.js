@@ -15,11 +15,11 @@
 {
     "use strict";
 /*
-  prms = { case_insensitive: 0/1,
+  prms = { ph_case_sensitive: 0/1,
            global_vars: 0/1 }
 
   Process the tmpl as string or as html element.
-  case_insensitive - process template constructs in case-insensitive mode.
+  ph_case_sensitive - process template constructs in case-sensitive mode.
   global_vars - make variables defined outside a loop visible.
 */
 function htmltmpl(tmpl, prms)
@@ -124,11 +124,11 @@ function htmltmpl(tmpl, prms)
 
     this.tmpl[0].pos = [{ cur: 0,
 			  start: 0 }];
-    this.p.case_insensitive = 0;
+    this.p.ph_case_sensitive = 1;
     this.p.global_vars = 0;
     if ( prms != undefined ) {
-	if ( prms.case_insensitive != undefined )
-	    this.p.case_insensitive = prms.case_insensitive;
+	if ( prms.ph_case_sensitive != undefined )
+	    this.p.ph_case_sensitive = prms.ph_case_sensitive;
 	if ( prms.global_vars != undefined )
 	    this.p.global_vars = prms.global_vars;
     }
@@ -214,10 +214,10 @@ htmltmpl.prototype.phrases_match = function (char)
     var chr;
 
 
-    if ( this.p.case_insensitive )
-	chr = char.toUpperCase();
-    else
+    if ( this.p.ph_case_sensitive )
 	chr = char;
+    else
+	chr = char.toUpperCase();
 
     // Match against all phrases
     for(i = 0; i < this.phrases[0].length; i++) {
