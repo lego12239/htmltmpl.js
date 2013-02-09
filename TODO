@@ -5,3 +5,7 @@
 3. Some handlers of different phrases are equal. So, we can several common
    handlers and use it in various phrases.
 4. Make more expressive ex.html.
+5. Somewhen, the code must be unified on simplified...
+6. If we will can replace $.parseHTML(this.out_str) with an html-elements
+   creating on the basis of the main algorithm, i think we will get a
+   faster speed of work and totaly remove the need of jquery in htmltmpl.
