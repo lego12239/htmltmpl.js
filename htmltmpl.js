@@ -416,15 +416,28 @@ htmltmpl.prototype.hdlr_tmpl_loop_1_0 = function ()
 
 htmltmpl.prototype.hdlr_tmpl_loop_1_2_tail = function ()
 {
-    var lname;
+    var loop;
 
 
-//    alert("tmpl_loop_1_2_tail: " + this._t);
+//    alert("tmpl_loop_1_2_tail: " + this.priv[0].loopname);
     this.phrases.shift();
     this.hdlrs.shift();
 
-    if (( this.data[0][this.priv[0].loopname] == undefined ) ||
-	( ! Array.isArray(this.data[0][this.priv[0].loopname]) )) {
+    // Search a loop in data
+    if ( this.p.global_vars )
+	len = this.data.length;
+    else
+	len = 1;
+
+    for(i = 0; i < len; i++) {
+	if ( this.data[i][this.priv[0].loopname] != undefined ) {
+	    if ( Array.isArray(this.data[i][this.priv[0].loopname]) )
+		loop = this.data[i][this.priv[0].loopname];
+	    break;
+	}
+    }
+
+    if ( loop == undefined ) {
 	this.priv.shift();
 	this.phrases.unshift([ { phrase: "<%/TMPL_LOOP%>",
 				 is_match: 1,
@@ -444,15 +457,14 @@ htmltmpl.prototype.hdlr_tmpl_loop_1_2_tail = function ()
 				 hdlr_1_2: this.hdlr_tmpl_loop_1_2_eat } ]);
 	this.hdlrs.unshift({ hdlr_0_1: this.hdlr_tmpl_loop_eat,
 			     hdlr_1_0: this.hdlr_tmpl_loop_eat });
-	return;
 	this._match_reset();
+	return;
     }
-    lname = this.priv[0].loopname;
     this.priv.shift();
 
-    this.priv.unshift({ loop: this.data[0][lname],
+    this.priv.unshift({ loop: loop,
 			loopidx: 0 });
-    this.data.unshift(this.data[0][lname][0]);
+    this.data.unshift(loop[0]);
 
     this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
     this.tmpl[0].pos.unshift({ cur: this.tmpl[0].pos[0].cur,

@@ -1,6 +1,6 @@
 <html>
 <head>
-  <title>htmltmpl loop & global_vars example</title>
+  <title>htmltmpl loop, if & global_vars example</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
   <script type="text/javascript" src="htmltmpl.js"></script>
   <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
@@ -20,6 +20,7 @@
         data.fields.push({});
       }
       data.is_id = 1;
+      data.array = [ { val: 1 }, { val: 2 }, { val: 3 }, { val: 4 } ];
       data.id = document.getElementById("id").value;
       data.name = document.getElementById("name").value;
 
@@ -31,11 +32,19 @@
 </head>
 <body>
   <div>
-    Example of using TMPL_LOOP and TMPL_IF with global_vars option.
+    Example of using nested TMPL_LOOP and TMPL_IF with global_vars option.
   </div>
 
   <table id="tbody_tmpl" style="display: none"><tbody>
       <!--%TMPL_LOOP NAME=fields%-->
+      <tr>
+        <td>array values:</td>
+	<td>
+	  <%TMPL_LOOP NAME=array%>
+	    <%TMPL_VAR NAME=val%>, 
+	  <%/TMPL_LOOP%>
+	</td>
+      </tr>
       <tr>
         <td>
 	  <%TMPL_IF NAME=is_id%>id:<%TMPL_ELSE%>non-id:<%/TMPL_IF%>
