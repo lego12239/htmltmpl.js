@@ -12,4 +12,5 @@ constructs:
 
 See ex*.html files for examples of use.
 
-
+You can open test.html in your browser to test that htmltmpl.js is works right.
+If not so, please, report a bug.

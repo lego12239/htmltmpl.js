@@ -1,0 +1,502 @@
+<html>
+<head>
+  <title>htmltmpl test</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <script type="text/javascript" src="htmltmpl.js"></script>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
+  <script type="text/javascript">
+    var tmpl;  // make tmpl a global var for debug purposes
+    var span_ok, span_fail, res_cntr_el;
+    var tests = [ { id: "unit1",
+                    id_res: "unit1_res",
+                    title: "Test TMPL_VAR",
+                    prms: {},
+                    data: { var1: 1,
+                            var2: "test",
+                            var3: 234,
+                            var_long_name4: "asdf123" } },
+                  { id: "unit2",
+                    id_res: "unit2_res",
+                    title: "Test TMPL_LOOP",
+                    prms: {},
+                    data: { var1: 1,
+                            var2: "test",
+                            loop1: [ { var1: 123,
+                                       var2: "asdf",
+                                       var3: "qwer" },
+                                     { var1: 456,
+                                       var2: "uikj",
+                                       var3: "zxcv" },
+                                     { var1: "lk jfd",
+                                       var2: 789,
+                                       var3: "pooiu " } ],
+                            var_long_name: "ffff" } },
+                  { id: "unit3",
+                    id_res: "unit3_res",
+                    title: "Test TMPL_LOOP with global_vars option",
+                    prms: { global_vars: 1 },
+                    data: { var1: 1,
+                            var2: "test",
+                            var3: "glb",
+                            loop1: [ { var1: 123,
+                                       var2: "asdf" },
+                                     { var1: 456,
+                                       var2: "uikj" },
+                                     { var1: "lk jfd",
+                                       var2: 789 } ],
+                            var_long_name: "ffff" } },
+                  { id: "unit4",
+                    id_res: "unit4_res",
+                    title: "Test TMPL_LOOP without needed var",
+                    prms: {},
+                    data: { var1: 1,
+                            var2: "test",
+                            loop1: [ { var1: 123,
+                                       var3: "qwer" },
+                                     { var1: 456,
+                                       var3: "zxcv" },
+                                     { var1: "lk jfd",
+                                       var3: "pooiu " } ],
+                            var_long_name: "ffff" } },
+                  { id: "unit5",
+                    id_res: "unit5_res",
+                    title: "Test inner TMPL_LOOP",
+                    prms: {},
+                    data: { loop1: [ { var1: 123,
+                                       var2: "qwer",
+                                       var3: "lkjk",
+                                       loop2: [ { var1: "asdf",
+                                                  var2: "jhgf",
+                                                  var3: "jhhhf" },
+                                                { var1: "asdf1",
+                                                  var2: "jjjj2",
+                                                  var3: "aaaa2" },
+                                                { var1: "dfdf3",
+                                                  var2: "dfdf4",
+                                                  var3: "dfdf5" } ] },
+                                     { var1: 456,
+                                       var2: "kjkj",
+                                       var3: "aaaa12",
+                                       loop2: [ { var1: "asdf1",
+                                                  var2: "jhgf1",
+                                                  var3: "jhhhf1" },
+                                                { var1: "asdf2",
+                                                  var2: "jjjj3",
+                                                  var3: "aaaa3" },
+                                                { var1: "dfdf7",
+                                                  var2: "dfdf8",
+                                                  var3: "dfdf9" } ] } ] } },
+                  { id: "unit6",
+                    id_res: "unit6_res",
+                    title: "Test inner TMPL_LOOP with global_vars option",
+                    prms: { global_vars: 1 },
+                    data: { loop2: [ { var1: "asdf",
+                                       var2: "jhgf",
+                                       var3: "jhhhf" },
+                                     { var1: "asdf1",
+                                       var2: "jjjj2",
+                                       var3: "aaaa2" },
+                                     { var1: "dfdf3",
+                                       var2: "dfdf4",
+                                       var3: "dfdf5" } ],
+                            loop1: [ { var1: 123,
+                                       var2: "qwer",
+                                       var3: "lkjk" },
+                                     { var1: 456,
+                                       var2: "kjkj",
+                                       var3: "aaaa12" } ] } },
+                  { id: "unit7",
+                    id_res: "unit7_res",
+                    title: "Test TMPL_LOOP (3 pass) with loop_context_vars option",
+                    prms: { loop_context_vars: 1 },
+                    data: { loop1: [ { var1: 123,
+                                       var3: "qwer" },
+                                     { var1: 456,
+                                       var3: "zxcv" },
+                                     { var1: "lk jfd",
+                                       var3: "pooiu " } ] } },
+                  { id: "unit8",
+                    id_res: "unit8_res",
+                    title: "Test TMPL_LOOP (2 pass) with loop_context_vars option",
+                    prms: { loop_context_vars: 1 },
+                    data: { loop1: [ { var1: 123,
+                                       var3: "qwer" },
+                                     { var1: "lk jfd",
+                                       var3: "pooiu " } ] } },
+                  { id: "unit9",
+                    id_res: "unit9_res",
+                    title: "Test TMPL_LOOP (1 pass) with loop_context_vars option",
+                    prms: { loop_context_vars: 1 },
+                    data: { loop1: [ { var1: 123,
+                                       var3: "pooiu " } ] } } ];
+
+    function report_ok(test)
+    {
+        var el, span;
+
+
+        el = document.createElement("div");
+        span = document.createElement("span");
+        span.innerHTML = "test '" + test.id + "' (" + test.title + "): ";
+        el.appendChild(span);
+        el.appendChild(span_ok.cloneNode(true));
+        res_cntr_el.appendChild(el);
+    }
+
+    function report_fail(test)
+    {
+        var el, span;
+
+
+        el = document.createElement("div");
+        span = document.createElement("span");
+        span.innerHTML = "test '" + test.id + "' (" + test.title + "): ";
+        el.appendChild(span);
+        el.appendChild(span_fail.cloneNode(true));
+        res_cntr_el.appendChild(el);
+    }
+
+    function do_tests()
+    {
+        var i;
+        var res_el;
+
+
+        span_ok = document.getElementById("results_ok");
+        span_fail = document.getElementById("results_fail");
+        res_cntr_el = document.getElementById("results");
+
+        for(i = 0; i < tests.length; i++) {
+            tmpl = new htmltmpl(document.getElementById(tests[i].id), tests[i].prms);
+            tmpl.apply(tests[i].data);
+            if ( document.getElementById(tests[i].id_res).innerHTML == tmpl.out_str )
+	        report_ok(tests[i]);
+            else
+                report_fail(tests[i]);
+        }
+    }
+  </script>
+</head>
+<body onload="do_tests()">
+  <div id="results">
+  </div>
+
+  <div style="display: none">
+  <span id="results_fail" style="color: red; font-weight: bold">fail</span>
+  <span id="results_ok" style="color: green; font-weight: bold">ok</span>
+
+  <!-- unit 1 -->
+  <div id="unit1">
+    <%TMPL_VAR NAME=var1%>
+    <%TMPL_VAR NAME=var2%>
+    <%TMPL_VAR NAME=var3%>
+    <%TMPL_VAR NAME=var_long_name4%>
+  </div>
+  <div id="unit1_res">
+    1
+    test
+    234
+    asdf123
+  </div>
+
+  <!-- unit 2 -->
+  <div id="unit2">
+    <%TMPL_LOOP NAME=loop1%>
+      <%TMPL_VAR NAME=var1%>
+      <%TMPL_VAR NAME=var2%>
+      <%TMPL_VAR NAME=var3%>
+    <%/TMPL_LOOP%>
+    <%TMPL_VAR NAME=var1%>
+    <%TMPL_VAR NAME=var2%>
+    <%TMPL_VAR NAME=var_long_name%>
+  </div>
+  <div id="unit2_res">
+    
+      123
+      asdf
+      qwer
+    
+      456
+      uikj
+      zxcv
+    
+      lk jfd
+      789
+      pooiu 
+    
+    1
+    test
+    ffff
+  </div>
+
+  <!-- unit 3 -->
+  <div id="unit3">
+    <%TMPL_LOOP NAME=loop1%>
+      <%TMPL_VAR NAME=var1%>
+      <%TMPL_VAR NAME=var2%>
+      <%TMPL_VAR NAME=var3%>
+    <%/TMPL_LOOP%>
+    <%TMPL_VAR NAME=var1%>
+    <%TMPL_VAR NAME=var2%>
+    <%TMPL_VAR NAME=var_long_name%>
+  </div>
+  <div id="unit3_res">
+    
+      123
+      asdf
+      glb
+    
+      456
+      uikj
+      glb
+    
+      lk jfd
+      789
+      glb
+    
+    1
+    test
+    ffff
+  </div>
+
+  <!-- unit 4 -->
+  <div id="unit4">
+    <%TMPL_LOOP NAME=loop1%>
+      <%TMPL_VAR NAME=var1%>
+      <%TMPL_VAR NAME=var2%>
+      <%TMPL_VAR NAME=var3%>
+    <%/TMPL_LOOP%>
+    <%TMPL_VAR NAME=var1%>
+    <%TMPL_VAR NAME=var2%>
+    <%TMPL_VAR NAME=var_long_name%>
+  </div>
+  <div id="unit4_res">
+    
+      123
+      
+      qwer
+    
+      456
+      
+      zxcv
+    
+      lk jfd
+      
+      pooiu 
+    
+    1
+    test
+    ffff
+  </div>
+
+  <!-- unit 5 -->
+  <div id="unit5">
+    <%TMPL_LOOP NAME=loop1%>
+      <%TMPL_VAR NAME=var1%>
+      <%TMPL_VAR NAME=var2%>
+      <%TMPL_VAR NAME=var3%>
+      <%TMPL_LOOP NAME=loop2%>
+        <%TMPL_VAR NAME=var1%>
+        <%TMPL_VAR NAME=var2%>
+        <%TMPL_VAR NAME=var3%>
+      <%/TMPL_LOOP%>
+    <%/TMPL_LOOP%>
+  </div>
+  <div id="unit5_res">
+    
+      123
+      qwer
+      lkjk
+      
+        asdf
+        jhgf
+        jhhhf
+      
+        asdf1
+        jjjj2
+        aaaa2
+      
+        dfdf3
+        dfdf4
+        dfdf5
+      
+    
+      456
+      kjkj
+      aaaa12
+      
+        asdf1
+        jhgf1
+        jhhhf1
+      
+        asdf2
+        jjjj3
+        aaaa3
+      
+        dfdf7
+        dfdf8
+        dfdf9
+      
+    
+  </div>    
+
+  <!-- unit 6 -->
+  <div id="unit6">
+    <%TMPL_LOOP NAME=loop1%>
+      <%TMPL_VAR NAME=var1%>
+      <%TMPL_VAR NAME=var2%>
+      <%TMPL_VAR NAME=var3%>
+      <%TMPL_LOOP NAME=loop2%>
+        <%TMPL_VAR NAME=var1%>
+        <%TMPL_VAR NAME=var2%>
+        <%TMPL_VAR NAME=var3%>
+      <%/TMPL_LOOP%>
+    <%/TMPL_LOOP%>
+  </div>
+  <div id="unit6_res">
+    
+      123
+      qwer
+      lkjk
+      
+        asdf
+        jhgf
+        jhhhf
+      
+        asdf1
+        jjjj2
+        aaaa2
+      
+        dfdf3
+        dfdf4
+        dfdf5
+      
+    
+      456
+      kjkj
+      aaaa12
+      
+        asdf
+        jhgf
+        jhhhf
+      
+        asdf1
+        jjjj2
+        aaaa2
+      
+        dfdf3
+        dfdf4
+        dfdf5
+      
+    
+  </div>    
+
+  <!-- unit 7 -->
+  <div id="unit7">
+    <%TMPL_LOOP NAME=loop1%>
+      <%TMPL_VAR NAME=__first__%>
+      <%TMPL_VAR NAME=__last__%>
+      <%TMPL_VAR NAME=__inner__%>
+      <%TMPL_VAR NAME=__outer__%>
+      <%TMPL_VAR NAME=__odd__%>
+      <%TMPL_VAR NAME=__even__%>
+      <%TMPL_VAR NAME=__counter__%>
+      <%TMPL_VAR NAME=__index__%>
+    <%/TMPL_LOOP%>
+  </div>
+  <div id="unit7_res">
+    
+      1
+      0
+      0
+      1
+      1
+      0
+      1
+      0
+    
+      0
+      0
+      1
+      0
+      0
+      1
+      2
+      1
+    
+      0
+      1
+      0
+      1
+      1
+      0
+      3
+      2
+    
+  </div>
+
+  <!-- unit 8 -->
+  <div id="unit8">
+    <%TMPL_LOOP NAME=loop1%>
+      <%TMPL_VAR NAME=__first__%>
+      <%TMPL_VAR NAME=__last__%>
+      <%TMPL_VAR NAME=__inner__%>
+      <%TMPL_VAR NAME=__outer__%>
+      <%TMPL_VAR NAME=__odd__%>
+      <%TMPL_VAR NAME=__even__%>
+      <%TMPL_VAR NAME=__counter__%>
+      <%TMPL_VAR NAME=__index__%>
+    <%/TMPL_LOOP%>
+  </div>
+  <div id="unit8_res">
+    
+      1
+      0
+      0
+      1
+      1
+      0
+      1
+      0
+    
+      0
+      1
+      0
+      1
+      0
+      1
+      2
+      1
+    
+  </div>
+
+  <!-- unit 9 -->
+  <div id="unit9">
+    <%TMPL_LOOP NAME=loop1%>
+      <%TMPL_VAR NAME=__first__%>
+      <%TMPL_VAR NAME=__last__%>
+      <%TMPL_VAR NAME=__inner__%>
+      <%TMPL_VAR NAME=__outer__%>
+      <%TMPL_VAR NAME=__odd__%>
+      <%TMPL_VAR NAME=__even__%>
+      <%TMPL_VAR NAME=__counter__%>
+      <%TMPL_VAR NAME=__index__%>
+    <%/TMPL_LOOP%>
+  </div>
+  <div id="unit9_res">
+    
+      1
+      1
+      0
+      1
+      1
+      0
+      1
+      0
+    
+  </div>
+
+  </div>
+</body>
+</html>
+
