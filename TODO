@@ -1,6 +1,6 @@
 1. Process at the first level only <%TMPL_ constructs, and only after it
    a match switches to the next level, where process the all <%TMPL_* constructs.
-2. Added phrase name into the priv, to detect current processing phrase and 
+2. Add phrase name into the priv, to detect current processing phrase and 
    template phrases errors (where phrases are intermixed, like <1> <2> </1> </2>).
 3. Some handlers of different phrases are equal. So, we can several common
    handlers and use it in various phrases.
@@ -11,5 +11,7 @@
    faster speed of work and totaly remove the need of jquery in htmltmpl.
 7. May be we need to make some autotests for library functionality?..
 8. Check what variants really need to stay from this.phrases in htmltmpl().
-9. Added tests into test.html for ph_case_sensitive option and for
+9. Add tests into test.html for ph_case_sensitive option and for
    TMPL_IF/TMPL_UNLESS/TMPL_ELSE.
+10. Add option to raise error if we found TMPL construct, but in supplied
+    data we don't found needed names.

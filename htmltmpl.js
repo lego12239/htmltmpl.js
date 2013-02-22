@@ -517,7 +517,8 @@ htmltmpl.prototype.hdlr_tmpl_loop_1_2_tail = function ()
 
     for(i = 0; i < len; i++) {
 	if ( this.data[i][this.priv[0].loopname] != undefined ) {
-	    if ( Array.isArray(this.data[i][this.priv[0].loopname]) )
+	    if (( typeof(this.data[i][this.priv[0].loopname]) === "object" ) &&
+		( this.data[i][this.priv[0].loopname] instanceof Array ))
 		loop = this.data[i][this.priv[0].loopname];
 	    break;
 	}
