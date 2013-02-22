@@ -7,7 +7,16 @@
   <script type="text/javascript">
     var tmpl;  // make tmpl a global var for debug purposes
     var span_ok, span_fail, res_cntr_el;
-    var tests = [ { id: "unit1",
+    var tests = [ { id: "unit0",
+                    id_res: "unit0_res",
+                    as_str: 1,
+                    title: "Test template as string",
+                    prms: {},
+                    data: { var1: 1,
+                            var2: "test",
+                            var3: 234,
+                            var_long_name4: "asdf123" } },
+                  { id: "unit1",
                     id_res: "unit1_res",
                     title: "Test TMPL_VAR",
                     prms: {},
@@ -179,7 +188,11 @@
         res_cntr_el = document.getElementById("results");
 
         for(i = 0; i < tests.length; i++) {
-            tmpl = new htmltmpl(document.getElementById(tests[i].id), tests[i].prms);
+            if ( tests[i].as_str )
+                tmpl = new htmltmpl(document.getElementById(tests[i].id).innerHTML,
+                                    tests[i].prms);
+            else
+                tmpl = new htmltmpl(document.getElementById(tests[i].id), tests[i].prms);
             tmpl.apply(tests[i].data);
             if ( document.getElementById(tests[i].id_res).innerHTML == tmpl.out_str )
 	        report_ok(tests[i]);
@@ -196,6 +209,20 @@
   <div style="display: none">
   <span id="results_fail" style="color: red; font-weight: bold">fail</span>
   <span id="results_ok" style="color: green; font-weight: bold">ok</span>
+
+  <!-- unit 0 -->
+  <div id="unit0">
+    <%TMPL_VAR NAME=var1%>
+    <%TMPL_VAR NAME=var2%>
+    <%TMPL_VAR NAME=var3%>
+    <%TMPL_VAR NAME=var_long_name4%>
+  </div>
+  <div id="unit0_res">
+    1
+    test
+    234
+    asdf123
+  </div>
 
   <!-- unit 1 -->
   <div id="unit1">
