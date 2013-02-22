@@ -128,7 +128,19 @@
                     title: "Test TMPL_LOOP (1 pass) with loop_context_vars option",
                     prms: { loop_context_vars: 1 },
                     data: { loop1: [ { var1: 123,
-                                       var3: "pooiu " } ] } } ];
+                                       var3: "pooiu " } ] } },
+                  { id: "unit10",
+                    id_res: "unit10_res",
+                    title: "Test tmpl_is_commented option",
+                    prms: { tmpl_is_commented: 1 },
+                    data: { loop1: [ { var1: 123,
+                                       var2: "pooiu " } ] } },
+                  { id: "unit11",
+                    id_res: "unit11_res",
+                    title: "Test tmpl_is_commented option",
+                    prms: { tmpl_is_commented: 1 },
+                    data: { loop1: [ { var1: 123,
+                                       var2: "pooiu " } ] } } ];
 
     function report_ok(test)
     {
@@ -493,6 +505,38 @@
       0
       1
       0
+    
+  </div>
+
+  <!-- unit 10 -->
+  <div id="unit10"><!--
+    <%TMPL_LOOP NAME=loop1%>
+      <%TMPL_VAR NAME=var1%>
+      <%TMPL_VAR NAME=var2%>
+    <%/TMPL_LOOP%>
+  --></div>
+  <div id="unit10_res">
+    
+      123
+      pooiu 
+    
+  </div>
+
+  <!-- unit 11 -->
+  <div id="unit11">
+    <!--
+    <%TMPL_LOOP NAME=loop1%>
+      <%TMPL_VAR NAME=var1%>
+      <%TMPL_VAR NAME=var2%>
+    <%/TMPL_LOOP%>
+    -->
+  </div>
+  <div id="unit11_res">
+    
+    
+      123
+      pooiu 
+    
     
   </div>
 

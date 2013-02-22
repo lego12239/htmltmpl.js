@@ -19,7 +19,8 @@
 /*
   prms = { ph_case_sensitive: 0/1,
            global_vars: 0/1,
-	   loop_context_vars: 0/1 }
+	   loop_context_vars: 0/1,
+	   tmpl_is_commented: 0/1 }
 
   Process the tmpl as string or as html element.
   ph_case_sensitive
@@ -31,6 +32,10 @@
   loop_context_vars
         Enable loop variables (__first__, __last__, __inner__,
 	__outer__, __odd__, __even__, __counter__, __index__).
+	0 by default.
+  tmpl_is_commented
+        Enable this if a template is enclosed in <!--/-->. Thus,
+	the comment constuct is striped from a result.
 	0 by default.
 */
 function htmltmpl(tmpl, prms)
@@ -170,6 +175,7 @@ function htmltmpl(tmpl, prms)
     this.p.ph_case_sensitive = 1;
     this.p.global_vars = 0;
     this.p.loop_context_vars = 0;
+    this.p.tmpl_is_commented = 0;
     if ( prms != undefined ) {
 	if ( prms.ph_case_sensitive != undefined )
 	    this.p.ph_case_sensitive = prms.ph_case_sensitive;
@@ -177,6 +183,14 @@ function htmltmpl(tmpl, prms)
 	    this.p.global_vars = prms.global_vars;
 	if ( prms.loop_context_vars != undefined )
 	    this.p.loop_context_vars = prms.loop_context_vars;
+	if ( prms.tmpl_is_commented != undefined ) {
+	    this.p.tmpl_is_commented = prms.tmpl_is_commented;
+	    // MUST think about a better place for this code
+	    this.phrases.unshift([ { phrase: "<!--",
+				     is_match: 1,
+				     oref: this,
+				     hdlr_1_2: this.hdlr_enclosing_comment_start } ]);
+	}
     }
     // Set default handlers. It is an optional step. If a handler is ommited,
     // then a default handler is used instead.
@@ -355,6 +369,33 @@ htmltmpl.prototype.def_hdlr_1_2 = function ()
     if ( typeof(this.phrases[0][this.match.phrase_idx].hdlr_1_2) === "function" )
 	this.phrases[0][this.match.phrase_idx].hdlr_1_2.call(this);
 }
+
+
+/**********************************************************************
+ * ENCLOSING COMMENT HANDLERS
+ **********************************************************************/
+htmltmpl.prototype.hdlr_enclosing_comment_start = function ()
+{
+//    alert("enclosing_comment_start");
+    this.phrases.shift();
+    this.phrases[0].unshift({ phrase: "-->",
+			      is_match: 1,
+			      oref: this,
+			      hdlr_1_2: this.hdlr_enclosing_comment_end });
+    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
+
+    this._match_reset();
+}
+
+htmltmpl.prototype.hdlr_enclosing_comment_end = function ()
+{
+//    alert("enclosing_comment_end");
+
+    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
+
+    this._match_reset();
+}
+
 
 /**********************************************************************
  * TMPL_VAR HANDLERS

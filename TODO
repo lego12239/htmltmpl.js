@@ -9,7 +9,7 @@
 6. If we will can replace $.parseHTML(this.out_str) with an html-elements
    creating on the basis of the main algorithm, i think we will get a
    faster speed of work and totaly remove the need of jquery in htmltmpl.
-7. May be we need to make some autotests for library functionality?..
+7. Do something with test.html, that would it works in ie.
 8. Check what variants really need to stay from this.phrases in htmltmpl().
 9. Add tests into test.html for ph_case_sensitive option and for
    TMPL_IF/TMPL_UNLESS/TMPL_ELSE.
