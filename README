@@ -14,3 +14,111 @@ See ex*.html files for examples of use.
 
 You can open test.html in your browser to test that htmltmpl.js is works right
 (It doesn't work in ie now). If not so, please, report a bug.
+
+Using
+=====
+
+To create a htmltmpl object call the constructor with a template element as an
+argument:
+
+var tmpl = new htmltmpl(document.getElementById("tmpl_div"));
+....
+<div style="display: none" id="tmpl_div">
+  <%TMPL_LOOP NAME=loop1%>
+    <div><%TMPL_VAR NAME=var1%></div>
+  <%/TMPL_LOOP%>
+</div>
+
+In this case the content of the outer div is got as a template. That is
+(without quotes):
+
+"
+  <%TMPL_LOOP NAME=loop1%>
+    <div><%TMPL_VAR NAME=var1%></div>
+  <%/TMPL_LOOP%>
+"
+
+A template can be a string instead of a html element:
+
+var tmpl = new htmltmpl("<div><%TMPL_VAR NAME=var1%></div>");
+
+htmltmpl constructor accept parameters in second argument to change it
+behaviour. They are passed as object properties:
+
+  ph_case_sensitive (0/1)
+        process template constructs in case-sensitive mode.
+        1 by default.
+  global_vars
+        make variables defined outside a loop visible.
+        0 by default.        
+  loop_context_vars
+        Enable loop variables (__first__, __last__, __inner__,
+        __outer__, __odd__, __even__, __counter__, __index__).
+        0 by default.
+  tmpl_is_commented
+        Enable this if a template is enclosed in <!--/-->. Thus,
+        the comment constuct is striped from a result.
+        0 by default.
+
+For example:
+
+var tmpl = new htmltmpl(document.getElementById("tmpl_div"),
+                        { ph_case_sensitive: 0 });
+...
+<div style="display: none" id="tmpl_div">
+  <%TMPL_LOOP NAME=loop1%>
+    <div><%TmPl_VaR NaMe=var1%></div>
+  <%/TMPL_LooP%>
+</div>
+
+Next you must apply a data set to the template:
+
+var el = tmpl.apply({ loop1: [{ var1: 123 },
+                              { var1: "string" },
+			      { var1: "str 456" }] });
+
+After this you have an array with html elements in el. The result is:
+
+"
+  
+    <div>123</div>
+  
+    <div>string</div>
+  
+    <div>str 456</div>
+  
+"
+
+You can attach it with jquery append() to any element in a DOM:
+
+$("#res").append(el);
+
+
+Template tags
+================
+
+TMPL_VAR
+    <%TMPL_VAR NAME=var_name%>
+
+    This is simply replaced with value of var_name property.
+
+TMPL_LOOP
+    <%TMPL_LOOP NAME=loop_name%>...<%/TMPL_LOOP%>
+
+    For this construct htmltmpl finds in a data set a property with name
+    loop_name which contain an array.
+
+TMPL_IF
+    <%TMPL_IF NAME=bool_var%>...<%/TMPL_IF%>
+    <%TMPL_IF NAME=bool_var%>...<%TMPL_ELSE%>...<%/TMPL_IF%>
+
+    This tag allows a conditional including of a html part in a result.
+    If bool_var data set property evaluates to true, then a content
+    between <%TMPL_IF%> and <%/TMPL_IF%> or between <%TMPL_IF%> and
+    <%TMPL_ELSE%> is included in a result.
+
+TMPL_UNLESS
+    <%TMPL_UNLESS NAME=bool_var%>...<%/TMPL_UNLESS%>
+    <%TMPL_UNLESS NAME=bool_var%>...<%TMPL_ELSE%>...<%/TMPL_UNLESS%>
+
+    The same as TMPL_IF, but bool_var property must evaluates to false.
