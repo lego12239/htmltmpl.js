@@ -181,6 +181,12 @@
                     title: "Test tmpl_is_commented option",
                     prms: { tmpl_is_commented: 1 },
                     data: { loop1: [ { var1: 123,
+                                       var2: "pooiu " } ] } },
+                  { id: "unit16",
+                    id_res: "unit16_res",
+                    title: "Test ph_case_sensitive option",
+                    prms: { ph_case_sensitive: 0 },
+                    data: { loop1: [ { var1: 123,
                                        var2: "pooiu " } ] } } ];
 
     function report_ok(test)
@@ -672,6 +678,20 @@
       123
       pooiu 
     
+    
+  </div>
+
+  <!-- unit 16 -->
+  <div id="unit16">
+    <%Tmpl_LooP NAMe=loop1%>
+      <%tmpl_var name=var1%>
+      <%tmpl_VAR NamE=var2%>
+    <%/TmpL_LOOp%>
+  </div>
+  <div id="unit16_res">
+    
+      123
+      pooiu 
     
   </div>
 
