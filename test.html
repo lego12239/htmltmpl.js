@@ -684,14 +684,26 @@
   <!-- unit 16 -->
   <div id="unit16">
     <%Tmpl_LooP NAMe=loop1%>
-      <%tmpl_var name=var1%>
-      <%tmpl_VAR NamE=var2%>
+      <%Tmpl_iF Name=var1%>
+        <%tmpl_var name=var1%>
+      <%Tmpl_elsE%>
+        ee
+      <%/tmpL_if%>
+      <%tmpl_unlESS NaME=var2%>
+        ff
+      <%TMPL_else%>
+        <%tmpl_VAR NamE=var2%>
+      <%/tmpl_unless%>
     <%/TmpL_LOOp%>
   </div>
   <div id="unit16_res">
     
-      123
-      pooiu 
+      
+        123
+      
+      
+        pooiu 
+      
     
   </div>
 
