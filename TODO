@@ -10,6 +10,5 @@
    creating on the basis of the main algorithm, i think we will get a
    faster speed of work and totaly remove the need of jquery in htmltmpl.
 7. Do something with test.html, that would it works in ie.
-8. Check what variants really need to stay from this.phrases in htmltmpl().
 10. Add option to raise error if we found TMPL construct, but in supplied
     data we don't found needed names.
