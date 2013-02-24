@@ -187,6 +187,12 @@
                     title: "Test ph_case_sensitive option",
                     prms: { ph_case_sensitive: 0 },
                     data: { loop1: [ { var1: 123,
+                                       var2: "pooiu " } ] } },
+                  { id: "unit17",
+                    id_res: "unit17_res",
+                    title: "Test the commented variant of the tags",
+                    prms: { },
+                    data: { loop1: [ { var1: 123,
                                        var2: "pooiu " } ] } } ];
 
     function report_ok(test)
@@ -697,6 +703,32 @@
     <%/TmpL_LOOp%>
   </div>
   <div id="unit16_res">
+    
+      
+        123
+      
+      
+        pooiu 
+      
+    
+  </div>
+
+  <!-- unit 17 -->
+  <div id="unit17">
+    <!--%TMPL_LOOP NAME=loop1%-->
+      <!--%TMPL_IF NAME=var1%-->
+        <!--%TMPL_VAR NAME=var1%-->
+      <!--%TMPL_ELSE%-->
+        ee
+      <!--%/TMPL_IF%-->
+      <!--%TMPL_UNLESS NAME=var2%-->
+        ff
+      <!--%TMPL_ELSE%-->
+        <!--%TMPL_VAR NAME=var2%-->
+      <!--%/TMPL_UNLESS%-->
+    <!--%/TMPL_LOOP%-->
+  </div>
+  <div id="unit17_res">
     
       
         123
