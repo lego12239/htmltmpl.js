@@ -140,12 +140,44 @@
                                        var3: "pooiu " } ] } },
                   { id: "unit10",
                     id_res: "unit10_res",
+                    title: "Test TMPL_IF",
+                    prms: {},
+                    data: { show_var1: 1,
+                            var1: 123,
+                            show_var2: 0,
+                            var2: "test" } },
+                  { id: "unit11",
+                    id_res: "unit11_res",
+                    title: "Test TMPL_IF with TMPL_ELSE",
+                    prms: {},
+                    data: { show_var1: 1,
+                            var1: 123,
+                            show_var2: 0,
+                            var2: "test" } },
+                  { id: "unit12",
+                    id_res: "unit12_res",
+                    title: "Test TMPL_UNLESS",
+                    prms: {},
+                    data: { show_var1: 1,
+                            var1: 123,
+                            show_var2: 0,
+                            var2: "test" } },
+                  { id: "unit13",
+                    id_res: "unit13_res",
+                    title: "Test TMPL_UNLESS with TMPL_ELSE",
+                    prms: {},
+                    data: { show_var1: 1,
+                            var1: 123,
+                            show_var2: 0,
+                            var2: "test" } },
+                  { id: "unit14",
+                    id_res: "unit14_res",
                     title: "Test tmpl_is_commented option",
                     prms: { tmpl_is_commented: 1 },
                     data: { loop1: [ { var1: 123,
                                        var2: "pooiu " } ] } },
-                  { id: "unit11",
-                    id_res: "unit11_res",
+                  { id: "unit15",
+                    id_res: "unit15_res",
                     title: "Test tmpl_is_commented option",
                     prms: { tmpl_is_commented: 1 },
                     data: { loop1: [ { var1: 123,
@@ -536,21 +568,97 @@
   </div>
 
   <!-- unit 10 -->
-  <div id="unit10"><!--
+  <div id="unit10">
+    <%TMPL_IF NAME=show_var1%>
+      <%TMPL_VAR NAME=var1%>
+    <%/TMPL_IF%>
+    <%TMPL_IF NAME=show_var2%>
+      <%TMPL_VAR NAME=var2%>
+    <%/TMPL_IF%>
+  </div>
+  <div id="unit10_res">
+    
+      123
+    
+    
+  </div>
+
+  <!-- unit 11 -->
+  <div id="unit11">
+    <%TMPL_IF NAME=show_var1%>
+      <%TMPL_VAR NAME=var1%>
+    <%TMPL_ELSE%>
+      without var1
+    <%/TMPL_IF%>
+    <%TMPL_IF NAME=show_var2%>
+      <%TMPL_VAR NAME=var2%>
+    <%TMPL_ELSE%>
+      without var2
+    <%/TMPL_IF%>
+  </div>
+  <div id="unit11_res">
+    
+      123
+    
+    
+      without var2
+    
+  </div>
+
+  <!-- unit 12 -->
+  <div id="unit12">
+    <%TMPL_UNLESS NAME=show_var1%>
+      <%TMPL_VAR NAME=var1%>
+    <%/TMPL_UNLESS%>
+    <%TMPL_UNLESS NAME=show_var2%>
+      <%TMPL_VAR NAME=var2%>
+    <%/TMPL_UNLESS%>
+  </div>
+  <div id="unit12_res">
+    
+    
+      test
+    
+  </div>
+
+  <!-- unit 13 -->
+  <div id="unit13">
+    <%TMPL_UNLESS NAME=show_var1%>
+      <%TMPL_VAR NAME=var1%>
+    <%TMPL_ELSE%>
+      without var1
+    <%/TMPL_UNLESS%>
+    <%TMPL_UNLESS NAME=show_var2%>
+      <%TMPL_VAR NAME=var2%>
+    <%TMPL_ELSE%>
+      without var2
+    <%/TMPL_UNLESS%>
+  </div>
+  <div id="unit13_res">
+    
+      without var1
+    
+    
+      test
+    
+  </div>
+
+  <!-- unit 14 -->
+  <div id="unit14"><!--
     <%TMPL_LOOP NAME=loop1%>
       <%TMPL_VAR NAME=var1%>
       <%TMPL_VAR NAME=var2%>
     <%/TMPL_LOOP%>
   --></div>
-  <div id="unit10_res">
+  <div id="unit14_res">
     
       123
       pooiu 
     
   </div>
 
-  <!-- unit 11 -->
-  <div id="unit11">
+  <!-- unit 15 -->
+  <div id="unit15">
     <!--
     <%TMPL_LOOP NAME=loop1%>
       <%TMPL_VAR NAME=var1%>
@@ -558,7 +666,7 @@
     <%/TMPL_LOOP%>
     -->
   </div>
-  <div id="unit11_res">
+  <div id="unit15_res">
     
     
       123
