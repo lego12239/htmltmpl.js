@@ -48,17 +48,21 @@ behaviour. They are passed as object properties:
   ph_case_sensitive (0/1)
         process template constructs in case-sensitive mode.
         1 by default.
-  global_vars
+  global_vars (0/1)
         make variables defined outside a loop visible.
         0 by default.        
-  loop_context_vars
+  loop_context_vars (0/1)
         Enable loop variables (__first__, __last__, __inner__,
         __outer__, __odd__, __even__, __counter__, __index__).
         0 by default.
-  tmpl_is_commented
+  tmpl_is_commented (0/1)
         Enable this if a template is enclosed in <!--/-->. Thus,
         the comment constuct is striped from a result.
         0 by default.
+  err_on_no_data (0/1)
+        If we found a template tag and have no such property in a supplied
+	data, return undefined and set this.err_msg to error message.
+	0 by default.
 
 For example:
 
@@ -92,6 +96,20 @@ After this you have an array with html elements in el. The result is:
 You can attach it with jquery append() to any element in a DOM:
 
 $("#res").append(el);
+
+The more strict variant is to use a err_on_no_data option:
+
+var tmpl, el;
+
+tmpl = new htmltmpl(document.getElementById("tmpl_div"),
+                    { ph_case_sensitive: 0,
+                      err_on_no_data: 1 });
+el = tmpl.apply({ loop1: [{ var1: 123 },
+                          { var1: "string" },
+              	          { var1: "str 456" }] });
+if ( el == undefined )
+    return alert("Error has been occured: " + tmpl.err_msg);
+
 
 
 Template tags

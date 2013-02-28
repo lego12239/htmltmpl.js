@@ -193,6 +193,30 @@
                     title: "Test the commented variant of the tags",
                     prms: { },
                     data: { loop1: [ { var1: 123,
+                                       var2: "pooiu " } ] } },
+                  { id: "unit18",
+                    id_res: "unit18_res",
+                    title: "Test the err_on_no_data option & TMPL_VAR",
+                    is_err: 1,
+                    err_msg: "Cann't find var 'var3'.",
+                    prms: { err_on_no_data: 1 },
+                    data: { loop1: [ { var1: 123,
+                                       var2: "pooiu " } ] } },
+                  { id: "unit19",
+                    id_res: "unit19_res",
+                    title: "Test the err_on_no_data option & TMPL_LOOP",
+                    is_err: 1,
+                    err_msg: "Cann't find loop 'loop2'.",
+                    prms: { err_on_no_data: 1 },
+                    data: { loop1: [ { var1: 123,
+                                       var2: "pooiu " } ] } },
+                  { id: "unit20",
+                    id_res: "unit20_res",
+                    title: "Test the err_on_no_data option & TMPL_IF",
+                    is_err: 1,
+                    err_msg: "Cann't find bool var 'var3'.",
+                    prms: { err_on_no_data: 1 },
+                    data: { loop1: [ { var1: 123,
                                        var2: "pooiu " } ] } } ];
 
     function report_ok(test)
@@ -224,7 +248,7 @@
     function do_tests()
     {
         var i;
-        var res_el;
+        var ret;
 
 
         span_ok = document.getElementById("results_ok");
@@ -237,11 +261,18 @@
                                     tests[i].prms);
             else
                 tmpl = new htmltmpl(document.getElementById(tests[i].id), tests[i].prms);
-            tmpl.apply(tests[i].data);
-            if ( document.getElementById(tests[i].id_res).innerHTML == tmpl.out_str )
-	        report_ok(tests[i]);
-            else
-                report_fail(tests[i]);
+            ret = tmpl.apply(tests[i].data);
+            if ( tests[i].is_err ) {
+                if (( ret == undefined ) && ( tests[i].err_msg == tmpl.err_msg ))
+                    report_ok(tests[i]);
+                else
+                    report_fail(tests[i]);
+            } else {
+                if ( document.getElementById(tests[i].id_res).innerHTML == tmpl.out_str )
+	            report_ok(tests[i]);
+                else
+                    report_fail(tests[i]);
+            }
         }
     }
   </script>
@@ -737,6 +768,37 @@
         pooiu 
       
     
+  </div>
+
+  <!-- unit 18 -->
+  <div id="unit18">
+    <%TMPL_LOOP NAME=loop1%>
+      <%TMPL_VAR NAME=var1%>
+      <%TMPL_VAR NAME=var3%>
+    <%/TMPL_LOOP%>
+  </div>
+  <div id="unit18_res">
+  </div>
+
+  <!-- unit 19 -->
+  <div id="unit19">
+    <%TMPL_LOOP NAME=loop2%>
+      <%TMPL_VAR NAME=var1%>
+      <%TMPL_VAR NAME=var3%>
+    <%/TMPL_LOOP%>
+  </div>
+  <div id="unit19_res">
+  </div>
+
+  <!-- unit 20 -->
+  <div id="unit20">
+    <%TMPL_LOOP NAME=loop1%>
+      <%TMPL_IF NAME=var3%>
+        <%TMPL_VAR NAME=var1%>
+      <%/TMPL_IF%>
+    <%/TMPL_LOOP%>
+  </div>
+  <div id="unit20_res">
   </div>
 
   </div>

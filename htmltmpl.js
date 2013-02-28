@@ -20,7 +20,8 @@
   prms = { ph_case_sensitive: 0/1,
            global_vars: 0/1,
 	   loop_context_vars: 0/1,
-	   tmpl_is_commented: 0/1 }
+	   tmpl_is_commented: 0/1,
+	   err_on_no_data: 0/1 }
 
   Process the tmpl as string or as html element.
   ph_case_sensitive
@@ -37,10 +38,15 @@
         Enable this if a template is enclosed in <!--/-->. Thus,
 	the comment constuct is striped from a result.
 	0 by default.
+  err_on_no_data
+        If we found a template tag and have no such property in a supplied
+	data, return undefined and set this.err_msg to error message.
+	0 by default.
 */
 function htmltmpl(tmpl, prms)
 {
     this.p = {};
+    this.err_msg = "";
     this.data = [];
     this.match = {};
     this.tmpl = [];
@@ -188,6 +194,7 @@ function htmltmpl(tmpl, prms)
     this.p.global_vars = 0;
     this.p.loop_context_vars = 0;
     this.p.tmpl_is_commented = 0;
+    this.p.err_on_no_data = 0;
     if ( prms != undefined ) {
 	if ( prms.ph_case_sensitive != undefined )
 	    this.p.ph_case_sensitive = prms.ph_case_sensitive;
@@ -203,6 +210,8 @@ function htmltmpl(tmpl, prms)
 				     oref: this,
 				     hdlr_1_2: this.hdlr_enclosing_comment_start } ]);
 	}
+	if ( prms.err_on_no_data != undefined )
+	    this.p.err_on_no_data = prms.err_on_no_data;
     }
     // Set default handlers. It is an optional step. If a handler is ommited,
     // then a default handler is used instead.
@@ -337,6 +346,8 @@ htmltmpl.prototype.apply = function(data)
 	    break;
 	case 2:
 	    break;
+	case -1:
+	    return;
 	}
     }
 
@@ -458,6 +469,7 @@ htmltmpl.prototype.hdlr_tmpl_var_1_2_tail = function ()
 //    alert("tmpl_var_1_2_tail: " + this.priv[0].varname);
     var i;
     var len;
+    var name_is_found = 0;
 
 
     if ( this.p.global_vars )
@@ -468,9 +480,16 @@ htmltmpl.prototype.hdlr_tmpl_var_1_2_tail = function ()
     for(i = 0; i < len; i++) {
 	if ( this.data[i][this.priv[0].varname] != undefined ) {
 	    this.out_str += this.data[i][this.priv[0].varname];
+	    name_is_found = 1;
 	    break;
 	}
     }
+    if (( this.p.err_on_no_data ) && ( ! name_is_found )) {
+	this.err_msg = "Cann't find var '" + this.priv[0].varname + "'.";
+	this.set_state(-1);
+	return;
+    }
+
     this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
 
     this.priv.shift();
@@ -564,6 +583,7 @@ htmltmpl.prototype.set_loop_context_vars = function ()
 htmltmpl.prototype.hdlr_tmpl_loop_1_2_tail = function ()
 {
     var loop;
+    var name_is_found = 0;
 
 
 //    alert("tmpl_loop_1_2_tail: " + this.priv[0].loopname);
@@ -579,10 +599,17 @@ htmltmpl.prototype.hdlr_tmpl_loop_1_2_tail = function ()
     for(i = 0; i < len; i++) {
 	if ( this.data[i][this.priv[0].loopname] != undefined ) {
 	    if (( typeof(this.data[i][this.priv[0].loopname]) === "object" ) &&
-		( this.data[i][this.priv[0].loopname] instanceof Array ))
+		( this.data[i][this.priv[0].loopname] instanceof Array )) {
+		name_is_found = 1;
 		loop = this.data[i][this.priv[0].loopname];
+	    }
 	    break;
 	}
+    }
+    if (( this.p.err_on_no_data ) && ( ! name_is_found )) {
+	this.err_msg = "Cann't find loop '" + this.priv[0].loopname + "'.";
+	this.set_state(-1);
+	return;
     }
 
     if ( loop == undefined ) {
@@ -754,6 +781,7 @@ htmltmpl.prototype.hdlr_tmpl_if_1_2_tail = function ()
     var i;
     var len;
     var phrase;
+    var name_is_found = 0;
 
 
 //    alert("tmpl_if_1_2_tail(" + this.priv[0].phrase + "): " + this.priv[0].varname + "("+this.data[0][this.priv[0].varname] +")");
@@ -768,10 +796,16 @@ htmltmpl.prototype.hdlr_tmpl_if_1_2_tail = function ()
     this.priv[0].var_is_true = 0;
     for(i = 0; i < len; i++) {
 	if ( this.data[i][this.priv[0].varname] != undefined ) {
+	    name_is_found = 1;
 	    if ( this.data[i][this.priv[0].varname] )
 		this.priv[0].var_is_true = 1;
 	    break;
 	}
+    }
+    if (( this.p.err_on_no_data ) && ( ! name_is_found )) {
+	this.err_msg = "Cann't find bool var '" + this.priv[0].varname + "'.";
+	this.set_state(-1);
+	return;
     }
 
     if ((( this.priv[0].phrase == "if" ) && ( ! this.priv[0].var_is_true )) ||
