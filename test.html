@@ -217,7 +217,12 @@
                     err_msg: "Cann't find bool var 'var3'.",
                     prms: { err_on_no_data: 1 },
                     data: { loop1: [ { var1: 123,
-                                       var2: "pooiu " } ] } } ];
+                                       var2: "pooiu " } ] } },
+                  { id: "unit21",
+                    id_res: "unit21_res",
+                    title: "Test TMPL_LOOP with an empty loop data",
+                    prms: { },
+                    data: { loop1: [ ] } } ];
 
     function report_ok(test)
     {
@@ -806,6 +811,18 @@
     <%/TMPL_LOOP%>
   </div>
   <div id="unit20_res">
+  </div>
+
+  <!-- unit 21 -->
+  <div id="unit21">
+    <%TMPL_LOOP NAME=loop1%>
+      <%TMPL_IF NAME=var3%>
+        <%TMPL_VAR NAME=var1%>
+      <%/TMPL_IF%>
+    <%/TMPL_LOOP%>
+  </div>
+  <div id="unit21_res">
+    
   </div>
 
   </div>

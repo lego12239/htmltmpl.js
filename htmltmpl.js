@@ -612,7 +612,7 @@ htmltmpl.prototype.hdlr_tmpl_loop_1_2_tail = function ()
 	return;
     }
 
-    if ( loop == undefined ) {
+    if (( loop == undefined ) || ( loop.length == 0 )) {
 	this.priv.shift();
 	this.phrases.unshift([ { phrase: "<%/TMPL_LOOP%>",
 				 is_match: 1,
