@@ -273,11 +273,18 @@
                 else
                     report_fail(tests[i]);
             }
+
+            // set counter
+            document.getElementById("counter").innerHTML = (i + 1) + "/" + tests.length;
         }
     }
   </script>
 </head>
 <body onload="do_tests()">
+  <div style="margin: 1em">
+    run tests: <span id="counter">0/0</span>
+  </div>
+
   <div id="results">
   </div>
 
