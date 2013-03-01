@@ -222,7 +222,24 @@
                     id_res: "unit21_res",
                     title: "Test TMPL_LOOP with an empty loop data",
                     prms: { },
-                    data: { loop1: [ ] } } ];
+                    data: { loop1: [ ] } },
+                  { id: "unit22",
+                    id_res: "unit22_res",
+                    title: "Test TMPL_VAR with a no var data",
+                    prms: { },
+                    data: { var1: 123 } },
+                  { id: "unit23",
+                    id_res: "unit23_res",
+                    title: "Test TMPL_IF with a no var data",
+                    prms: { },
+                    data: { var1: 123,
+                            var3: "test" } },
+                  { id: "unit24",
+                    id_res: "unit24_res",
+                    title: "Test TMPL_UNLESS with a no var data",
+                    prms: { },
+                    data: { var1: 123,
+                            var3: "test" } } ];
 
     function report_ok(test)
     {
@@ -822,6 +839,44 @@
     <%/TMPL_LOOP%>
   </div>
   <div id="unit21_res">
+    
+  </div>
+
+  <!-- unit 22 -->
+  <div id="unit22">
+    <%TMPL_VAR NAME=var1%>
+    <%TMPL_VAR NAME=var2%>
+  </div>
+  <div id="unit22_res">
+    123
+    
+  </div>
+
+  <!-- unit 23 -->
+  <div id="unit23">
+    <%TMPL_IF NAME=var2%>
+      <%TMPL_VAR NAME=var1%>
+    <%TMPL_ELSE%>
+      <%TMPL_VAR NAME=var3%>
+    <%/TMPL_IF%>
+  </div>
+  <div id="unit23_res">
+    
+      test
+    
+  </div>
+
+  <!-- unit 24 -->
+  <div id="unit24">
+    <%TMPL_UNLESS NAME=var2%>
+      <%TMPL_VAR NAME=var1%>
+    <%TMPL_ELSE%>
+      <%TMPL_VAR NAME=var3%>
+    <%/TMPL_UNLESS%>
+  </div>
+  <div id="unit24_res">
+    
+      123
     
   </div>
 
