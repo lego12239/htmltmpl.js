@@ -239,6 +239,12 @@
                     title: "Test TMPL_UNLESS with a no var data",
                     prms: { },
                     data: { var1: 123,
+                            var3: "test" } },
+                  { id: "unit25",
+                    id_res: "unit25_res",
+                    title: "Test TMPL_VAR with DEFAULT attribute",
+                    prms: { },
+                    data: { var1: 123,
                             var3: "test" } } ];
 
     function report_ok(test)
@@ -276,6 +282,9 @@
         span_ok = document.getElementById("results_ok");
         span_fail = document.getElementById("results_fail");
         res_cntr_el = document.getElementById("results");
+
+        // set counter initial value
+        document.getElementById("counter").innerHTML = "0/" + tests.length;
 
         for(i = 0; i < tests.length; i++) {
             if ( tests[i].as_str )
@@ -878,6 +887,16 @@
     
       123
     
+  </div>
+
+  <!-- unit 25 -->
+  <div id="unit25">
+    <%TMPL_VAR DEFAULT=test1 NAME=var1%>
+    <%TMPL_VAR DEFAULT=test1 NAME=var2%>
+  </div>
+  <div id="unit25_res">
+    123
+    test1
   </div>
 
   </div>

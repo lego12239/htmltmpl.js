@@ -117,8 +117,11 @@ Template tags
 
 TMPL_VAR
     <%TMPL_VAR NAME=var_name%>
+    <%TMPL_VAR DEFAULT=123 NAME=var_name%>
 
-    This is simply replaced with value of var_name property.
+    This is simply replaced with value of var_name property. If you use
+    TMPL_VAR tag with DEFAULT attribute, then if var_name property isn't found
+    a tag is replaced with a value of DEFAULT attribute.
 
 TMPL_LOOP
     <%TMPL_LOOP NAME=loop_name%>...<%/TMPL_LOOP%>

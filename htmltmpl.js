@@ -52,19 +52,19 @@ function htmltmpl(tmpl, prms)
     this.tmpl = [];
     this.priv = [];
     // Initial phrases
-    this.phrases = [[ { phrase: "<%TMPL_VAR NAME=",
+    this.phrases = [[ { phrase: "<%TMPL_VAR ",
 			is_match: 1,
 			oref: this,
 			hdlr_1_2: this.hdlr_tmpl_var_1_2 },
-		      { phrase: "&lt;%TMPL_VAR NAME=",
+		      { phrase: "&lt;%TMPL_VAR ",
 			is_match: 1,
 			oref: this,
 			hdlr_1_2: this.hdlr_tmpl_var_1_2 },
-		      { phrase: "&LT;%TMPL_VAR NAME=",
+		      { phrase: "&LT;%TMPL_VAR ",
 			is_match: 1,
 			oref: this,
 			hdlr_1_2: this.hdlr_tmpl_var_1_2 },
-		      { phrase: "<!--%TMPL_VAR NAME=",
+		      { phrase: "<!--%TMPL_VAR ",
 			is_match: 1,
 			oref: this,
 			hdlr_1_2: this.hdlr_tmpl_var_1_2 },
@@ -265,7 +265,7 @@ htmltmpl.prototype.set_state = function (newstate)
 	    if ( typeof(this.hdlrs[0].hdlr_0_2) === "function" )
 		this.hdlrs[0].hdlr_0_2.call(this);
 	    else
-		alert("Error: cann't handle a state change from 0 to 2");
+		this.def_hdlr_0_2();
 	    return;
 	}
 	break;
@@ -310,6 +310,7 @@ htmltmpl.prototype.phrases_match = function (char)
 	} else {
 	    if ( this.phrases[0][i].phrase.length == (this.match.ph_chr_idx + 1) ) {
 		this.match.phrase_idx = i;
+		this.match.str += char;
 		return 2;
 	    }
 	}
@@ -393,6 +394,13 @@ htmltmpl.prototype.def_hdlr_1_2 = function ()
 	this.phrases[0][this.match.phrase_idx].hdlr_1_2.call(this);
 }
 
+htmltmpl.prototype.def_hdlr_0_2 = function ()
+{
+//    alert("0_2: ");
+    if ( typeof(this.phrases[0][this.match.phrase_idx].hdlr_0_2) === "function" )
+	this.phrases[0][this.match.phrase_idx].hdlr_0_2.call(this);
+}
+
 
 /**********************************************************************
  * ENCLOSING COMMENT HANDLERS
@@ -426,26 +434,73 @@ htmltmpl.prototype.hdlr_enclosing_comment_end = function ()
 htmltmpl.prototype.hdlr_tmpl_var_1_2 = function ()
 {
 //    alert("tmp_var_1_2");
-    this.phrases.unshift([ { phrase: "%>",
+    this.phrases.unshift([ { phrase: "NAME=",
 			     is_match: 1,
 			     oref: this,
-			     hdlr_1_2: this.hdlr_tmpl_var_1_2_tail },
-			   { phrase: "%&gt;",
+			     hdlr_1_2: this.hdlr_tmpl_var_1_2_get },
+			   { phrase: "DEFAULT=",
 			     is_match: 1,
 			     oref: this,
-			     hdlr_1_2: this.hdlr_tmpl_var_1_2_tail },
-			   { phrase: "%&GT;",
-			     is_match: 1,
-			     oref: this,
-			     hdlr_1_2: this.hdlr_tmpl_var_1_2_tail },
-			   { phrase: "%-->",
-			     is_match: 1,
-			     oref: this,
-			     hdlr_1_2: this.hdlr_tmpl_var_1_2_tail } ]);
+			     hdlr_1_2: this.hdlr_tmpl_var_1_2_get } ]);
 
     this.hdlrs.unshift({ hdlr_0_1: this.hdlr_tmpl_var_0_1,
 			 hdlr_1_0: this.hdlr_tmpl_var_1_0 });
-    this.priv.unshift({ varname: new String() });
+    this.priv.unshift({ attrs: {},
+			attr_name: "",
+			tag: "var",
+			tokens: new String() });
+    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
+
+    this._match_reset();
+}
+
+htmltmpl.prototype.hdlr_tmpl_var_1_2_get = function ()
+{
+//    alert("tmp_var_1_2_get");
+
+    this.phrases.shift();
+    if ( this.priv[0].attr_name != "" )
+	this.phrases.unshift([ { phrase: "NAME=",
+				 is_match: 1,
+				 oref: this,
+				 hdlr_1_2: this.hdlr_tmpl_var_1_2_get },
+			       { phrase: "DEFAULT=",
+				 is_match: 1,
+				 oref: this,
+				 hdlr_1_2: this.hdlr_tmpl_var_1_2_get } ]);
+    else
+	this.phrases.unshift([ { phrase: " ",
+				 is_match: 1,
+				 oref: this,
+				 hdlr_0_2: function () {
+				     this.hdlr_tmpl_var_0_2(this.hdlr_tmpl_var_1_2_get);
+				 } },
+			       { phrase: "%>",
+				 is_match: 1,
+				 oref: this,
+				 hdlr_1_2: this.hdlr_tmpl_var_1_2_tail },
+			       { phrase: "%&gt;",
+				 is_match: 1,
+				 oref: this,
+				 hdlr_1_2: this.hdlr_tmpl_var_1_2_tail },
+			       { phrase: "%&GT;",
+				 is_match: 1,
+				 oref: this,
+				 hdlr_1_2: this.hdlr_tmpl_var_1_2_tail },
+			       { phrase: "%-->",
+				 is_match: 1,
+				 oref: this,
+				 hdlr_1_2: this.hdlr_tmpl_var_1_2_tail } ]);
+
+    if ( this.priv[0].attr_name == "" )
+	this.priv[0].attr_name = this.tmpl[0].str.substring(this.tmpl[0].pos[0].start, this.tmpl[0].pos[0].cur).toLowerCase();
+    else {
+	// Save last tokens
+	this.priv[0].attrs[this.priv[0].attr_name] = this.priv[0].tokens;
+	this.priv[0].attr_name = "";
+    }
+
+    this.priv[0].tokens = new String();
     this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
 
     this._match_reset();
@@ -453,24 +508,35 @@ htmltmpl.prototype.hdlr_tmpl_var_1_2 = function ()
 
 htmltmpl.prototype.hdlr_tmpl_var_0_1 = function ()
 {
-    this.priv[0].varname += this.tmpl[0].str.substring(this.tmpl[0].pos[0].start, this.tmpl[0].pos[0].cur);
-//    alert("tmpl_var_0_1: " + this.priv[0].varname);
+    this.priv[0].tokens += this.tmpl[0].str.substring(this.tmpl[0].pos[0].start, this.tmpl[0].pos[0].cur);
+//    alert("tmpl_var_0_1: " + this.priv[0].tokens);
+}
+
+htmltmpl.prototype.hdlr_tmpl_var_0_2 = function (func)
+{
+    this.priv[0].tokens += this.tmpl[0].str.substring(this.tmpl[0].pos[0].start, this.tmpl[0].pos[0].cur);
+//    alert("tmpl_var_0_2: " + this.priv[0].tokens);
+
+    func.call(this);
 }
 
 htmltmpl.prototype.hdlr_tmpl_var_1_0 = function ()
 {
     this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur;
-    this.priv[0].varname += this.match.str;
-//    alert("tmpl_var_1_0: " + this.priv[0].varname);
+    this.priv[0].tokens += this.match.str;
+//    alert("tmpl_var_1_0: " + this.priv[0].tokens);
 }
 
 htmltmpl.prototype.hdlr_tmpl_var_1_2_tail = function ()
 {
-//    alert("tmpl_var_1_2_tail: " + this.priv[0].varname);
+//    alert("tmpl_var_1_2_tail: " + this.priv[0].tokens);
     var i;
     var len;
     var name_is_found = 0;
 
+
+    // Save last tokens
+    this.priv[0].attrs[this.priv[0].attr_name] = this.priv[0].tokens;
 
     if ( this.p.global_vars )
 	len = this.data.length;
@@ -478,14 +544,18 @@ htmltmpl.prototype.hdlr_tmpl_var_1_2_tail = function ()
 	len = 1;
 
     for(i = 0; i < len; i++) {
-	if ( this.data[i][this.priv[0].varname] != undefined ) {
-	    this.out_str += this.data[i][this.priv[0].varname];
+	if ( this.data[i][this.priv[0].attrs.name] != undefined ) {
+	    this.out_str += this.data[i][this.priv[0].attrs.name];
 	    name_is_found = 1;
 	    break;
 	}
     }
+    if (( ! name_is_found ) && ( this.priv[0].attrs.default != undefined )) {
+	this.out_str += this.priv[0].attrs.default;
+	name_is_found = 1;
+    }
     if (( this.p.err_on_no_data ) && ( ! name_is_found )) {
-	this.err_msg = "Cann't find var '" + this.priv[0].varname + "'.";
+	this.err_msg = "Cann't find var '" + this.priv[0].attrs.name + "'.";
 	this.set_state(-1);
 	return;
     }
