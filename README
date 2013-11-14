@@ -63,6 +63,9 @@ behaviour. They are passed as object properties:
         If we found a template tag and have no such property in a supplied
 	data, return undefined and set this.err_msg to error message.
 	0 by default.
+  wrap_in
+	Wrap a template into a specified html element.
+	"" by default.
 
 For example:
 

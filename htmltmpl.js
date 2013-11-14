@@ -21,7 +21,8 @@
            global_vars: 0/1,
 	   loop_context_vars: 0/1,
 	   tmpl_is_commented: 0/1,
-	   err_on_no_data: 0/1 }
+	   err_on_no_data: 0/1,
+	   wrap_in: "div" }
 
   Process the tmpl as string or as html element.
   ph_case_sensitive
@@ -42,6 +43,9 @@
         If we found a template tag and have no such property in a supplied
 	data, return undefined and set this.err_msg to error message.
 	0 by default.
+  wrap_in
+        Wrap a template into a specified html element.
+	"" by default.  
 */
 function htmltmpl(tmpl, prms)
 {
@@ -212,6 +216,9 @@ function htmltmpl(tmpl, prms)
 	}
 	if ( prms.err_on_no_data != undefined )
 	    this.p.err_on_no_data = prms.err_on_no_data;
+	if ( prms.wrap_in != undefined )
+	    this.tmpl[0].str = "<" + prms.wrap_in + ">" + this.tmpl[0].str +
+	    + "</" + prms.wrap_in + ">";
     }
     // Set default handlers. It is an optional step. If a handler is ommited,
     // then a default handler is used instead.
