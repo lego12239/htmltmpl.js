@@ -53,7 +53,11 @@ function htmltmpl(tmpl, prms)
     this.err_msg = "";
     this.data = [];
     this.match = {};
-    this.tmpl = [];
+    this.tmpl = { data: [],
+		  data_cur: undefined,
+		  str: undefined,
+		  pos: { cur: 0,
+			 start: 0 } };
     this.priv = [];
     // Initial phrases
     this.phrases = [[ { phrase: "<%TMPL_VAR ",
@@ -185,15 +189,14 @@ function htmltmpl(tmpl, prms)
 			oref: this,
 			hdlr_1_2: this.hdlr_tmpl_if_1_2_else } ]];
     if ( typeof(tmpl) === "undefined" ) {
-	this.tmpl[0] = { str: "" };
+	this.tmpl.str = "";
     } else if ( typeof(tmpl) === "string" ) {
-	this.tmpl[0] = { str: tmpl };
+	this.tmpl.str = tmpl;
     } else if ( typeof(tmpl) === "object" ) {
-	this.tmpl[0] = { str: tmpl.innerHTML };
+	this.tmpl.str = tmpl.innerHTML;
     }
+    this.tmpl.data_cur = [ this.tmpl.data ];
 
-    this.tmpl[0].pos = [{ cur: 0,
-			  start: 0 }];
     this.p.ph_case_sensitive = 1;
     this.p.global_vars = 0;
     this.p.loop_context_vars = 0;
@@ -217,7 +220,7 @@ function htmltmpl(tmpl, prms)
 	if ( prms.err_on_no_data != undefined )
 	    this.p.err_on_no_data = prms.err_on_no_data;
 	if ( prms.wrap_in != undefined )
-	    this.tmpl[0].str = "<" + prms.wrap_in + ">" + this.tmpl[0].str +
+	    this.tmpl.str = "<" + prms.wrap_in + ">" + this.tmpl.str +
 	    + "</" + prms.wrap_in + ">";
     }
     // Set default handlers. It is an optional step. If a handler is ommited,
@@ -227,6 +230,8 @@ function htmltmpl(tmpl, prms)
 		    hdlr_1_2: this.def_hdlr_1_2 }];
 
     this._match_reset();
+
+    this.tmpl_prepare();
 }
 
 htmltmpl.prototype._match_reset = function ()
@@ -331,25 +336,24 @@ htmltmpl.prototype.phrases_match = function (char)
     }
 }
 
-htmltmpl.prototype.apply = function(data)
+htmltmpl.prototype.tmpl_prepare = function()
 {
     var str;
     var out_el;
 
 
     this.out_str = new String();
-    this.data.unshift(data);
 
     for (;
-	 this.tmpl[0].pos[0].cur < this.tmpl[0].str.length;
-	 this.tmpl[0].pos[0].cur++ ) {
+	 this.tmpl.pos.cur < this.tmpl.str.length;
+	 this.tmpl.pos.cur++ ) {
 	switch (this.match.state) {
 	case 0:
-	    res = this.phrases_match(this.tmpl[0].str.charAt(this.tmpl[0].pos[0].cur));
+	    res = this.phrases_match(this.tmpl.str.charAt(this.tmpl.pos.cur));
 	    this.set_state(res);
 	    break;
 	case 1:
-	    res = this.phrases_match(this.tmpl[0].str.charAt(this.tmpl[0].pos[0].cur));
+	    res = this.phrases_match(this.tmpl.str.charAt(this.tmpl.pos.cur));
 	    this.set_state(res);
 	    break;
 	case 2:
@@ -360,7 +364,160 @@ htmltmpl.prototype.apply = function(data)
     }
 
     // Append last characters if we still in state 0
-    this.out_str += this.tmpl[0].str.substring(this.tmpl[0].pos[0].start, this.tmpl[0].pos[0].cur);
+    this.out_str += this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur);
+    this.tmpl.data_cur[0].push({ type: "text",
+				 data: this.out_str });
+}
+
+htmltmpl.prototype._find_data_by_name = function(name, data)
+{
+    var len;
+    var j;
+
+
+    if (( data == undefined ) ||
+	( typeof(data) !== "object" ) ||
+	( ! (data instanceof Array) ))
+	return;
+
+    if ( this.p.global_vars )
+	len = data.length;
+    else
+	len = 1;
+
+    for(j = 0; j < len; j++) {
+	if ( data[j][name] != undefined )
+	    return data[j][name];
+    }
+
+    return;
+}
+
+htmltmpl.prototype.set_loop_context_vars = function (data, loopidx, looplen)
+{
+    // Reset the vars
+    data[0].__first__ = 0;
+    data[0].__last__ = 0;
+    data[0].__inner__ = 0;
+    data[0].__outer__ = 0;
+
+    // Set the vars
+    if ( loopidx == 0 ) {
+	data[0].__first__ = 1;
+	data[0].__outer__ = 1;
+    }
+    if ( loopidx == (looplen - 1) ) {
+	data[0].__last__ = 1;
+	data[0].__outer__ = 1;
+    }
+
+    if ( ! data[0].__outer__ )
+	data[0].__inner__ = 1;
+
+    if ( (loopidx + 1) % 2 == 0 ) {
+	data[0].__odd__ = 0;
+	data[0].__even__ = 1;
+    } else {
+	data[0].__odd__ = 1;
+	data[0].__even__ = 0;
+    }
+
+    data[0].__index__ = loopidx;
+    data[0].__counter__ = loopidx + 1;
+}
+
+htmltmpl.prototype._apply = function(tmpl, data)
+{
+    var i, j;
+    var found_d;
+
+
+    for(i = 0; i < tmpl.length; i++) {
+	switch (tmpl[i].type) {
+	case "text":
+	    this.out_str += tmpl[i].data;
+	    break;
+	case "var":
+	    found_d = this._find_data_by_name(tmpl[i].name, data);
+
+	    if ( found_d != undefined )
+		this.out_str += found_d;
+	    else if ( tmpl[i].default != undefined )
+		this.out_str += tmpl[i].default;
+	    else if ( this.p.err_on_no_data ) {
+		this.err_msg = "Cann't find var '" + tmpl[i].name + "'.";
+		return 0;
+	    }
+	    break;
+	case "loop":
+	    found_d = this._find_data_by_name(tmpl[i].name, data);
+
+	    if (( found_d != undefined ) &&
+		( typeof(found_d) === "object" ) &&
+		( found_d instanceof Array )) {
+		for(j = 0; j < found_d.length; j++) {
+		    data.unshift(found_d[j]);
+		    if ( this.p.loop_context_vars )
+			this.set_loop_context_vars(data, j, found_d.length);
+		    if ( ! this._apply(tmpl[i].data, data) )
+			return 0;
+		    data.shift();
+		}
+	    } else if ( this.p.err_on_no_data ) {
+		this.err_msg = "Cann't find loop '" + tmpl[i].name + "'.";
+		return 0;
+	    }		
+	    break;
+	case "if":
+	    found_d = this._find_data_by_name(tmpl[i].name, data);
+
+	    if (( found_d == undefined ) && ( this.p.err_on_no_data )) {
+		this.err_msg = "Cann't find bool var '" + tmpl[i].name + "'.";
+		return 0;
+	    }
+
+	    if ( found_d ) {
+		if ( ! this._apply(tmpl[i].data, data) )
+		    return 0;
+	    } else {
+		if ( ! this._apply(tmpl[i].else_data, data) )
+		    return 0;
+	    }
+	    break;
+	case "unless":
+	    found_d = this._find_data_by_name(tmpl[i].name, data);
+
+	    if (( found_d == undefined ) && ( this.p.err_on_no_data )) {
+		this.err_msg = "Cann't find bool var '" + tmpl[i].name + "'.";
+		return 0;
+	    }
+
+	    if ( ! found_d ) {
+		if ( ! this._apply(tmpl[i].data, data) )
+		    return 0;
+	    } else {
+		if ( ! this._apply(tmpl[i].else_data, data) )
+		    return 0;
+	    }
+	    break;
+	}
+    }
+
+    return 1;
+}
+
+htmltmpl.prototype.apply = function(data)
+{
+    var str;
+    var out_el;
+    var i;
+
+
+    this.out_str = new String();
+
+    if ( ! this._apply(this.tmpl.data, [ data ]) )
+	return;
+
     out_el = $.parseHTML(this.out_str);
 
     if ( out_el.length == 1 )
@@ -380,15 +537,15 @@ htmltmpl.prototype.def_hdlr_0_0 = function ()
 
 htmltmpl.prototype.def_hdlr_0_1 = function ()
 {
-//    alert("0_1: " + this.tmpl[0].str.substring(this.tmpl[0].pos[0].start, this.tmpl[0].pos[0].cur));
-    this.out_str += this.tmpl[0].str.substring(this.tmpl[0].pos[0].start, this.tmpl[0].pos[0].cur);
+//    console.log("0_1: " + this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur));
+    this.out_str += this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur);
 }
 
 htmltmpl.prototype.def_hdlr_1_0 = function ()
 {
-//    alert("1_0: " + this.match.str);
+//    console.log("1_0: " + this.match.str);
 
-    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur;
+    this.tmpl.pos.start = this.tmpl.pos.cur;
 
     this.out_str += this.match.str;
     this._match_reset();
@@ -396,14 +553,28 @@ htmltmpl.prototype.def_hdlr_1_0 = function ()
 
 htmltmpl.prototype.def_hdlr_1_2 = function ()
 {
-//    alert("1_2: ");
+    if ( this.out_str != "" ) {
+	this.tmpl.data_cur[0].push({ type: "text",
+				     data: this.out_str });
+	this.out_str = new String();
+    }
+
+//    console.log("1_2: " + JSON.stringify(this.tmpl.data));
+
     if ( typeof(this.phrases[0][this.match.phrase_idx].hdlr_1_2) === "function" )
 	this.phrases[0][this.match.phrase_idx].hdlr_1_2.call(this);
 }
 
 htmltmpl.prototype.def_hdlr_0_2 = function ()
 {
-//    alert("0_2: ");
+    if ( this.out_str != "" ) {
+	this.tmpl.data_cur[0].push({ type: "text",
+				     data: this.out_str });
+	this.out_str = new String();
+    }
+
+//    console.log("0_2: " + JSON.stringify(this.tmpl.data));
+
     if ( typeof(this.phrases[0][this.match.phrase_idx].hdlr_0_2) === "function" )
 	this.phrases[0][this.match.phrase_idx].hdlr_0_2.call(this);
 }
@@ -420,7 +591,7 @@ htmltmpl.prototype.hdlr_enclosing_comment_start = function ()
 			      is_match: 1,
 			      oref: this,
 			      hdlr_1_2: this.hdlr_enclosing_comment_end });
-    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
+    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
 
     this._match_reset();
 }
@@ -429,7 +600,7 @@ htmltmpl.prototype.hdlr_enclosing_comment_end = function ()
 {
 //    alert("enclosing_comment_end");
 
-    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
+    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
 
     this._match_reset();
 }
@@ -456,7 +627,7 @@ htmltmpl.prototype.hdlr_tmpl_var_1_2 = function ()
 			attr_name: "",
 			tag: "var",
 			tokens: new String() });
-    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
+    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
 
     this._match_reset();
 }
@@ -500,7 +671,7 @@ htmltmpl.prototype.hdlr_tmpl_var_1_2_get = function ()
 				 hdlr_1_2: this.hdlr_tmpl_var_1_2_tail } ]);
 
     if ( this.priv[0].attr_name == "" )
-	this.priv[0].attr_name = this.tmpl[0].str.substring(this.tmpl[0].pos[0].start, this.tmpl[0].pos[0].cur).toLowerCase();
+	this.priv[0].attr_name = this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur).toLowerCase();
     else {
 	// Save last tokens
 	this.priv[0].attrs[this.priv[0].attr_name] = this.priv[0].tokens;
@@ -508,20 +679,20 @@ htmltmpl.prototype.hdlr_tmpl_var_1_2_get = function ()
     }
 
     this.priv[0].tokens = new String();
-    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
+    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
 
     this._match_reset();
 }
 
 htmltmpl.prototype.hdlr_tmpl_var_0_1 = function ()
 {
-    this.priv[0].tokens += this.tmpl[0].str.substring(this.tmpl[0].pos[0].start, this.tmpl[0].pos[0].cur);
+    this.priv[0].tokens += this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur);
 //    alert("tmpl_var_0_1: " + this.priv[0].tokens);
 }
 
 htmltmpl.prototype.hdlr_tmpl_var_0_2 = function (func)
 {
-    this.priv[0].tokens += this.tmpl[0].str.substring(this.tmpl[0].pos[0].start, this.tmpl[0].pos[0].cur);
+    this.priv[0].tokens += this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur);
 //    alert("tmpl_var_0_2: " + this.priv[0].tokens);
 
     func.call(this);
@@ -529,7 +700,7 @@ htmltmpl.prototype.hdlr_tmpl_var_0_2 = function (func)
 
 htmltmpl.prototype.hdlr_tmpl_var_1_0 = function ()
 {
-    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur;
+    this.tmpl.pos.start = this.tmpl.pos.cur;
     this.priv[0].tokens += this.match.str;
 //    alert("tmpl_var_1_0: " + this.priv[0].tokens);
 }
@@ -545,29 +716,11 @@ htmltmpl.prototype.hdlr_tmpl_var_1_2_tail = function ()
     // Save last tokens
     this.priv[0].attrs[this.priv[0].attr_name] = this.priv[0].tokens;
 
-    if ( this.p.global_vars )
-	len = this.data.length;
-    else
-	len = 1;
+    this.tmpl.data_cur[0].push({ type: "var",
+				 name: this.priv[0].attrs.name,
+			         default: this.priv[0].attrs.default });
 
-    for(i = 0; i < len; i++) {
-	if ( this.data[i][this.priv[0].attrs.name] != undefined ) {
-	    this.out_str += this.data[i][this.priv[0].attrs.name];
-	    name_is_found = 1;
-	    break;
-	}
-    }
-    if (( ! name_is_found ) && ( this.priv[0].attrs.default != undefined )) {
-	this.out_str += this.priv[0].attrs.default;
-	name_is_found = 1;
-    }
-    if (( this.p.err_on_no_data ) && ( ! name_is_found )) {
-	this.err_msg = "Cann't find var '" + this.priv[0].attrs.name + "'.";
-	this.set_state(-1);
-	return;
-    }
-
-    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
+    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
 
     this.priv.shift();
     this.phrases.shift();
@@ -601,145 +754,39 @@ htmltmpl.prototype.hdlr_tmpl_loop_1_2 = function ()
     this.hdlrs.unshift({ hdlr_0_1: this.hdlr_tmpl_loop_0_1,
 			 hdlr_1_0: this.hdlr_tmpl_loop_1_0 });
     this.priv.unshift({ loopname: new String() });
-    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
+    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
 
     this._match_reset();
 }
 
 htmltmpl.prototype.hdlr_tmpl_loop_0_1 = function ()
 {
-    this.priv[0].loopname += this.tmpl[0].str.substring(this.tmpl[0].pos[0].start, this.tmpl[0].pos[0].cur);
+    this.priv[0].loopname += this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur);
 //    alert("tmpl_loop_0_1: " + this.priv[0].loopname);
 }
 
 htmltmpl.prototype.hdlr_tmpl_loop_1_0 = function ()
 {
-    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur;
+    this.tmpl.pos.start = this.tmpl.pos.cur;
     this.priv[0].loopname += this.match.str;
 //    alert("tmpl_loop_1_0: " + this.priv[0].loopname);
 }
 
-htmltmpl.prototype.set_loop_context_vars = function ()
-{
-    if ( this.priv[0].loop == undefined ) {
-	alert("set_loop_context_vars() is called outside a loop.");
-	return;
-    }
-
-    // Reset the vars
-    this.data[0].__first__ = 0;
-    this.data[0].__last__ = 0;
-    this.data[0].__inner__ = 0;
-    this.data[0].__outer__ = 0;
-
-    // Set the vars
-    if ( this.priv[0].loopidx == 0 ) {
-	this.data[0].__first__ = 1;
-	this.data[0].__outer__ = 1;
-    }
-    if ( this.priv[0].loopidx == (this.priv[0].loop.length - 1) ) {
-	this.data[0].__last__ = 1;
-	this.data[0].__outer__ = 1;
-    }
-
-    if ( ! this.data[0].__outer__ )
-	this.data[0].__inner__ = 1;
-
-    if ( (this.priv[0].loopidx + 1) % 2 == 0 ) {
-	this.data[0].__odd__ = 0;
-	this.data[0].__even__ = 1;
-    } else {
-	this.data[0].__odd__ = 1;
-	this.data[0].__even__ = 0;
-    }
-
-    this.data[0].__index__ = this.priv[0].loopidx;
-    this.data[0].__counter__ = this.priv[0].loopidx + 1;
-}
-
 htmltmpl.prototype.hdlr_tmpl_loop_1_2_tail = function ()
 {
-    var loop;
-    var name_is_found = 0;
+    var loop = { type: "loop",
+		 name: this.priv[0].loopname,
+		 data: [] };
 
 
 //    alert("tmpl_loop_1_2_tail: " + this.priv[0].loopname);
     this.phrases.shift();
     this.hdlrs.shift();
 
-    // Search a loop in data
-    if ( this.p.global_vars )
-	len = this.data.length;
-    else
-	len = 1;
+    this.tmpl.data_cur[0].push(loop);
+    this.tmpl.data_cur.unshift(loop.data);
 
-    for(i = 0; i < len; i++) {
-	if ( this.data[i][this.priv[0].loopname] != undefined ) {
-	    if (( typeof(this.data[i][this.priv[0].loopname]) === "object" ) &&
-		( this.data[i][this.priv[0].loopname] instanceof Array )) {
-		name_is_found = 1;
-		loop = this.data[i][this.priv[0].loopname];
-	    }
-	    break;
-	}
-    }
-    if (( this.p.err_on_no_data ) && ( ! name_is_found )) {
-	this.err_msg = "Cann't find loop '" + this.priv[0].loopname + "'.";
-	this.set_state(-1);
-	return;
-    }
-
-    if (( loop == undefined ) || ( loop.length == 0 )) {
-	this.priv.shift();
-	this.phrases.unshift([ { phrase: "<%/TMPL_LOOP%>",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_loop_1_2_eat },
-			       { phrase: "&lt;%/TMPL_LOOP%&gt;",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_loop_1_2_eat },
-			       { phrase: "&LT;%/TMPL_LOOP%&GT;",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_loop_1_2_eat },
-			       { phrase: "<!--%/TMPL_LOOP%-->",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_loop_1_2_eat } ]);
-	this.hdlrs.unshift({ hdlr_0_1: this.hdlr_tmpl_loop_eat,
-			     hdlr_1_0: this.hdlr_tmpl_loop_eat });
-	this._match_reset();
-	return;
-    }
-    this.priv.shift();
-
-    this.priv.unshift({ loop: loop,
-			loopidx: 0 });
-    this.data.unshift(loop[0]);
-
-    if ( this.p.loop_context_vars )
-	this.set_loop_context_vars();
-
-    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
-    this.tmpl[0].pos.unshift({ cur: this.tmpl[0].pos[0].cur,
-			       start: this.tmpl[0].pos[0].start });
-
-    this._match_reset();
-}
-
-htmltmpl.prototype.hdlr_tmpl_loop_eat = function ()
-{
-    return;
-}
-
-htmltmpl.prototype.hdlr_tmpl_loop_1_2_eat = function ()
-{
-//    alert("tmpl_loop_1_2_eat: ");
-    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
-
-    this.phrases.shift();
-    this.hdlrs.shift();
+    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
 
     this._match_reset();
 }
@@ -751,30 +798,10 @@ htmltmpl.prototype.hdlr_tmpl_loop_1_2_end = function ()
 
 //    alert("tmpl_loop_1_2_end: " + this.priv[0].loopidx + "(" + this.priv[0].loop.length + ")");
 
-    this.priv[0].loopidx++;
-    // If we reach the end of a loop...
-    if ( this.priv[0].loopidx == this.priv[0].loop.length ) {
-	pcur = this.tmpl[0].pos[0].cur;
-	pstart = pcur + 1;
-	this.tmpl[0].pos.shift();
-	this.tmpl[0].pos[0].cur = pcur;
-	this.tmpl[0].pos[0].start = pstart;
-	this.data.shift();
-	this.priv.shift();
-	this._match_reset();
-	return;
-    }
+    this.tmpl.data_cur.shift();
+    this.priv.shift();
 
-    // If not, prepare to the next iteration of a loop
-    this.data.shift();
-    this.data.unshift(this.priv[0].loop[this.priv[0].loopidx]);
-
-    if ( this.p.loop_context_vars )
-	this.set_loop_context_vars();
-
-    this.tmpl[0].pos[0].cur = this.tmpl[0].pos[1].cur;
-    this.tmpl[0].pos[0].start = this.tmpl[0].pos[1].start;
-
+    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
     this._match_reset();
 }
 
@@ -805,7 +832,7 @@ htmltmpl.prototype.hdlr_tmpl_if_1_2 = function ()
 			 hdlr_1_0: this.hdlr_tmpl_if_1_0 });
     this.priv.unshift({ phrase: "if",
 			varname: new String() });
-    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
+    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
 
     this._match_reset();
 }
@@ -834,26 +861,30 @@ htmltmpl.prototype.hdlr_tmpl_unless_1_2 = function ()
 			 hdlr_1_0: this.hdlr_tmpl_if_1_0 });
     this.priv.unshift({ phrase: "unless",
 			varname: new String() });
-    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
+    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
 
     this._match_reset();
 }
 
 htmltmpl.prototype.hdlr_tmpl_if_0_1 = function ()
 {
-    this.priv[0].varname += this.tmpl[0].str.substring(this.tmpl[0].pos[0].start, this.tmpl[0].pos[0].cur);
+    this.priv[0].varname += this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur);
 //    alert("tmpl_if_0_1: " + this.priv[0].varname);
 }
 
 htmltmpl.prototype.hdlr_tmpl_if_1_0 = function ()
 {
-    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur;
+    this.tmpl.pos.start = this.tmpl.pos.cur;
     this.priv[0].varname += this.match.str;
 //    alert("tmpl_if_1_0: " + this.priv[0].varname);
 }
 
 htmltmpl.prototype.hdlr_tmpl_if_1_2_tail = function ()
 {
+    var if_ = { type: this.priv[0].phrase,
+		name: this.priv[0].varname,
+		data: [],
+		else_data: [] };
     var varname;
     var i;
     var len;
@@ -865,88 +896,10 @@ htmltmpl.prototype.hdlr_tmpl_if_1_2_tail = function ()
     this.phrases.shift();
     this.hdlrs.shift();
 
-    if ( this.p.global_vars )
-	len = this.data.length;
-    else
-	len = 1;
+    this.tmpl.data_cur[0].push(if_);
+    this.tmpl.data_cur.unshift(if_.data);
 
-    this.priv[0].var_is_true = 0;
-    for(i = 0; i < len; i++) {
-	if ( this.data[i][this.priv[0].varname] != undefined ) {
-	    name_is_found = 1;
-	    if ( this.data[i][this.priv[0].varname] )
-		this.priv[0].var_is_true = 1;
-	    break;
-	}
-    }
-    if (( this.p.err_on_no_data ) && ( ! name_is_found )) {
-	this.err_msg = "Cann't find bool var '" + this.priv[0].varname + "'.";
-	this.set_state(-1);
-	return;
-    }
-
-    if ((( this.priv[0].phrase == "if" ) && ( ! this.priv[0].var_is_true )) ||
-	(( this.priv[0].phrase == "unless" ) && ( this.priv[0].var_is_true ))) {
-	if ( this.priv[0].phrase == "if" )
-	    phrase = "TMPL_IF";
-	else
-	    phrase = "TMPL_UNLESS";
-	this.phrases.unshift([ { phrase: "<%/" + phrase + "%>",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat },
-			       { phrase: "&lt;%/" + phrase + "%&gt;",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat },
-			       { phrase: "&LT;%/" + phrase + "%&GT;",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat },
-			       { phrase: "<!--%/" + phrase + "%-->",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat },
-			       { phrase: "<%TMPL_ELSE%>",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_if_1_2_else },
-			       { phrase: "&lt;%TMPL_ELSE%&gt;",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_if_1_2_else },
-			       { phrase: "&LT;%TMPL_ELSE%&GT;",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_if_1_2_else },
-			       { phrase: "<!--%TMPL_ELSE%-->",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_if_1_2_else } ]);
-	this.hdlrs.unshift({ hdlr_0_1: this.hdlr_tmpl_if_eat,
-			     hdlr_1_0: this.hdlr_tmpl_if_eat });
-	this._match_reset();
-	return;
-    }
-
-    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
-
-    this._match_reset();
-}
-
-htmltmpl.prototype.hdlr_tmpl_if_eat = function ()
-{
-    return;
-}
-
-htmltmpl.prototype.hdlr_tmpl_if_1_2_eat = function ()
-{
-//    alert("tmpl_if_1_2_eat(" + this.priv[0].phrase + "): ");
-    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
-
-    this.priv.shift();
-    this.phrases.shift();
-    this.hdlrs.shift();
+    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
 
     this._match_reset();
 }
@@ -954,41 +907,15 @@ htmltmpl.prototype.hdlr_tmpl_if_1_2_eat = function ()
 htmltmpl.prototype.hdlr_tmpl_if_1_2_else = function ()
 {
     var phrase;
+    var len;
 
 
 //    alert("tmpl_if_1_2_else(" + this.priv[0].phrase + "): " + this.priv[0].varname + "("+this.data[0][this.priv[0].varname] +")");
 
-    if ((( this.priv[0].phrase == "if" ) && ( this.priv[0].var_is_true )) ||
-	(( this.priv[0].phrase == "unless" ) && ( ! this.priv[0].var_is_true ))) {
-	if ( this.priv[0].phrase == "if" )
-	    phrase = "TMPL_IF";
-	else
-	    phrase = "TMPL_UNLESS";
-	this.phrases.unshift([ { phrase: "<%/" + phrase + "%>",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat },
-			       { phrase: "&lt;%/" + phrase + "%&gt;",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat },
-			       { phrase: "&LT;%/" + phrase + "%&GT;",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat },
-			       { phrase: "<!--%/" + phrase + "%-->",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_if_1_2_eat } ]);
-	this.hdlrs.unshift({ hdlr_0_1: this.hdlr_tmpl_if_eat,
-			     hdlr_1_0: this.hdlr_tmpl_if_eat });
-	this._match_reset();
-	return;
-    }
-    this.phrases.shift();
-    this.hdlrs.shift();
-
-    this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
+    this.tmpl.data_cur.shift();
+    len = this.tmpl.data_cur[0].length;
+    this.tmpl.data_cur.unshift(this.tmpl.data_cur[0][len - 1].else_data);
+    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
 
     this._match_reset();
 }
@@ -997,13 +924,10 @@ htmltmpl.prototype.hdlr_tmpl_if_1_2_end = function ()
 {
 //    alert("tmpl_if_1_2_end(" + this.priv[0].phrase + "): " + this.priv[0].phrase + "(" + this.priv[0].varname + ")");
 
-    if (( this.priv[0].phrase == "if" ) ||
-	( this.priv[0].phrase == "unless" )) {
-	this.priv.shift();
-	this.tmpl[0].pos[0].start = this.tmpl[0].pos[0].cur + 1;
-	this._match_reset();
-	return;
-    }
+    this.tmpl.data_cur.shift();
+    this.priv.shift();
+    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
+    this._match_reset();
 }
 
 }

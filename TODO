@@ -13,3 +13,5 @@
 8. Add code to process multiple spaces instead of one in tags.
 10. Add option to raise error if we found TMPL construct, but in supplied
     data we don't found needed names.
+11. Add option to alert(console.log) an error instead of simply return undefined
+    (apply()).
