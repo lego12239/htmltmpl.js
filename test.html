@@ -26,6 +26,17 @@
                             var_long_name4: "asdf123" } },
                   { id: "unit2",
                     id_res: "unit2_res",
+                    title: "Test TMPL_VAR with a no var data",
+                    prms: { },
+                    data: { var1: 123 } },
+                  { id: "unit3",
+                    id_res: "unit3_res",
+                    title: "Test TMPL_VAR with DEFAULT attribute",
+                    prms: { },
+                    data: { var1: 123,
+                            var3: "test" } },
+                  { id: "unit4",
+                    id_res: "unit4_res",
                     title: "Test TMPL_LOOP",
                     prms: {},
                     data: { var1: 1,
@@ -40,8 +51,13 @@
                                        var2: 789,
                                        var3: "pooiu " } ],
                             var_long_name: "ffff" } },
-                  { id: "unit3",
-                    id_res: "unit3_res",
+                  { id: "unit5",
+                    id_res: "unit5_res",
+                    title: "Test TMPL_LOOP with an empty loop data",
+                    prms: { },
+                    data: { loop1: [ ] } },
+                  { id: "unit6",
+                    id_res: "unit6_res",
                     title: "Test TMPL_LOOP with global_vars option",
                     prms: { global_vars: 1 },
                     data: { var1: 1,
@@ -54,8 +70,8 @@
                                      { var1: "lk jfd",
                                        var2: 789 } ],
                             var_long_name: "ffff" } },
-                  { id: "unit4",
-                    id_res: "unit4_res",
+                  { id: "unit7",
+                    id_res: "unit7_res",
                     title: "Test TMPL_LOOP without needed var",
                     prms: {},
                     data: { var1: 1,
@@ -67,8 +83,8 @@
                                      { var1: "lk jfd",
                                        var3: "pooiu " } ],
                             var_long_name: "ffff" } },
-                  { id: "unit5",
-                    id_res: "unit5_res",
+                  { id: "unit8",
+                    id_res: "unit8_res",
                     title: "Test inner TMPL_LOOP",
                     prms: {},
                     data: { loop1: [ { var1: 123,
@@ -95,8 +111,8 @@
                                                 { var1: "dfdf7",
                                                   var2: "dfdf8",
                                                   var3: "dfdf9" } ] } ] } },
-                  { id: "unit6",
-                    id_res: "unit6_res",
+                  { id: "unit9",
+                    id_res: "unit9_res",
                     title: "Test inner TMPL_LOOP with global_vars option",
                     prms: { global_vars: 1 },
                     data: { loop2: [ { var1: "asdf",
@@ -114,8 +130,8 @@
                                      { var1: 456,
                                        var2: "kjkj",
                                        var3: "aaaa12" } ] } },
-                  { id: "unit7",
-                    id_res: "unit7_res",
+                  { id: "unit10",
+                    id_res: "unit10_res",
                     title: "Test TMPL_LOOP (3 pass) with loop_context_vars option",
                     prms: { loop_context_vars: 1 },
                     data: { loop1: [ { var1: 123,
@@ -124,47 +140,23 @@
                                        var3: "zxcv" },
                                      { var1: "lk jfd",
                                        var3: "pooiu " } ] } },
-                  { id: "unit8",
-                    id_res: "unit8_res",
+                  { id: "unit11",
+                    id_res: "unit11_res",
                     title: "Test TMPL_LOOP (2 pass) with loop_context_vars option",
                     prms: { loop_context_vars: 1 },
                     data: { loop1: [ { var1: 123,
                                        var3: "qwer" },
                                      { var1: "lk jfd",
                                        var3: "pooiu " } ] } },
-                  { id: "unit9",
-                    id_res: "unit9_res",
+                  { id: "unit12",
+                    id_res: "unit12_res",
                     title: "Test TMPL_LOOP (1 pass) with loop_context_vars option",
                     prms: { loop_context_vars: 1 },
                     data: { loop1: [ { var1: 123,
                                        var3: "pooiu " } ] } },
-                  { id: "unit10",
-                    id_res: "unit10_res",
-                    title: "Test TMPL_IF",
-                    prms: {},
-                    data: { show_var1: 1,
-                            var1: 123,
-                            show_var2: 0,
-                            var2: "test" } },
-                  { id: "unit11",
-                    id_res: "unit11_res",
-                    title: "Test TMPL_IF with TMPL_ELSE",
-                    prms: {},
-                    data: { show_var1: 1,
-                            var1: 123,
-                            show_var2: 0,
-                            var2: "test" } },
-                  { id: "unit12",
-                    id_res: "unit12_res",
-                    title: "Test TMPL_UNLESS",
-                    prms: {},
-                    data: { show_var1: 1,
-                            var1: 123,
-                            show_var2: 0,
-                            var2: "test" } },
                   { id: "unit13",
                     id_res: "unit13_res",
-                    title: "Test TMPL_UNLESS with TMPL_ELSE",
+                    title: "Test TMPL_IF",
                     prms: {},
                     data: { show_var1: 1,
                             var1: 123,
@@ -172,81 +164,88 @@
                             var2: "test" } },
                   { id: "unit14",
                     id_res: "unit14_res",
-                    title: "Test tmpl_is_commented option",
-                    prms: { tmpl_is_commented: 1 },
-                    data: { loop1: [ { var1: 123,
-                                       var2: "pooiu " } ] } },
+                    title: "Test TMPL_IF with a no var data",
+                    prms: { },
+                    data: { var1: 123,
+                            var3: "test" } },
                   { id: "unit15",
                     id_res: "unit15_res",
+                    title: "Test TMPL_IF with TMPL_ELSE",
+                    prms: {},
+                    data: { show_var1: 1,
+                            var1: 123,
+                            show_var2: 0,
+                            var2: "test" } },
+                  { id: "unit16",
+                    id_res: "unit16_res",
+                    title: "Test TMPL_UNLESS",
+                    prms: {},
+                    data: { show_var1: 1,
+                            var1: 123,
+                            show_var2: 0,
+                            var2: "test" } },
+                  { id: "unit17",
+                    id_res: "unit17_res",
+                    title: "Test TMPL_UNLESS with a no var data",
+                    prms: { },
+                    data: { var1: 123,
+                            var3: "test" } },
+                  { id: "unit18",
+                    id_res: "unit18_res",
+                    title: "Test TMPL_UNLESS with TMPL_ELSE",
+                    prms: {},
+                    data: { show_var1: 1,
+                            var1: 123,
+                            show_var2: 0,
+                            var2: "test" } },
+                  { id: "unit19",
+                    id_res: "unit19_res",
                     title: "Test tmpl_is_commented option",
                     prms: { tmpl_is_commented: 1 },
                     data: { loop1: [ { var1: 123,
                                        var2: "pooiu " } ] } },
-                  { id: "unit16",
-                    id_res: "unit16_res",
+                  { id: "unit20",
+                    id_res: "unit20_res",
+                    title: "Test tmpl_is_commented option",
+                    prms: { tmpl_is_commented: 1 },
+                    data: { loop1: [ { var1: 123,
+                                       var2: "pooiu " } ] } },
+                  { id: "unit21",
+                    id_res: "unit21_res",
                     title: "Test ph_case_sensitive option",
                     prms: { ph_case_sensitive: 0 },
                     data: { loop1: [ { var1: 123,
                                        var2: "pooiu " } ] } },
-                  { id: "unit17",
-                    id_res: "unit17_res",
+                  { id: "unit22",
+                    id_res: "unit22_res",
                     title: "Test the commented variant of the tags",
                     prms: { },
                     data: { loop1: [ { var1: 123,
                                        var2: "pooiu " } ] } },
-                  { id: "unit18",
-                    id_res: "unit18_res",
+                  { id: "unit23",
+                    id_res: "unit23_res",
                     title: "Test the err_on_no_data option & TMPL_VAR",
                     is_err: 1,
                     err_msg: "Cann't find var 'var3'.",
                     prms: { err_on_no_data: 1 },
                     data: { loop1: [ { var1: 123,
                                        var2: "pooiu " } ] } },
-                  { id: "unit19",
-                    id_res: "unit19_res",
+                  { id: "unit24",
+                    id_res: "unit24_res",
                     title: "Test the err_on_no_data option & TMPL_LOOP",
                     is_err: 1,
                     err_msg: "Cann't find loop 'loop2'.",
                     prms: { err_on_no_data: 1 },
                     data: { loop1: [ { var1: 123,
                                        var2: "pooiu " } ] } },
-                  { id: "unit20",
-                    id_res: "unit20_res",
+                  { id: "unit25",
+                    id_res: "unit25_res",
                     title: "Test the err_on_no_data option & TMPL_IF",
                     is_err: 1,
                     err_msg: "Cann't find bool var 'var3'.",
                     prms: { err_on_no_data: 1 },
                     data: { loop1: [ { var1: 123,
-                                       var2: "pooiu " } ] } },
-                  { id: "unit21",
-                    id_res: "unit21_res",
-                    title: "Test TMPL_LOOP with an empty loop data",
-                    prms: { },
-                    data: { loop1: [ ] } },
-                  { id: "unit22",
-                    id_res: "unit22_res",
-                    title: "Test TMPL_VAR with a no var data",
-                    prms: { },
-                    data: { var1: 123 } },
-                  { id: "unit23",
-                    id_res: "unit23_res",
-                    title: "Test TMPL_IF with a no var data",
-                    prms: { },
-                    data: { var1: 123,
-                            var3: "test" } },
-                  { id: "unit24",
-                    id_res: "unit24_res",
-                    title: "Test TMPL_UNLESS with a no var data",
-                    prms: { },
-                    data: { var1: 123,
-                            var3: "test" } },
-                  { id: "unit25",
-                    id_res: "unit25_res",
-                    title: "Test TMPL_VAR with DEFAULT attribute",
-                    prms: { },
-                    data: { var1: 123,
-                            var3: "test" } } ];
-
+                                       var2: "pooiu " } ] } } ];
     function report_ok(test)
     {
         var el, span;
@@ -361,62 +360,22 @@
 
   <!-- unit 2 -->
   <div id="unit2">
-    <%TMPL_LOOP NAME=loop1%>
-      <%TMPL_VAR NAME=var1%>
-      <%TMPL_VAR NAME=var2%>
-      <%TMPL_VAR NAME=var3%>
-    <%/TMPL_LOOP%>
     <%TMPL_VAR NAME=var1%>
     <%TMPL_VAR NAME=var2%>
-    <%TMPL_VAR NAME=var_long_name%>
   </div>
   <div id="unit2_res">
+    123
     
-      123
-      asdf
-      qwer
-    
-      456
-      uikj
-      zxcv
-    
-      lk jfd
-      789
-      pooiu 
-    
-    1
-    test
-    ffff
   </div>
 
   <!-- unit 3 -->
   <div id="unit3">
-    <%TMPL_LOOP NAME=loop1%>
-      <%TMPL_VAR NAME=var1%>
-      <%TMPL_VAR NAME=var2%>
-      <%TMPL_VAR NAME=var3%>
-    <%/TMPL_LOOP%>
-    <%TMPL_VAR NAME=var1%>
-    <%TMPL_VAR NAME=var2%>
-    <%TMPL_VAR NAME=var_long_name%>
+    <%TMPL_VAR DEFAULT=test1 NAME=var1%>
+    <%TMPL_VAR DEFAULT=test1 NAME=var2%>
   </div>
   <div id="unit3_res">
-    
-      123
-      asdf
-      glb
-    
-      456
-      uikj
-      glb
-    
-      lk jfd
-      789
-      glb
-    
-    1
-    test
-    ffff
+    123
+    test1
   </div>
 
   <!-- unit 4 -->
@@ -433,6 +392,78 @@
   <div id="unit4_res">
     
       123
+      asdf
+      qwer
+    
+      456
+      uikj
+      zxcv
+    
+      lk jfd
+      789
+      pooiu 
+    
+    1
+    test
+    ffff
+  </div>
+
+  <!-- unit 5 -->
+  <div id="unit5">
+    <%TMPL_LOOP NAME=loop1%>
+      <%TMPL_IF NAME=var3%>
+        <%TMPL_VAR NAME=var1%>
+      <%/TMPL_IF%>
+    <%/TMPL_LOOP%>
+  </div>
+  <div id="unit5_res">
+    
+  </div>
+
+  <!-- unit 6 -->
+  <div id="unit6">
+    <%TMPL_LOOP NAME=loop1%>
+      <%TMPL_VAR NAME=var1%>
+      <%TMPL_VAR NAME=var2%>
+      <%TMPL_VAR NAME=var3%>
+    <%/TMPL_LOOP%>
+    <%TMPL_VAR NAME=var1%>
+    <%TMPL_VAR NAME=var2%>
+    <%TMPL_VAR NAME=var_long_name%>
+  </div>
+  <div id="unit6_res">
+    
+      123
+      asdf
+      glb
+    
+      456
+      uikj
+      glb
+    
+      lk jfd
+      789
+      glb
+    
+    1
+    test
+    ffff
+  </div>
+
+  <!-- unit 7 -->
+  <div id="unit7">
+    <%TMPL_LOOP NAME=loop1%>
+      <%TMPL_VAR NAME=var1%>
+      <%TMPL_VAR NAME=var2%>
+      <%TMPL_VAR NAME=var3%>
+    <%/TMPL_LOOP%>
+    <%TMPL_VAR NAME=var1%>
+    <%TMPL_VAR NAME=var2%>
+    <%TMPL_VAR NAME=var_long_name%>
+  </div>
+  <div id="unit7_res">
+    
+      123
       
       qwer
     
@@ -449,8 +480,8 @@
     ffff
   </div>
 
-  <!-- unit 5 -->
-  <div id="unit5">
+  <!-- unit 8 -->
+  <div id="unit8">
     <%TMPL_LOOP NAME=loop1%>
       <%TMPL_VAR NAME=var1%>
       <%TMPL_VAR NAME=var2%>
@@ -462,7 +493,7 @@
       <%/TMPL_LOOP%>
     <%/TMPL_LOOP%>
   </div>
-  <div id="unit5_res">
+  <div id="unit8_res">
     
       123
       qwer
@@ -500,8 +531,8 @@
     
   </div>    
 
-  <!-- unit 6 -->
-  <div id="unit6">
+  <!-- unit 9 -->
+  <div id="unit9">
     <%TMPL_LOOP NAME=loop1%>
       <%TMPL_VAR NAME=var1%>
       <%TMPL_VAR NAME=var2%>
@@ -513,7 +544,7 @@
       <%/TMPL_LOOP%>
     <%/TMPL_LOOP%>
   </div>
-  <div id="unit6_res">
+  <div id="unit9_res">
     
       123
       qwer
@@ -551,8 +582,8 @@
     
   </div>    
 
-  <!-- unit 7 -->
-  <div id="unit7">
+  <!-- unit 10 -->
+  <div id="unit10">
     <%TMPL_LOOP NAME=loop1%>
       <%TMPL_VAR NAME=__first__%>
       <%TMPL_VAR NAME=__last__%>
@@ -564,7 +595,7 @@
       <%TMPL_VAR NAME=__index__%>
     <%/TMPL_LOOP%>
   </div>
-  <div id="unit7_res">
+  <div id="unit10_res">
     
       1
       0
@@ -595,8 +626,8 @@
     
   </div>
 
-  <!-- unit 8 -->
-  <div id="unit8">
+  <!-- unit 11 -->
+  <div id="unit11">
     <%TMPL_LOOP NAME=loop1%>
       <%TMPL_VAR NAME=__first__%>
       <%TMPL_VAR NAME=__last__%>
@@ -608,7 +639,7 @@
       <%TMPL_VAR NAME=__index__%>
     <%/TMPL_LOOP%>
   </div>
-  <div id="unit8_res">
+  <div id="unit11_res">
     
       1
       0
@@ -630,8 +661,8 @@
     
   </div>
 
-  <!-- unit 9 -->
-  <div id="unit9">
+  <!-- unit 12 -->
+  <div id="unit12">
     <%TMPL_LOOP NAME=loop1%>
       <%TMPL_VAR NAME=__first__%>
       <%TMPL_VAR NAME=__last__%>
@@ -643,75 +674,103 @@
       <%TMPL_VAR NAME=__index__%>
     <%/TMPL_LOOP%>
   </div>
-  <div id="unit9_res">
-    
-      1
-      1
-      0
-      1
-      1
-      0
-      1
-      0
-    
-  </div>
-
-  <!-- unit 10 -->
-  <div id="unit10">
-    <%TMPL_IF NAME=show_var1%>
-      <%TMPL_VAR NAME=var1%>
-    <%/TMPL_IF%>
-    <%TMPL_IF NAME=show_var2%>
-      <%TMPL_VAR NAME=var2%>
-    <%/TMPL_IF%>
-  </div>
-  <div id="unit10_res">
-    
-      123
-    
-    
-  </div>
-
-  <!-- unit 11 -->
-  <div id="unit11">
-    <%TMPL_IF NAME=show_var1%>
-      <%TMPL_VAR NAME=var1%>
-    <%TMPL_ELSE%>
-      without var1
-    <%/TMPL_IF%>
-    <%TMPL_IF NAME=show_var2%>
-      <%TMPL_VAR NAME=var2%>
-    <%TMPL_ELSE%>
-      without var2
-    <%/TMPL_IF%>
-  </div>
-  <div id="unit11_res">
-    
-      123
-    
-    
-      without var2
-    
-  </div>
-
-  <!-- unit 12 -->
-  <div id="unit12">
-    <%TMPL_UNLESS NAME=show_var1%>
-      <%TMPL_VAR NAME=var1%>
-    <%/TMPL_UNLESS%>
-    <%TMPL_UNLESS NAME=show_var2%>
-      <%TMPL_VAR NAME=var2%>
-    <%/TMPL_UNLESS%>
-  </div>
   <div id="unit12_res">
     
-    
-      test
+      1
+      1
+      0
+      1
+      1
+      0
+      1
+      0
     
   </div>
 
   <!-- unit 13 -->
   <div id="unit13">
+    <%TMPL_IF NAME=show_var1%>
+      <%TMPL_VAR NAME=var1%>
+    <%/TMPL_IF%>
+    <%TMPL_IF NAME=show_var2%>
+      <%TMPL_VAR NAME=var2%>
+    <%/TMPL_IF%>
+  </div>
+  <div id="unit13_res">
+    
+      123
+    
+    
+  </div>
+
+  <!-- unit 14 -->
+  <div id="unit14">
+    <%TMPL_IF NAME=var2%>
+      <%TMPL_VAR NAME=var1%>
+    <%TMPL_ELSE%>
+      <%TMPL_VAR NAME=var3%>
+    <%/TMPL_IF%>
+  </div>
+  <div id="unit14_res">
+    
+      test
+    
+  </div>
+
+  <!-- unit 15 -->
+  <div id="unit15">
+    <%TMPL_IF NAME=show_var1%>
+      <%TMPL_VAR NAME=var1%>
+    <%TMPL_ELSE%>
+      without var1
+    <%/TMPL_IF%>
+    <%TMPL_IF NAME=show_var2%>
+      <%TMPL_VAR NAME=var2%>
+    <%TMPL_ELSE%>
+      without var2
+    <%/TMPL_IF%>
+  </div>
+  <div id="unit15_res">
+    
+      123
+    
+    
+      without var2
+    
+  </div>
+
+  <!-- unit 16 -->
+  <div id="unit16">
+    <%TMPL_UNLESS NAME=show_var1%>
+      <%TMPL_VAR NAME=var1%>
+    <%/TMPL_UNLESS%>
+    <%TMPL_UNLESS NAME=show_var2%>
+      <%TMPL_VAR NAME=var2%>
+    <%/TMPL_UNLESS%>
+  </div>
+  <div id="unit16_res">
+    
+    
+      test
+    
+  </div>
+
+  <!-- unit 17 -->
+  <div id="unit17">
+    <%TMPL_UNLESS NAME=var2%>
+      <%TMPL_VAR NAME=var1%>
+    <%TMPL_ELSE%>
+      <%TMPL_VAR NAME=var3%>
+    <%/TMPL_UNLESS%>
+  </div>
+  <div id="unit17_res">
+    
+      123
+    
+  </div>
+
+  <!-- unit 18 -->
+  <div id="unit18">
     <%TMPL_UNLESS NAME=show_var1%>
       <%TMPL_VAR NAME=var1%>
     <%TMPL_ELSE%>
@@ -723,7 +782,7 @@
       without var2
     <%/TMPL_UNLESS%>
   </div>
-  <div id="unit13_res">
+  <div id="unit18_res">
     
       without var1
     
@@ -732,22 +791,22 @@
     
   </div>
 
-  <!-- unit 14 -->
-  <div id="unit14"><!--
+  <!-- unit 19 -->
+  <div id="unit19"><!--
     <%TMPL_LOOP NAME=loop1%>
       <%TMPL_VAR NAME=var1%>
       <%TMPL_VAR NAME=var2%>
     <%/TMPL_LOOP%>
   --></div>
-  <div id="unit14_res">
+  <div id="unit19_res">
     
       123
       pooiu 
     
   </div>
 
-  <!-- unit 15 -->
-  <div id="unit15">
+  <!-- unit 20 -->
+  <div id="unit20">
     <!--
     <%TMPL_LOOP NAME=loop1%>
       <%TMPL_VAR NAME=var1%>
@@ -755,7 +814,7 @@
     <%/TMPL_LOOP%>
     -->
   </div>
-  <div id="unit15_res">
+  <div id="unit20_res">
     
     
       123
@@ -764,8 +823,8 @@
     
   </div>
 
-  <!-- unit 16 -->
-  <div id="unit16">
+  <!-- unit 21 -->
+  <div id="unit21">
     <%Tmpl_LooP NAMe=loop1%>
       <%Tmpl_iF Name=var1%>
         <%tmpl_var name=var1%>
@@ -779,7 +838,7 @@
       <%/tmpl_unless%>
     <%/TmpL_LOOp%>
   </div>
-  <div id="unit16_res">
+  <div id="unit21_res">
     
       
         123
@@ -790,8 +849,8 @@
     
   </div>
 
-  <!-- unit 17 -->
-  <div id="unit17">
+  <!-- unit 22 -->
+  <div id="unit22">
     <!--%TMPL_LOOP NAME=loop1%-->
       <!--%TMPL_IF NAME=var1%-->
         <!--%TMPL_VAR NAME=var1%-->
@@ -805,7 +864,7 @@
       <!--%/TMPL_UNLESS%-->
     <!--%/TMPL_LOOP%-->
   </div>
-  <div id="unit17_res">
+  <div id="unit22_res">
     
       
         123
@@ -816,95 +875,35 @@
     
   </div>
 
-  <!-- unit 18 -->
-  <div id="unit18">
+  <!-- unit 23 -->
+  <div id="unit23">
     <%TMPL_LOOP NAME=loop1%>
       <%TMPL_VAR NAME=var1%>
       <%TMPL_VAR NAME=var3%>
     <%/TMPL_LOOP%>
   </div>
-  <div id="unit18_res">
+  <div id="unit23_res">
   </div>
 
-  <!-- unit 19 -->
-  <div id="unit19">
+  <!-- unit 24 -->
+  <div id="unit24">
     <%TMPL_LOOP NAME=loop2%>
       <%TMPL_VAR NAME=var1%>
       <%TMPL_VAR NAME=var3%>
     <%/TMPL_LOOP%>
   </div>
-  <div id="unit19_res">
-  </div>
-
-  <!-- unit 20 -->
-  <div id="unit20">
-    <%TMPL_LOOP NAME=loop1%>
-      <%TMPL_IF NAME=var3%>
-        <%TMPL_VAR NAME=var1%>
-      <%/TMPL_IF%>
-    <%/TMPL_LOOP%>
-  </div>
-  <div id="unit20_res">
-  </div>
-
-  <!-- unit 21 -->
-  <div id="unit21">
-    <%TMPL_LOOP NAME=loop1%>
-      <%TMPL_IF NAME=var3%>
-        <%TMPL_VAR NAME=var1%>
-      <%/TMPL_IF%>
-    <%/TMPL_LOOP%>
-  </div>
-  <div id="unit21_res">
-    
-  </div>
-
-  <!-- unit 22 -->
-  <div id="unit22">
-    <%TMPL_VAR NAME=var1%>
-    <%TMPL_VAR NAME=var2%>
-  </div>
-  <div id="unit22_res">
-    123
-    
-  </div>
-
-  <!-- unit 23 -->
-  <div id="unit23">
-    <%TMPL_IF NAME=var2%>
-      <%TMPL_VAR NAME=var1%>
-    <%TMPL_ELSE%>
-      <%TMPL_VAR NAME=var3%>
-    <%/TMPL_IF%>
-  </div>
-  <div id="unit23_res">
-    
-      test
-    
-  </div>
-
-  <!-- unit 24 -->
-  <div id="unit24">
-    <%TMPL_UNLESS NAME=var2%>
-      <%TMPL_VAR NAME=var1%>
-    <%TMPL_ELSE%>
-      <%TMPL_VAR NAME=var3%>
-    <%/TMPL_UNLESS%>
-  </div>
   <div id="unit24_res">
-    
-      123
-    
   </div>
 
   <!-- unit 25 -->
   <div id="unit25">
-    <%TMPL_VAR DEFAULT=test1 NAME=var1%>
-    <%TMPL_VAR DEFAULT=test1 NAME=var2%>
+    <%TMPL_LOOP NAME=loop1%>
+      <%TMPL_IF NAME=var3%>
+        <%TMPL_VAR NAME=var1%>
+      <%/TMPL_IF%>
+    <%/TMPL_LOOP%>
   </div>
   <div id="unit25_res">
-    123
-    test1
   </div>
 
   </div>
