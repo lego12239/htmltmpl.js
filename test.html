@@ -305,6 +305,8 @@
                     report_fail(tests[i]);
             }
 
+            console.log("unit" + i + ": " + JSON.stringify(tmpl.tmpl.data));
+
             // set counter
             document.getElementById("counter").innerHTML = (i + 1) + "/" + tests.length;
         }
