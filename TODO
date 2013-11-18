@@ -15,3 +15,4 @@
     data we don't found needed names.
 11. Add option to alert(console.log) an error instead of simply return undefined
     (apply()).
+12. DEFAULT for TMPL_VAR doesn't accept values with spaces.
