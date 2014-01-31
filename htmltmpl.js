@@ -221,7 +221,7 @@ function htmltmpl(tmpl, prms)
 	    this.p.err_on_no_data = prms.err_on_no_data;
 	if ( prms.wrap_in != undefined )
 	    this.tmpl.str = "<" + prms.wrap_in + ">" + this.tmpl.str +
-	    + "</" + prms.wrap_in + ">";
+	    "</" + prms.wrap_in + ">";
     }
     // Set default handlers. It is an optional step. If a handler is ommited,
     // then a default handler is used instead.
