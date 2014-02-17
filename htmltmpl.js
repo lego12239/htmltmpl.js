@@ -579,36 +579,6 @@ htmltmpl.prototype.def_hdlr_0_2 = function ()
 	this.phrases[0][this.match.phrase_idx].hdlr_0_2.call(this);
 }
 
-htmltmpl.prototype.def_tag_hdlr_0_0 = function ()
-{
-//    console.log("tag_0_0: ");
-
-    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
-
-    this._match_reset();
-}
-
-htmltmpl.prototype.def_tag_hdlr_0_1 = function ()
-{
-    this.priv[0].tokens += this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur);
-//    console.log("tag_0_1: " + this.priv[0].tokens);
-}
-
-htmltmpl.prototype.def_tag_hdlr_0_2 = function (func)
-{
-    this.priv[0].tokens += this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur);
-//    alert("tag_0_2: " + this.priv[0].tokens);
-
-    func.call(this);
-}
-
-htmltmpl.prototype.def_tag_hdlr_1_0 = function ()
-{
-    this.tmpl.pos.start = this.tmpl.pos.cur;
-    this.priv[0].tokens += this.match.str;
-//    alert("tag_1_0: " + this.priv[0].tokens);
-}
-
 
 /**********************************************************************
  * ENCLOSING COMMENT HANDLERS
@@ -637,81 +607,92 @@ htmltmpl.prototype.hdlr_enclosing_comment_end = function ()
 
 
 /**********************************************************************
- * TMPL_VAR HANDLERS
+ * TAG HANDLERS
  **********************************************************************/
-htmltmpl.prototype.hdlr_tmpl_var_1_2 = function ()
+/*
+ * tag - a tag name
+ * attrs - an array with searched attribute names
+ * cb - a callback function to call on the end of a tag processing
+ */
+htmltmpl.prototype.hdlr_tag = function (tag, attrs, cb)
 {
-//    alert("tmp_var_1_2");
-    this.phrases.unshift([ { phrase: "NAME=",
-			     is_match: 1,
-			     oref: this,
-			     hdlr_1_2: this.hdlr_tmpl_var_1_2_get },
-			   { phrase: "DEFAULT=",
-			     is_match: 1,
-			     oref: this,
-			     hdlr_1_2: this.hdlr_tmpl_var_1_2_get } ]);
+    var phrases = [];
+    var i;
 
-    this.hdlrs.unshift({ hdlr_0_0: this.def_tag_hdlr_0_0,
-			 hdlr_0_1: this.def_tag_hdlr_0_1,
-			 hdlr_1_0: this.def_tag_hdlr_1_0 });
+
+//    alert("hdlr_tag");
+    for(i = 0; i < attrs.length; i++) {
+	phrases.push({ phrase: attrs[i] + "=",
+		       is_match: 1,
+		       oref: this,
+		       hdlr_1_2: this._hdlr_tag });
+    }
     this.priv.unshift({ attrs: {},
+			searched_phrases: phrases,
+			cb: cb,
 			attr_name: "",
-			tag: "var",
+			tag: tag,
 			tokens: new String() });
+
+    this.phrases.unshift(phrases);
+
+    this.hdlrs.unshift({ hdlr_0_0: this._hdlr_tag_0_0,
+			 hdlr_0_1: this._hdlr_tag_0_1,
+			 hdlr_1_0: this._hdlr_tag_1_0 });
+
     this.tmpl.pos.start = this.tmpl.pos.cur + 1;
 
     this._match_reset();
 }
 
-htmltmpl.prototype.hdlr_tmpl_var_1_2_get = function ()
+htmltmpl.prototype._hdlr_tag = function ()
 {
-//    alert("tmp_var_1_2_get");
+//    alert("_hdlr_tag");
 
     this.hdlrs.shift();
     this.phrases.shift();
+
     if ( this.priv[0].attr_name != "" ) {
-	this.phrases.unshift([ { phrase: "NAME=",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_var_1_2_get },
-			       { phrase: "DEFAULT=",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_var_1_2_get } ]);
-	this.hdlrs.unshift({ hdlr_0_0: this.def_tag_hdlr_0_0,
-			     hdlr_0_1: this.def_tag_hdlr_0_1,
-			     hdlr_1_0: this.def_tag_hdlr_1_0 });
+	this.phrases.unshift(this.priv[0].searched_phrases);
+
+	this.hdlrs.unshift({ hdlr_0_0: this._hdlr_tag_0_0,
+			     hdlr_0_1: this._hdlr_tag_0_1,
+			     hdlr_1_0: this._hdlr_tag_1_0 });
     } else {
 	this.phrases.unshift([ { phrase: " ",
 				 is_match: 1,
 				 oref: this,
 				 hdlr_0_2: function () {
-				     this.def_tag_hdlr_0_2(this.hdlr_tmpl_var_1_2_get);
+				     this._hdlr_tag_0_2(this._hdlr_tag);
 				 } },
 			       { phrase: "%>",
 				 is_match: 1,
 				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_var_1_2_tail },
+				 hdlr_1_2: this._hdlr_tag_end },
 			       { phrase: "%&gt;",
 				 is_match: 1,
 				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_var_1_2_tail },
+				 hdlr_1_2: this._hdlr_tag_end },
 			       { phrase: "%&GT;",
 				 is_match: 1,
 				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_var_1_2_tail },
+				 hdlr_1_2: this._hdlr_tag_end },
 			       { phrase: "%-->",
 				 is_match: 1,
 				 oref: this,
-				 hdlr_1_2: this.hdlr_tmpl_var_1_2_tail } ]);
-	this.hdlrs.unshift({ hdlr_0_1: this.def_tag_hdlr_0_1,
-			     hdlr_1_0: this.def_tag_hdlr_1_0 });
+				 hdlr_1_2: this._hdlr_tag_end } ]);
+
+	this.hdlrs.unshift({ hdlr_0_1: this._hdlr_tag_0_1,
+			     hdlr_1_0: this._hdlr_tag_1_0 });
     }
 
 
-    if ( this.priv[0].attr_name == "" )
-	this.priv[0].attr_name = this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur).toLowerCase();
-    else {
+    if ( this.priv[0].attr_name == "" ) {
+	this.priv[0].attr_name = this.tmpl.str.substring(this.tmpl.pos.start,
+							 this.tmpl.pos.cur).toLowerCase();
+	// For a work little speedup
+	this.priv[0].searched_phrases.splice(this.match.phrase_idx, 1);
+    } else {
 	// Save last tokens
 	this.priv[0].attrs[this.priv[0].attr_name] = this.priv[0].tokens;
 	this.priv[0].attr_name = "";
@@ -723,20 +704,44 @@ htmltmpl.prototype.hdlr_tmpl_var_1_2_get = function ()
     this._match_reset();
 }
 
-htmltmpl.prototype.hdlr_tmpl_var_1_2_tail = function ()
+htmltmpl.prototype._hdlr_tag_0_0 = function ()
 {
-//    alert("tmpl_var_1_2_tail: " + this.priv[0].tokens);
-    var i;
-    var len;
-    var name_is_found = 0;
+//    console.log("tag_0_0: ");
 
+    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
+
+    this._match_reset();
+}
+
+htmltmpl.prototype._hdlr_tag_0_1 = function ()
+{
+    this.priv[0].tokens += this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur);
+//    console.log("tag_0_1: " + this.priv[0].tokens);
+}
+
+htmltmpl.prototype._hdlr_tag_0_2 = function (func)
+{
+    this.priv[0].tokens += this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur);
+//    alert("tag_0_2: " + this.priv[0].tokens);
+
+    func.call(this);
+}
+
+htmltmpl.prototype._hdlr_tag_1_0 = function ()
+{
+    this.tmpl.pos.start = this.tmpl.pos.cur;
+    this.priv[0].tokens += this.match.str;
+//    alert("tag_1_0: " + this.priv[0].tokens);
+}
+
+htmltmpl.prototype._hdlr_tag_end = function ()
+{
+//    console.log("_hdlr_tag_end");
 
     // Save last tokens
     this.priv[0].attrs[this.priv[0].attr_name] = this.priv[0].tokens;
 
-    this.tmpl.data_cur[0].push({ type: "var",
-				 name: this.priv[0].attrs.name,
-			         default: this.priv[0].attrs.default });
+    this.priv[0].cb.call(this);
 
     this.tmpl.pos.start = this.tmpl.pos.cur + 1;
 
@@ -747,65 +752,42 @@ htmltmpl.prototype.hdlr_tmpl_var_1_2_tail = function ()
     this._match_reset();
 }
 
+
+/**********************************************************************
+ * TMPL_VAR HANDLERS
+ **********************************************************************/
+htmltmpl.prototype.hdlr_tmpl_var_1_2 = function ()
+{
+//    alert("tmp_var_1_2");
+    this.hdlr_tag("var", ["NAME", "DEFAULT"], this.hdlr_tmpl_var_1_2_tail);
+}
+
+htmltmpl.prototype.hdlr_tmpl_var_1_2_tail = function ()
+{
+//    alert("tmpl_var_1_2_tail: " + this.priv[0].tokens);
+    var i;
+    var len;
+    var name_is_found = 0;
+
+
+    this.tmpl.data_cur[0].push({ type: "var",
+				 name: this.priv[0].attrs.name,
+			         default: this.priv[0].attrs.default });
+}
+
 /**********************************************************************
  * TMPL_LOOP HANDLERS
  **********************************************************************/
 htmltmpl.prototype.hdlr_tmpl_loop_1_2 = function ()
 {
 //    console.log("tmp_loop_1_2");
-    this.phrases.unshift([ { phrase: "NAME=",
-			     is_match: 1,
-			     oref: this,
-			     hdlr_1_2: this.hdlr_tmpl_loop_1_2_get } ]);
-
-    this.hdlrs.unshift({ hdlr_0_0: this.def_tag_hdlr_0_0,
-			 hdlr_0_1: this.def_tag_hdlr_0_1,
-			 hdlr_1_0: this.def_tag_hdlr_1_0 });
-    this.priv.unshift({ attrs: {},
-			attr_name: "",
-			tag: "loop",
-			tokens: new String() });
-    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
-
-    this._match_reset();
-}
-
-htmltmpl.prototype.hdlr_tmpl_loop_1_2_get = function ()
-{
-    this.hdlrs.shift();
-    this.phrases.shift();
-    this.phrases.unshift([ { phrase: "%>",
-			     is_match: 1,
-			     oref: this,
-			     hdlr_1_2: this.hdlr_tmpl_loop_1_2_tail },
-			   { phrase: "%&gt;",
-			     is_match: 1,
-			     oref: this,
-			     hdlr_1_2: this.hdlr_tmpl_loop_1_2_tail },
-			   { phrase: "%&GT;",
-			     is_match: 1,
-			     oref: this,
-			     hdlr_1_2: this.hdlr_tmpl_loop_1_2_tail },
-			   { phrase: "%-->",
-			     is_match: 1,
-			     oref: this,
-			     hdlr_1_2: this.hdlr_tmpl_loop_1_2_tail } ]);
-
-    this.hdlrs.unshift({ hdlr_0_1: this.def_tag_hdlr_0_1,
-			 hdlr_1_0: this.def_tag_hdlr_1_0 });
-    this.priv[0].attr_name = this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur).toLowerCase();
-    this.priv[0].tokens = new String();
-    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
-
-    this._match_reset();
+    this.hdlr_tag("loop", ["NAME"], this.hdlr_tmpl_loop_1_2_tail);
 }
 
 htmltmpl.prototype.hdlr_tmpl_loop_1_2_tail = function ()
 {
     var loop;
 
-
-    this.priv[0].attrs[this.priv[0].attr_name] = this.priv[0].tokens;
 
 //    console.log("tmpl_loop_1_2_tail: " + this.priv[0].tokens);
 
@@ -816,12 +798,8 @@ htmltmpl.prototype.hdlr_tmpl_loop_1_2_tail = function ()
     this.tmpl.data_cur[0].push(loop);
     this.tmpl.data_cur.unshift(loop.data);
 
-    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
-
-    this.phrases.shift();
-    this.hdlrs.shift();
-
-    this._match_reset();
+    // because of _hdlr_tag_end() do this.priv.shift()
+    this.priv.unshift(this.priv[0]);
 }
 
 htmltmpl.prototype.hdlr_tmpl_loop_1_2_end = function ()
@@ -844,103 +822,13 @@ htmltmpl.prototype.hdlr_tmpl_loop_1_2_end = function ()
 htmltmpl.prototype.hdlr_tmpl_if_1_2 = function ()
 {
 //    console.log("tmp_if_1_2");
-    this.phrases.unshift([ { phrase: "NAME=",
-			     is_match: 1,
-			     oref: this,
-			     hdlr_1_2: this.hdlr_tmpl_if_1_2_get } ]);
-
-    this.hdlrs.unshift({ hdlr_0_0: this.def_tag_hdlr_0_0,
-			 hdlr_0_1: this.def_tag_hdlr_0_1,
-			 hdlr_1_0: this.def_tag_hdlr_1_0 });
-    this.priv.unshift({ attrs: {},
-			attr_name: "",
-			tag: "if",
-			tokens: new String() });
-    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
-
-    this._match_reset();
-}
-
-htmltmpl.prototype.hdlr_tmpl_if_1_2_get = function ()
-{
-//    alert("tmpl_if_1_2_get");
-    this.hdlrs.shift();
-    this.phrases.shift();
-    this.phrases.unshift([ { phrase: "%>",
-			     is_match: 1,
-			     oref: this,
-			     hdlr_1_2: this.hdlr_tmpl_if_1_2_tail },
-			   { phrase: "%&gt;",
-			     is_match: 1,
-			     oref: this,
-			     hdlr_1_2: this.hdlr_tmpl_if_1_2_tail },
-			   { phrase: "%&GT;",
-			     is_match: 1,
-			     oref: this,
-			     hdlr_1_2: this.hdlr_tmpl_if_1_2_tail },
-			   { phrase: "%-->",
-			     is_match: 1,
-			     oref: this,
-			     hdlr_1_2: this.hdlr_tmpl_if_1_2_tail } ]);
-
-    this.hdlrs.unshift({ hdlr_0_1: this.def_tag_hdlr_0_1,
-			 hdlr_1_0: this.def_tag_hdlr_1_0 });
-    this.priv[0].attr_name = this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur).toLowerCase();
-    this.priv[0].tokens = new String();
-    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
-
-    this._match_reset();
+    this.hdlr_tag("if", ["NAME"], this.hdlr_tmpl_if_1_2_tail);
 }
 
 htmltmpl.prototype.hdlr_tmpl_unless_1_2 = function ()
 {
-    console.log("tmp_unless_1_2");
-    this.phrases.unshift([ { phrase: "NAME=",
-			     is_match: 1,
-			     oref: this,
-			     hdlr_1_2: this.hdlr_tmpl_unless_1_2_get } ]);
-
-    this.hdlrs.unshift({ hdlr_0_0: this.def_tag_hdlr_0_0,
-			 hdlr_0_1: this.def_tag_hdlr_0_1,
-			 hdlr_1_0: this.def_tag_hdlr_1_0 });
-    this.priv.unshift({ attrs: {},
-			attr_name: "",
-			tag: "unless",
-			tokens: new String() });
-    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
-
-    this._match_reset();
-}
-
-htmltmpl.prototype.hdlr_tmpl_unless_1_2_get = function ()
-{
-//    console.log("tmpl_unless_1_2_get");
-    this.hdlrs.shift();
-    this.phrases.shift();
-    this.phrases.unshift([ { phrase: "%>",
-			     is_match: 1,
-			     oref: this,
-			     hdlr_1_2: this.hdlr_tmpl_if_1_2_tail },
-			   { phrase: "%&gt;",
-			     is_match: 1,
-			     oref: this,
-			     hdlr_1_2: this.hdlr_tmpl_if_1_2_tail },
-			   { phrase: "%&GT;",
-			     is_match: 1,
-			     oref: this,
-			     hdlr_1_2: this.hdlr_tmpl_if_1_2_tail },
-			   { phrase: "%-->",
-			     is_match: 1,
-			     oref: this,
-			     hdlr_1_2: this.hdlr_tmpl_if_1_2_tail } ]);
-
-    this.hdlrs.unshift({ hdlr_0_1: this.def_tag_hdlr_0_1,
-			 hdlr_1_0: this.def_tag_hdlr_1_0 });
-    this.priv[0].attr_name = this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur).toLowerCase();
-    this.priv[0].tokens = new String();
-    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
-
-    this._match_reset();
+//    console.log("tmp_unless_1_2");
+    this.hdlr_tag("unless", ["NAME"], this.hdlr_tmpl_if_1_2_tail);
 }
 
 htmltmpl.prototype.hdlr_tmpl_if_1_2_tail = function ()
@@ -953,8 +841,6 @@ htmltmpl.prototype.hdlr_tmpl_if_1_2_tail = function ()
     var name_is_found = 0;
 
 
-    this.priv[0].attrs[this.priv[0].attr_name] = this.priv[0].tokens;
-
 //    console.log("tmpl_if_1_2_tail(" + this.priv[0].tag + "): " + this.priv[0].attrs.name);
 
     if_ = { type: this.priv[0].tag,
@@ -965,12 +851,8 @@ htmltmpl.prototype.hdlr_tmpl_if_1_2_tail = function ()
     this.tmpl.data_cur[0].push(if_);
     this.tmpl.data_cur.unshift(if_.data);
 
-    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
-
-    this.phrases.shift();
-    this.hdlrs.shift();
-
-    this._match_reset();
+    // because of _hdlr_tag_end() do this.priv.shift()
+    this.priv.unshift(this.priv[0]);
 }
 
 htmltmpl.prototype.hdlr_tmpl_if_1_2_else = function ()
