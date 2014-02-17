@@ -628,9 +628,26 @@ htmltmpl.prototype.hdlr_tag = function (tag, attrs, cb)
 		       hdlr_1_2: this._hdlr_tag });
     }
     this.priv.unshift({ attrs: {},
-			searched_phrases: phrases,
+			ph_attrs: phrases,
+			ph_tag_stops: [ { phrase: "%>",
+					  is_match: 1,
+					  oref: this,
+					  hdlr_1_2: this._hdlr_tag_end },
+					{ phrase: "%&gt;",
+					  is_match: 1,
+					  oref: this,
+					  hdlr_1_2: this._hdlr_tag_end },
+					{ phrase: "%&GT;",
+					  is_match: 1,
+					  oref: this,
+					  hdlr_1_2: this._hdlr_tag_end },
+					{ phrase: "%-->",
+					  is_match: 1,
+					  oref: this,
+					  hdlr_1_2: this._hdlr_tag_end } ],
 			cb: cb,
 			attr_name: "",
+			is_quoted: 0,
 			tag: tag,
 			tokens: new String() });
 
@@ -647,40 +664,42 @@ htmltmpl.prototype.hdlr_tag = function (tag, attrs, cb)
 
 htmltmpl.prototype._hdlr_tag = function ()
 {
+    var ph_sp_q = [ { phrase: " ",
+		      is_match: 1,
+		      oref: this,
+		      hdlr_0_2: function () {
+			  this._hdlr_tag_0_2(this._hdlr_tag);
+		      } },
+		    { phrase: "\"",
+		      is_match: 1,
+		      oref: this,
+		      hdlr_0_2: this._hdlr_tag_quote },
+		    { phrase: "'",
+		      is_match: 1,
+		      oref: this,
+		      hdlr_0_2: this._hdlr_tag_quote } ];
+
+
 //    alert("_hdlr_tag");
 
     this.hdlrs.shift();
     this.phrases.shift();
 
-    if ( this.priv[0].attr_name != "" ) {
-	this.phrases.unshift(this.priv[0].searched_phrases);
+    if ( this.priv[0].is_quoted ) {
+	this.phrases.unshift(this.priv[0].ph_attrs.concat(this.priv[0].ph_tag_stops));
+
+	this.hdlrs.unshift({ hdlr_0_0: this._hdlr_tag_0_0,
+			     hdlr_0_1: this._hdlr_tag_0_1,
+			     hdlr_1_0: this._hdlr_tag_1_0 });
+	this.priv[0].is_quoted = 0;
+    } else if ( this.priv[0].attr_name != "" ) {
+	this.phrases.unshift(this.priv[0].ph_attrs);
 
 	this.hdlrs.unshift({ hdlr_0_0: this._hdlr_tag_0_0,
 			     hdlr_0_1: this._hdlr_tag_0_1,
 			     hdlr_1_0: this._hdlr_tag_1_0 });
     } else {
-	this.phrases.unshift([ { phrase: " ",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_0_2: function () {
-				     this._hdlr_tag_0_2(this._hdlr_tag);
-				 } },
-			       { phrase: "%>",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this._hdlr_tag_end },
-			       { phrase: "%&gt;",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this._hdlr_tag_end },
-			       { phrase: "%&GT;",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this._hdlr_tag_end },
-			       { phrase: "%-->",
-				 is_match: 1,
-				 oref: this,
-				 hdlr_1_2: this._hdlr_tag_end } ]);
+	this.phrases.unshift(this.priv[0].ph_tag_stops.concat(ph_sp_q));
 
 	this.hdlrs.unshift({ hdlr_0_1: this._hdlr_tag_0_1,
 			     hdlr_1_0: this._hdlr_tag_1_0 });
@@ -691,7 +710,7 @@ htmltmpl.prototype._hdlr_tag = function ()
 	this.priv[0].attr_name = this.tmpl.str.substring(this.tmpl.pos.start,
 							 this.tmpl.pos.cur).toLowerCase();
 	// For a work little speedup
-	this.priv[0].searched_phrases.splice(this.match.phrase_idx, 1);
+	this.priv[0].ph_attrs.splice(this.match.phrase_idx, 1);
     } else {
 	// Save last tokens
 	this.priv[0].attrs[this.priv[0].attr_name] = this.priv[0].tokens;
@@ -722,7 +741,8 @@ htmltmpl.prototype._hdlr_tag_0_1 = function ()
 htmltmpl.prototype._hdlr_tag_0_2 = function (func)
 {
     this.priv[0].tokens += this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur);
-//    alert("tag_0_2: " + this.priv[0].tokens);
+
+//    console.log("tag_0_2: " + this.priv[0].tokens);
 
     func.call(this);
 }
@@ -734,9 +754,36 @@ htmltmpl.prototype._hdlr_tag_1_0 = function ()
 //    alert("tag_1_0: " + this.priv[0].tokens);
 }
 
+htmltmpl.prototype._hdlr_tag_quote = function ()
+{
+    var ph;
+
+
+//    console.log("_hdlr_tag_quote");
+
+    // If a quote is the first character, then wait the closing quote
+    if ( this.match.ph_chr_idx == 0 ) {
+	this.priv[0].is_quoted = 1;
+
+	ph = this.phrases[0][this.match.phrase_idx].phrase;
+	this.phrases.shift();
+	this.phrases.unshift([ { phrase: ph,
+				 is_match: 1,
+				 oref: this,
+				 hdlr_0_2: function () {
+				     this._hdlr_tag_0_2(this._hdlr_tag);
+				 } } ]);
+
+	this.tmpl.pos.start = this.tmpl.pos.cur + 1;
+	this._match_reset();
+    } else {
+	this.phrases[0].splice(this.match.phrase_idx, 1);
+    }
+}
+
 htmltmpl.prototype._hdlr_tag_end = function ()
 {
-//    console.log("_hdlr_tag_end");
+//    console.log("_hdlr_tag_end: ");
 
     // Save last tokens
     this.priv[0].attrs[this.priv[0].attr_name] = this.priv[0].tokens;

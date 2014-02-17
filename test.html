@@ -278,7 +278,13 @@
                     data: { show_var1: 1,
                             var1: 123,
                             show_var2: 0,
-                            var2: "test" } } ];
+                            var2: "test" } },
+                  { id: "unit31",
+                    id_res: "unit31_res",
+                    title: "Test quoted arguments in TMPL_VAR",
+                    prms: {},
+                    data: { var1: "tt",
+                            var2: "qq" } } ];
     function report_ok(test)
     {
         var el, span;
@@ -1009,6 +1015,18 @@
     
       test
     
+  </div>
+
+  <!-- unit 31 -->
+  <div id="unit31">
+    <%TMPL_VAR  NAME="var1"%>
+    <%TMPL_VAR  DEFAULT="ee  "    NAME="var2"%>
+    <%TMPL_VAR    DEFAULT="ee j"       NAME=var3%>
+  </div>
+  <div id="unit31_res">
+    tt
+    qq
+    ee j
   </div>
 
   </div>
