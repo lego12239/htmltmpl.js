@@ -254,10 +254,15 @@
                                        var2: "pooiu " } ] } },
                   { id: "unit27",
                     id_res: "unit27_res",
-                    title: "Test more than one space in TMPL_VAR construction",
+                    title: "Test more than one space inside TMPL_VAR construction",
                     prms: {},
                     data: { var1: "tt",
-                            var2: "qq" } } ];
+                            var2: "qq" } },
+                  { id: "unit28",
+                    id_res: "unit28_res",
+                    title: "Test more than one space inside TMPL_LOOP construction",
+                    prms: {},
+                    data: { loop1: [ { var1: 123 } ] } } ];
     function report_ok(test)
     {
         var el, span;
@@ -944,6 +949,18 @@
     tt
     qq
     ee
+  </div>
+
+  <!-- unit 28 -->
+  <div id="unit28">
+    <%TMPL_LOOP    NAME=loop1%>
+      <%TMPL_VAR NAME=var1%>
+    <%/TMPL_LOOP%>
+  </div>
+  <div id="unit28_res">
+    
+      123
+    
   </div>
 
   </div>

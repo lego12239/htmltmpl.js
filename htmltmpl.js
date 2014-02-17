@@ -76,19 +76,19 @@ function htmltmpl(tmpl, prms)
 			is_match: 1,
 			oref: this,
 			hdlr_1_2: this.hdlr_tmpl_var_1_2 },
-		      { phrase: "<%TMPL_LOOP NAME=",
+		      { phrase: "<%TMPL_LOOP ",
 			is_match: 1,
 			oref: this,
 			hdlr_1_2: this.hdlr_tmpl_loop_1_2 },
-		      { phrase: "&lt;%TMPL_LOOP NAME=",
+		      { phrase: "&lt;%TMPL_LOOP ",
 			is_match: 1,
 			oref: this,
 			hdlr_1_2: this.hdlr_tmpl_loop_1_2 },
-		      { phrase: "&LT;%TMPL_LOOP NAME=",
+		      { phrase: "&LT;%TMPL_LOOP ",
 			is_match: 1,
 			oref: this,
 			hdlr_1_2: this.hdlr_tmpl_loop_1_2 },
-		      { phrase: "<!--%TMPL_LOOP NAME=",
+		      { phrase: "<!--%TMPL_LOOP ",
 			is_match: 1,
 			oref: this,
 			hdlr_1_2: this.hdlr_tmpl_loop_1_2 },
@@ -705,7 +705,7 @@ htmltmpl.prototype.hdlr_tmpl_var_0_0 = function ()
 htmltmpl.prototype.hdlr_tmpl_var_0_1 = function ()
 {
     this.priv[0].tokens += this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur);
-//    alert("tmpl_var_0_1: " + this.priv[0].tokens);
+//    console.log("tmpl_var_0_1: " + this.priv[0].tokens);
 }
 
 htmltmpl.prototype.hdlr_tmpl_var_0_2 = function (func)
@@ -752,6 +752,28 @@ htmltmpl.prototype.hdlr_tmpl_var_1_2_tail = function ()
  **********************************************************************/
 htmltmpl.prototype.hdlr_tmpl_loop_1_2 = function ()
 {
+//    console.log("tmp_loop_1_2");
+    this.phrases.unshift([ { phrase: "NAME=",
+			     is_match: 1,
+			     oref: this,
+			     hdlr_1_2: this.hdlr_tmpl_loop_1_2_get } ]);
+
+    this.hdlrs.unshift({ hdlr_0_0: this.hdlr_tmpl_var_0_0,
+			 hdlr_0_1: this.hdlr_tmpl_var_0_1,
+			 hdlr_1_0: this.hdlr_tmpl_var_1_0 });
+    this.priv.unshift({ attrs: {},
+			attr_name: "",
+			tag: "loop",
+			tokens: new String() });
+    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
+
+    this._match_reset();
+}
+
+htmltmpl.prototype.hdlr_tmpl_loop_1_2_get = function ()
+{
+    this.hdlrs.shift();
+    this.phrases.shift();
     this.phrases.unshift([ { phrase: "%>",
 			     is_match: 1,
 			     oref: this,
@@ -769,42 +791,35 @@ htmltmpl.prototype.hdlr_tmpl_loop_1_2 = function ()
 			     oref: this,
 			     hdlr_1_2: this.hdlr_tmpl_loop_1_2_tail } ]);
 
-    this.hdlrs.unshift({ hdlr_0_1: this.hdlr_tmpl_loop_0_1,
-			 hdlr_1_0: this.hdlr_tmpl_loop_1_0 });
-    this.priv.unshift({ loopname: new String() });
+    this.hdlrs.unshift({ hdlr_0_1: this.hdlr_tmpl_var_0_1,
+			 hdlr_1_0: this.hdlr_tmpl_var_1_0 });
+    this.priv[0].attr_name = this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur).toLowerCase();
+    this.priv[0].tokens = new String();
     this.tmpl.pos.start = this.tmpl.pos.cur + 1;
 
     this._match_reset();
 }
 
-htmltmpl.prototype.hdlr_tmpl_loop_0_1 = function ()
-{
-    this.priv[0].loopname += this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur);
-//    alert("tmpl_loop_0_1: " + this.priv[0].loopname);
-}
-
-htmltmpl.prototype.hdlr_tmpl_loop_1_0 = function ()
-{
-    this.tmpl.pos.start = this.tmpl.pos.cur;
-    this.priv[0].loopname += this.match.str;
-//    alert("tmpl_loop_1_0: " + this.priv[0].loopname);
-}
-
 htmltmpl.prototype.hdlr_tmpl_loop_1_2_tail = function ()
 {
-    var loop = { type: "loop",
-		 name: this.priv[0].loopname,
-		 data: [] };
+    var loop;
 
 
-//    alert("tmpl_loop_1_2_tail: " + this.priv[0].loopname);
-    this.phrases.shift();
-    this.hdlrs.shift();
+//    console.log("tmpl_loop_1_2_tail: " + this.priv[0].tokens);
+
+    this.priv[0].attrs[this.priv[0].attr_name] = this.priv[0].tokens;
+
+    loop = { type: "loop",
+	     name: this.priv[0].attrs.name,
+	     data: [] };
 
     this.tmpl.data_cur[0].push(loop);
     this.tmpl.data_cur.unshift(loop.data);
 
     this.tmpl.pos.start = this.tmpl.pos.cur + 1;
+
+    this.phrases.shift();
+    this.hdlrs.shift();
 
     this._match_reset();
 }
