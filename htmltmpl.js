@@ -531,7 +531,7 @@ htmltmpl.prototype.apply = function(data)
  **********************************************************************/
 htmltmpl.prototype.def_hdlr_0_0 = function ()
 {
-//    alert("0_0: ");
+//    console.log("0_0: ");
     this._match_reset();
 }
 
@@ -621,7 +621,8 @@ htmltmpl.prototype.hdlr_tmpl_var_1_2 = function ()
 			     oref: this,
 			     hdlr_1_2: this.hdlr_tmpl_var_1_2_get } ]);
 
-    this.hdlrs.unshift({ hdlr_0_1: this.hdlr_tmpl_var_0_1,
+    this.hdlrs.unshift({ hdlr_0_0: this.hdlr_tmpl_var_0_0,
+			 hdlr_0_1: this.hdlr_tmpl_var_0_1,
 			 hdlr_1_0: this.hdlr_tmpl_var_1_0 });
     this.priv.unshift({ attrs: {},
 			attr_name: "",
@@ -636,8 +637,9 @@ htmltmpl.prototype.hdlr_tmpl_var_1_2_get = function ()
 {
 //    alert("tmp_var_1_2_get");
 
+    this.hdlrs.shift();
     this.phrases.shift();
-    if ( this.priv[0].attr_name != "" )
+    if ( this.priv[0].attr_name != "" ) {
 	this.phrases.unshift([ { phrase: "NAME=",
 				 is_match: 1,
 				 oref: this,
@@ -646,7 +648,10 @@ htmltmpl.prototype.hdlr_tmpl_var_1_2_get = function ()
 				 is_match: 1,
 				 oref: this,
 				 hdlr_1_2: this.hdlr_tmpl_var_1_2_get } ]);
-    else
+	this.hdlrs.unshift({ hdlr_0_0: this.hdlr_tmpl_var_0_0,
+			     hdlr_0_1: this.hdlr_tmpl_var_0_1,
+			     hdlr_1_0: this.hdlr_tmpl_var_1_0 });
+    } else {
 	this.phrases.unshift([ { phrase: " ",
 				 is_match: 1,
 				 oref: this,
@@ -669,6 +674,10 @@ htmltmpl.prototype.hdlr_tmpl_var_1_2_get = function ()
 				 is_match: 1,
 				 oref: this,
 				 hdlr_1_2: this.hdlr_tmpl_var_1_2_tail } ]);
+	this.hdlrs.unshift({ hdlr_0_1: this.hdlr_tmpl_var_0_1,
+			     hdlr_1_0: this.hdlr_tmpl_var_1_0 });
+    }
+
 
     if ( this.priv[0].attr_name == "" )
 	this.priv[0].attr_name = this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur).toLowerCase();
@@ -679,6 +688,15 @@ htmltmpl.prototype.hdlr_tmpl_var_1_2_get = function ()
     }
 
     this.priv[0].tokens = new String();
+    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
+
+    this._match_reset();
+}
+
+htmltmpl.prototype.hdlr_tmpl_var_0_0 = function ()
+{
+//    console.log("tmpl_var_0_0: ");
+
     this.tmpl.pos.start = this.tmpl.pos.cur + 1;
 
     this._match_reset();

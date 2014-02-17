@@ -251,7 +251,13 @@
                     title: "Test the ph_case_sensitive option",
                     prms: { ph_case_sensitive: 0 },
                     data: { loop1: [ { var1: 123,
-                                       var2: "pooiu " } ] } } ];
+                                       var2: "pooiu " } ] } },
+                  { id: "unit27",
+                    id_res: "unit27_res",
+                    title: "Test more than one space in TMPL_VAR construction",
+                    prms: {},
+                    data: { var1: "tt",
+                            var2: "qq" } } ];
     function report_ok(test)
     {
         var el, span;
@@ -926,6 +932,18 @@
         pooiu 
       
     
+  </div>
+
+  <!-- unit 27 -->
+  <div id="unit27">
+    <%TMPL_VAR   NAME=var1%>
+    <%TMPL_VAR  DEFAULT=ee      NAME=var2%>
+    <%TMPL_VAR    DEFAULT=ee        NAME=var3%>
+  </div>
+  <div id="unit27_res">
+    tt
+    qq
+    ee
   </div>
 
   </div>
