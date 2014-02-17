@@ -262,7 +262,23 @@
                     id_res: "unit28_res",
                     title: "Test more than one space inside TMPL_LOOP construction",
                     prms: {},
-                    data: { loop1: [ { var1: 123 } ] } } ];
+                    data: { loop1: [ { var1: 123 } ] } },
+                  { id: "unit29",
+                    id_res: "unit29_res",
+                    title: "Test more than one space inside TMPL_IF construction",
+                    prms: {},
+                    data: { show_var1: 1,
+                            var1: 123,
+                            show_var2: 0,
+                            var2: "test" } },
+                  { id: "unit30",
+                    id_res: "unit30_res",
+                    title: "Test more than one space inside TMPL_UNLESS construction",
+                    prms: {},
+                    data: { show_var1: 1,
+                            var1: 123,
+                            show_var2: 0,
+                            var2: "test" } } ];
     function report_ok(test)
     {
         var el, span;
@@ -960,6 +976,38 @@
   <div id="unit28_res">
     
       123
+    
+  </div>
+
+  <!-- unit 29 -->
+  <div id="unit29">
+    <%TMPL_IF    NAME=show_var1%>
+      <%TMPL_VAR NAME=var1%>
+    <%/TMPL_IF%>
+    <%TMPL_IF     NAME=show_var2%>
+      <%TMPL_VAR NAME=var2%>
+    <%/TMPL_IF%>
+  </div>
+  <div id="unit29_res">
+    
+      123
+    
+    
+  </div>
+
+  <!-- unit 30 -->
+  <div id="unit30">
+    <%TMPL_UNLESS    NAME=show_var1%>
+      <%TMPL_VAR NAME=var1%>
+    <%/TMPL_UNLESS%>
+    <%TMPL_UNLESS     NAME=show_var2%>
+      <%TMPL_VAR NAME=var2%>
+    <%/TMPL_UNLESS%>
+  </div>
+  <div id="unit30_res">
+    
+    
+      test
     
   </div>
 
