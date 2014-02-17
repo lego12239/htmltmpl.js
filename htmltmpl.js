@@ -579,6 +579,36 @@ htmltmpl.prototype.def_hdlr_0_2 = function ()
 	this.phrases[0][this.match.phrase_idx].hdlr_0_2.call(this);
 }
 
+htmltmpl.prototype.def_tag_hdlr_0_0 = function ()
+{
+//    console.log("tag_0_0: ");
+
+    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
+
+    this._match_reset();
+}
+
+htmltmpl.prototype.def_tag_hdlr_0_1 = function ()
+{
+    this.priv[0].tokens += this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur);
+//    console.log("tag_0_1: " + this.priv[0].tokens);
+}
+
+htmltmpl.prototype.def_tag_hdlr_0_2 = function (func)
+{
+    this.priv[0].tokens += this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur);
+//    alert("tag_0_2: " + this.priv[0].tokens);
+
+    func.call(this);
+}
+
+htmltmpl.prototype.def_tag_hdlr_1_0 = function ()
+{
+    this.tmpl.pos.start = this.tmpl.pos.cur;
+    this.priv[0].tokens += this.match.str;
+//    alert("tag_1_0: " + this.priv[0].tokens);
+}
+
 
 /**********************************************************************
  * ENCLOSING COMMENT HANDLERS
@@ -621,9 +651,9 @@ htmltmpl.prototype.hdlr_tmpl_var_1_2 = function ()
 			     oref: this,
 			     hdlr_1_2: this.hdlr_tmpl_var_1_2_get } ]);
 
-    this.hdlrs.unshift({ hdlr_0_0: this.hdlr_tmpl_var_0_0,
-			 hdlr_0_1: this.hdlr_tmpl_var_0_1,
-			 hdlr_1_0: this.hdlr_tmpl_var_1_0 });
+    this.hdlrs.unshift({ hdlr_0_0: this.def_tag_hdlr_0_0,
+			 hdlr_0_1: this.def_tag_hdlr_0_1,
+			 hdlr_1_0: this.def_tag_hdlr_1_0 });
     this.priv.unshift({ attrs: {},
 			attr_name: "",
 			tag: "var",
@@ -648,15 +678,15 @@ htmltmpl.prototype.hdlr_tmpl_var_1_2_get = function ()
 				 is_match: 1,
 				 oref: this,
 				 hdlr_1_2: this.hdlr_tmpl_var_1_2_get } ]);
-	this.hdlrs.unshift({ hdlr_0_0: this.hdlr_tmpl_var_0_0,
-			     hdlr_0_1: this.hdlr_tmpl_var_0_1,
-			     hdlr_1_0: this.hdlr_tmpl_var_1_0 });
+	this.hdlrs.unshift({ hdlr_0_0: this.def_tag_hdlr_0_0,
+			     hdlr_0_1: this.def_tag_hdlr_0_1,
+			     hdlr_1_0: this.def_tag_hdlr_1_0 });
     } else {
 	this.phrases.unshift([ { phrase: " ",
 				 is_match: 1,
 				 oref: this,
 				 hdlr_0_2: function () {
-				     this.hdlr_tmpl_var_0_2(this.hdlr_tmpl_var_1_2_get);
+				     this.def_tag_hdlr_0_2(this.hdlr_tmpl_var_1_2_get);
 				 } },
 			       { phrase: "%>",
 				 is_match: 1,
@@ -674,8 +704,8 @@ htmltmpl.prototype.hdlr_tmpl_var_1_2_get = function ()
 				 is_match: 1,
 				 oref: this,
 				 hdlr_1_2: this.hdlr_tmpl_var_1_2_tail } ]);
-	this.hdlrs.unshift({ hdlr_0_1: this.hdlr_tmpl_var_0_1,
-			     hdlr_1_0: this.hdlr_tmpl_var_1_0 });
+	this.hdlrs.unshift({ hdlr_0_1: this.def_tag_hdlr_0_1,
+			     hdlr_1_0: this.def_tag_hdlr_1_0 });
     }
 
 
@@ -691,36 +721,6 @@ htmltmpl.prototype.hdlr_tmpl_var_1_2_get = function ()
     this.tmpl.pos.start = this.tmpl.pos.cur + 1;
 
     this._match_reset();
-}
-
-htmltmpl.prototype.hdlr_tmpl_var_0_0 = function ()
-{
-//    console.log("tmpl_var_0_0: ");
-
-    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
-
-    this._match_reset();
-}
-
-htmltmpl.prototype.hdlr_tmpl_var_0_1 = function ()
-{
-    this.priv[0].tokens += this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur);
-//    console.log("tmpl_var_0_1: " + this.priv[0].tokens);
-}
-
-htmltmpl.prototype.hdlr_tmpl_var_0_2 = function (func)
-{
-    this.priv[0].tokens += this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur);
-//    alert("tmpl_var_0_2: " + this.priv[0].tokens);
-
-    func.call(this);
-}
-
-htmltmpl.prototype.hdlr_tmpl_var_1_0 = function ()
-{
-    this.tmpl.pos.start = this.tmpl.pos.cur;
-    this.priv[0].tokens += this.match.str;
-//    alert("tmpl_var_1_0: " + this.priv[0].tokens);
 }
 
 htmltmpl.prototype.hdlr_tmpl_var_1_2_tail = function ()
@@ -758,9 +758,9 @@ htmltmpl.prototype.hdlr_tmpl_loop_1_2 = function ()
 			     oref: this,
 			     hdlr_1_2: this.hdlr_tmpl_loop_1_2_get } ]);
 
-    this.hdlrs.unshift({ hdlr_0_0: this.hdlr_tmpl_var_0_0,
-			 hdlr_0_1: this.hdlr_tmpl_var_0_1,
-			 hdlr_1_0: this.hdlr_tmpl_var_1_0 });
+    this.hdlrs.unshift({ hdlr_0_0: this.def_tag_hdlr_0_0,
+			 hdlr_0_1: this.def_tag_hdlr_0_1,
+			 hdlr_1_0: this.def_tag_hdlr_1_0 });
     this.priv.unshift({ attrs: {},
 			attr_name: "",
 			tag: "loop",
@@ -791,8 +791,8 @@ htmltmpl.prototype.hdlr_tmpl_loop_1_2_get = function ()
 			     oref: this,
 			     hdlr_1_2: this.hdlr_tmpl_loop_1_2_tail } ]);
 
-    this.hdlrs.unshift({ hdlr_0_1: this.hdlr_tmpl_var_0_1,
-			 hdlr_1_0: this.hdlr_tmpl_var_1_0 });
+    this.hdlrs.unshift({ hdlr_0_1: this.def_tag_hdlr_0_1,
+			 hdlr_1_0: this.def_tag_hdlr_1_0 });
     this.priv[0].attr_name = this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur).toLowerCase();
     this.priv[0].tokens = new String();
     this.tmpl.pos.start = this.tmpl.pos.cur + 1;
@@ -849,9 +849,9 @@ htmltmpl.prototype.hdlr_tmpl_if_1_2 = function ()
 			     oref: this,
 			     hdlr_1_2: this.hdlr_tmpl_if_1_2_get } ]);
 
-    this.hdlrs.unshift({ hdlr_0_0: this.hdlr_tmpl_var_0_0,
-			 hdlr_0_1: this.hdlr_tmpl_var_0_1,
-			 hdlr_1_0: this.hdlr_tmpl_var_1_0 });
+    this.hdlrs.unshift({ hdlr_0_0: this.def_tag_hdlr_0_0,
+			 hdlr_0_1: this.def_tag_hdlr_0_1,
+			 hdlr_1_0: this.def_tag_hdlr_1_0 });
     this.priv.unshift({ attrs: {},
 			attr_name: "",
 			tag: "if",
@@ -883,8 +883,8 @@ htmltmpl.prototype.hdlr_tmpl_if_1_2_get = function ()
 			     oref: this,
 			     hdlr_1_2: this.hdlr_tmpl_if_1_2_tail } ]);
 
-    this.hdlrs.unshift({ hdlr_0_1: this.hdlr_tmpl_var_0_1,
-			 hdlr_1_0: this.hdlr_tmpl_var_1_0 });
+    this.hdlrs.unshift({ hdlr_0_1: this.def_tag_hdlr_0_1,
+			 hdlr_1_0: this.def_tag_hdlr_1_0 });
     this.priv[0].attr_name = this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur).toLowerCase();
     this.priv[0].tokens = new String();
     this.tmpl.pos.start = this.tmpl.pos.cur + 1;
@@ -900,9 +900,9 @@ htmltmpl.prototype.hdlr_tmpl_unless_1_2 = function ()
 			     oref: this,
 			     hdlr_1_2: this.hdlr_tmpl_unless_1_2_get } ]);
 
-    this.hdlrs.unshift({ hdlr_0_0: this.hdlr_tmpl_var_0_0,
-			 hdlr_0_1: this.hdlr_tmpl_var_0_1,
-			 hdlr_1_0: this.hdlr_tmpl_var_1_0 });
+    this.hdlrs.unshift({ hdlr_0_0: this.def_tag_hdlr_0_0,
+			 hdlr_0_1: this.def_tag_hdlr_0_1,
+			 hdlr_1_0: this.def_tag_hdlr_1_0 });
     this.priv.unshift({ attrs: {},
 			attr_name: "",
 			tag: "unless",
@@ -934,8 +934,8 @@ htmltmpl.prototype.hdlr_tmpl_unless_1_2_get = function ()
 			     oref: this,
 			     hdlr_1_2: this.hdlr_tmpl_if_1_2_tail } ]);
 
-    this.hdlrs.unshift({ hdlr_0_1: this.hdlr_tmpl_var_0_1,
-			 hdlr_1_0: this.hdlr_tmpl_var_1_0 });
+    this.hdlrs.unshift({ hdlr_0_1: this.def_tag_hdlr_0_1,
+			 hdlr_1_0: this.def_tag_hdlr_1_0 });
     this.priv[0].attr_name = this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur).toLowerCase();
     this.priv[0].tokens = new String();
     this.tmpl.pos.start = this.tmpl.pos.cur + 1;
