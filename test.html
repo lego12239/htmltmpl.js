@@ -245,6 +245,12 @@
                     err_msg: "Cann't find bool var 'var3'.",
                     prms: { err_on_no_data: 1 },
                     data: { loop1: [ { var1: 123,
+                                       var2: "pooiu " } ] } },
+                  { id: "unit26",
+                    id_res: "unit26_res",
+                    title: "Test the ph_case_sensitive option",
+                    prms: { ph_case_sensitive: 0 },
+                    data: { loop1: [ { var1: 123,
                                        var2: "pooiu " } ] } } ];
     function report_ok(test)
     {
@@ -904,6 +910,22 @@
     <%/TMPL_LOOP%>
   </div>
   <div id="unit25_res">
+  </div>
+
+  <!-- unit 26 -->
+  <div id="unit26">
+    <%TmPl_loop NAME=loop1%>
+      <%tmpl_if NAME=var1%>
+        <%tmpl_Var NAME=var2%>
+      <%/Tmpl_If%>
+    <%/Tmpl_LoOp%>
+  </div>
+  <div id="unit26_res">
+    
+      
+        pooiu 
+      
+    
   </div>
 
   </div>
