@@ -1,18 +1,4 @@
-1. Process at the first level only <%TMPL_ constructs, and only after it
-   a match switches to the next level, where process the all <%TMPL_* constructs.
-2. Add phrase name into the priv, to detect current processing phrase and 
-   template phrases errors (where phrases are intermixed, like <1> <2> </1> </2>).
-3. Some handlers of different phrases are equal. So, we can several common
-   handlers and use it in various phrases.
 4. Make more expressive ex.html.
-5. Somewhen, the code must be unified on simplified...
 6. If we will can replace $.parseHTML(this.out_str) with an html-elements
    creating on the basis of the main algorithm, i think we will get a
    faster speed of work and totaly remove the need of jquery in htmltmpl.
-7. Do something with test.html, that would it works in ie.
-8. Add code to process multiple spaces instead of one in tags.
-10. Add option to raise error if we found TMPL construct, but in supplied
-    data we don't found needed names.
-11. Add option to alert(console.log) an error instead of simply return undefined
-    (apply()).
-12. DEFAULT for TMPL_VAR doesn't accept values with spaces.

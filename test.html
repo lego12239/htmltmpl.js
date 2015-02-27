@@ -215,12 +215,6 @@
                     prms: { ph_case_sensitive: 0 },
                     data: { loop1: [ { var1: 123,
                                        var2: "pooiu " } ] } },
-                  { id: "unit22",
-                    id_res: "unit22_res",
-                    title: "Test the commented variant of the tags",
-                    prms: { },
-                    data: { loop1: [ { var1: 123,
-                                       var2: "pooiu " } ] } },
                   { id: "unit23",
                     id_res: "unit23_res",
                     title: "Test the err_on_no_data option & TMPL_VAR",
@@ -241,7 +235,7 @@
                     id_res: "unit25_res",
                     title: "Test the err_on_no_data option & TMPL_IF",
                     is_err: 1,
-                    err_msg: "Cann't find bool var 'var3'.",
+                    err_msg: "Cann't find var 'var3'.",
                     prms: { err_on_no_data: 1 },
                     data: { loop1: [ { var1: 123,
                                        var2: "pooiu " } ] } },
@@ -284,6 +278,21 @@
                     prms: {},
                     data: { var1: "tt",
                             var2: "qq" } } ];
+    function report_res(test, ex)
+    {
+        if ( test.is_err ) {
+            if (( ex != undefined ) && ( test.err_msg == ex ))
+                report_ok(test);
+            else
+                report_fail(test);
+        } else {
+            if (( ex == undefined ) &&
+                ( document.getElementById(test.id_res).innerHTML == tmpl.out_str ))
+                report_ok(test);
+            else
+                report_fail(test);
+        }
+    }
     function report_ok(test)
     {
         var el, span;
@@ -324,25 +333,25 @@
         document.getElementById("counter").innerHTML = "0/" + tests.length;
 
         for(i = 0; i < tests.length; i++) {
-            if ( tests[i].as_str )
-                tmpl = new htmltmpl(document.getElementById(tests[i].id).innerHTML,
-                                    tests[i].prms);
-            else
-                tmpl = new htmltmpl(document.getElementById(tests[i].id), tests[i].prms);
-            ret = tmpl.apply(tests[i].data);
-            if ( tests[i].is_err ) {
-                if (( ret == undefined ) && ( tests[i].err_msg == tmpl.err_msg ))
-                    report_ok(tests[i]);
-                else
-                    report_fail(tests[i]);
-            } else {
-                if ( document.getElementById(tests[i].id_res).innerHTML == tmpl.out_str )
-	            report_ok(tests[i]);
-                else
-                    report_fail(tests[i]);
+            try {
+		if ( tests[i].as_str )
+                    tmpl = new htmltmpl(document.getElementById(tests[i].id).innerHTML,
+                       tests[i].prms);
+		else
+                    tmpl = new htmltmpl(document.getElementById(tests[i].id), tests[i].prms);
+	    } catch (ex) {
+		report_res(tests[i], ex);
+                continue;
+	    }
+	    try {
+                ret = tmpl.apply(tests[i].data);
+            } catch (ex) {
+                report_res(tests[i], ex);
+                continue;
             }
+	    report_res(tests[i], undefined);
 
-            console.log("unit" + i + ": " + JSON.stringify(tmpl.tmpl.data));
+            console.log("unit" + i + ": " + JSON.stringify(tmpl.tmpl_parsed));
 
             // set counter
             document.getElementById("counter").innerHTML = (i + 1) + "/" + tests.length;
@@ -364,13 +373,13 @@
 
   <!-- unit 0 -->
   <div id="unit0">
-    <%TMPL_VAR NAME=var1%>
+    {%TMPL_VAR NAME=var1%}
     another
-    <%TMPL_VAR NAME=var2%>
+    {%TMPL_VAR NAME=var2%}
     text
-    <%TMPL_VAR NAME=var3%>
+    {%TMPL_VAR NAME=var3%}
     here
-    <%TMPL_VAR NAME=var_long_name4%>
+    {%TMPL_VAR NAME=var_long_name4%}
   </div>
   <div id="unit0_res">
     1
@@ -384,10 +393,10 @@
 
   <!-- unit 1 -->
   <div id="unit1">
-    <%TMPL_VAR NAME=var1%>
-    <%TMPL_VAR NAME=var2%>
-    <%TMPL_VAR NAME=var3%>
-    <%TMPL_VAR NAME=var_long_name4%>
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_VAR NAME=var2%}
+    {%TMPL_VAR NAME=var3%}
+    {%TMPL_VAR NAME=var_long_name4%}
   </div>
   <div id="unit1_res">
     1
@@ -398,8 +407,8 @@
 
   <!-- unit 2 -->
   <div id="unit2">
-    <%TMPL_VAR NAME=var1%>
-    <%TMPL_VAR NAME=var2%>
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_VAR NAME=var2%}
   </div>
   <div id="unit2_res">
     123
@@ -408,8 +417,8 @@
 
   <!-- unit 3 -->
   <div id="unit3">
-    <%TMPL_VAR DEFAULT=test1 NAME=var1%>
-    <%TMPL_VAR DEFAULT=test1 NAME=var2%>
+    {%TMPL_VAR DEFAULT=test1 NAME=var1%}
+    {%TMPL_VAR DEFAULT=test1 NAME=var2%}
   </div>
   <div id="unit3_res">
     123
@@ -418,14 +427,14 @@
 
   <!-- unit 4 -->
   <div id="unit4">
-    <%TMPL_LOOP NAME=loop1%>
-      <%TMPL_VAR NAME=var1%>
-      <%TMPL_VAR NAME=var2%>
-      <%TMPL_VAR NAME=var3%>
-    <%/TMPL_LOOP%>
-    <%TMPL_VAR NAME=var1%>
-    <%TMPL_VAR NAME=var2%>
-    <%TMPL_VAR NAME=var_long_name%>
+    {%TMPL_LOOP NAME=loop1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_VAR NAME=var2%}
+      {%TMPL_VAR NAME=var3%}
+    {%/TMPL_LOOP%}
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_VAR NAME=var2%}
+    {%TMPL_VAR NAME=var_long_name%}
   </div>
   <div id="unit4_res">
     
@@ -448,11 +457,11 @@
 
   <!-- unit 5 -->
   <div id="unit5">
-    <%TMPL_LOOP NAME=loop1%>
-      <%TMPL_IF NAME=var3%>
-        <%TMPL_VAR NAME=var1%>
-      <%/TMPL_IF%>
-    <%/TMPL_LOOP%>
+    {%TMPL_LOOP NAME=loop1%}
+      {%TMPL_IF NAME=var3%}
+        {%TMPL_VAR NAME=var1%}
+      {%/TMPL_IF%}
+    {%/TMPL_LOOP%}
   </div>
   <div id="unit5_res">
     
@@ -460,14 +469,14 @@
 
   <!-- unit 6 -->
   <div id="unit6">
-    <%TMPL_LOOP NAME=loop1%>
-      <%TMPL_VAR NAME=var1%>
-      <%TMPL_VAR NAME=var2%>
-      <%TMPL_VAR NAME=var3%>
-    <%/TMPL_LOOP%>
-    <%TMPL_VAR NAME=var1%>
-    <%TMPL_VAR NAME=var2%>
-    <%TMPL_VAR NAME=var_long_name%>
+    {%TMPL_LOOP NAME=loop1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_VAR NAME=var2%}
+      {%TMPL_VAR NAME=var3%}
+    {%/TMPL_LOOP%}
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_VAR NAME=var2%}
+    {%TMPL_VAR NAME=var_long_name%}
   </div>
   <div id="unit6_res">
     
@@ -490,14 +499,14 @@
 
   <!-- unit 7 -->
   <div id="unit7">
-    <%TMPL_LOOP NAME=loop1%>
-      <%TMPL_VAR NAME=var1%>
-      <%TMPL_VAR NAME=var2%>
-      <%TMPL_VAR NAME=var3%>
-    <%/TMPL_LOOP%>
-    <%TMPL_VAR NAME=var1%>
-    <%TMPL_VAR NAME=var2%>
-    <%TMPL_VAR NAME=var_long_name%>
+    {%TMPL_LOOP NAME=loop1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_VAR NAME=var2%}
+      {%TMPL_VAR NAME=var3%}
+    {%/TMPL_LOOP%}
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_VAR NAME=var2%}
+    {%TMPL_VAR NAME=var_long_name%}
   </div>
   <div id="unit7_res">
     
@@ -520,16 +529,16 @@
 
   <!-- unit 8 -->
   <div id="unit8">
-    <%TMPL_LOOP NAME=loop1%>
-      <%TMPL_VAR NAME=var1%>
-      <%TMPL_VAR NAME=var2%>
-      <%TMPL_VAR NAME=var3%>
-      <%TMPL_LOOP NAME=loop2%>
-        <%TMPL_VAR NAME=var1%>
-        <%TMPL_VAR NAME=var2%>
-        <%TMPL_VAR NAME=var3%>
-      <%/TMPL_LOOP%>
-    <%/TMPL_LOOP%>
+    {%TMPL_LOOP NAME=loop1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_VAR NAME=var2%}
+      {%TMPL_VAR NAME=var3%}
+      {%TMPL_LOOP NAME=loop2%}
+        {%TMPL_VAR NAME=var1%}
+        {%TMPL_VAR NAME=var2%}
+        {%TMPL_VAR NAME=var3%}
+      {%/TMPL_LOOP%}
+    {%/TMPL_LOOP%}
   </div>
   <div id="unit8_res">
     
@@ -571,16 +580,16 @@
 
   <!-- unit 9 -->
   <div id="unit9">
-    <%TMPL_LOOP NAME=loop1%>
-      <%TMPL_VAR NAME=var1%>
-      <%TMPL_VAR NAME=var2%>
-      <%TMPL_VAR NAME=var3%>
-      <%TMPL_LOOP NAME=loop2%>
-        <%TMPL_VAR NAME=var1%>
-        <%TMPL_VAR NAME=var2%>
-        <%TMPL_VAR NAME=var3%>
-      <%/TMPL_LOOP%>
-    <%/TMPL_LOOP%>
+    {%TMPL_LOOP NAME=loop1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_VAR NAME=var2%}
+      {%TMPL_VAR NAME=var3%}
+      {%TMPL_LOOP NAME=loop2%}
+        {%TMPL_VAR NAME=var1%}
+        {%TMPL_VAR NAME=var2%}
+        {%TMPL_VAR NAME=var3%}
+      {%/TMPL_LOOP%}
+    {%/TMPL_LOOP%}
   </div>
   <div id="unit9_res">
     
@@ -622,18 +631,18 @@
 
   <!-- unit 10 -->
   <div id="unit10">
-    <%TMPL_LOOP NAME=loop1%>
-      <%TMPL_VAR NAME=__first__%>
-      <%TMPL_VAR NAME=__last__%>
-      <%TMPL_VAR NAME=__inner__%>
-      <%TMPL_VAR NAME=__outer__%>
-      <%TMPL_VAR NAME=__odd__%>
-      <%TMPL_VAR NAME=__even__%>
-      <%TMPL_VAR NAME=__counter__%>
-      <%TMPL_VAR NAME=__index__%>
+    {%TMPL_LOOP NAME=loop1%}
+      {%TMPL_VAR NAME=__first__%}
+      {%TMPL_VAR NAME=__last__%}
+      {%TMPL_VAR NAME=__inner__%}
+      {%TMPL_VAR NAME=__outer__%}
+      {%TMPL_VAR NAME=__odd__%}
+      {%TMPL_VAR NAME=__even__%}
+      {%TMPL_VAR NAME=__counter__%}
+      {%TMPL_VAR NAME=__index__%}
 
-      <%TMPL_VAR NAME=var1%>
-    <%/TMPL_LOOP%>
+      {%TMPL_VAR NAME=var1%}
+    {%/TMPL_LOOP%}
   </div>
   <div id="unit10_res">
     
@@ -674,16 +683,16 @@
 
   <!-- unit 11 -->
   <div id="unit11">
-    <%TMPL_LOOP NAME=loop1%>
-      <%TMPL_VAR NAME=__first__%>
-      <%TMPL_VAR NAME=__last__%>
-      <%TMPL_VAR NAME=__inner__%>
-      <%TMPL_VAR NAME=__outer__%>
-      <%TMPL_VAR NAME=__odd__%>
-      <%TMPL_VAR NAME=__even__%>
-      <%TMPL_VAR NAME=__counter__%>
-      <%TMPL_VAR NAME=__index__%>
-    <%/TMPL_LOOP%>
+    {%TMPL_LOOP NAME=loop1%}
+      {%TMPL_VAR NAME=__first__%}
+      {%TMPL_VAR NAME=__last__%}
+      {%TMPL_VAR NAME=__inner__%}
+      {%TMPL_VAR NAME=__outer__%}
+      {%TMPL_VAR NAME=__odd__%}
+      {%TMPL_VAR NAME=__even__%}
+      {%TMPL_VAR NAME=__counter__%}
+      {%TMPL_VAR NAME=__index__%}
+    {%/TMPL_LOOP%}
   </div>
   <div id="unit11_res">
     
@@ -709,16 +718,16 @@
 
   <!-- unit 12 -->
   <div id="unit12">
-    <%TMPL_LOOP NAME=loop1%>
-      <%TMPL_VAR NAME=__first__%>
-      <%TMPL_VAR NAME=__last__%>
-      <%TMPL_VAR NAME=__inner__%>
-      <%TMPL_VAR NAME=__outer__%>
-      <%TMPL_VAR NAME=__odd__%>
-      <%TMPL_VAR NAME=__even__%>
-      <%TMPL_VAR NAME=__counter__%>
-      <%TMPL_VAR NAME=__index__%>
-    <%/TMPL_LOOP%>
+    {%TMPL_LOOP NAME=loop1%}
+      {%TMPL_VAR NAME=__first__%}
+      {%TMPL_VAR NAME=__last__%}
+      {%TMPL_VAR NAME=__inner__%}
+      {%TMPL_VAR NAME=__outer__%}
+      {%TMPL_VAR NAME=__odd__%}
+      {%TMPL_VAR NAME=__even__%}
+      {%TMPL_VAR NAME=__counter__%}
+      {%TMPL_VAR NAME=__index__%}
+    {%/TMPL_LOOP%}
   </div>
   <div id="unit12_res">
     
@@ -735,12 +744,12 @@
 
   <!-- unit 13 -->
   <div id="unit13">
-    <%TMPL_IF NAME=show_var1%>
-      <%TMPL_VAR NAME=var1%>
-    <%/TMPL_IF%>
-    <%TMPL_IF NAME=show_var2%>
-      <%TMPL_VAR NAME=var2%>
-    <%/TMPL_IF%>
+    {%TMPL_IF NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+    {%/TMPL_IF%}
+    {%TMPL_IF NAME=show_var2%}
+      {%TMPL_VAR NAME=var2%}
+    {%/TMPL_IF%}
   </div>
   <div id="unit13_res">
     
@@ -751,11 +760,11 @@
 
   <!-- unit 14 -->
   <div id="unit14">
-    <%TMPL_IF NAME=var2%>
-      <%TMPL_VAR NAME=var1%>
-    <%TMPL_ELSE%>
-      <%TMPL_VAR NAME=var3%>
-    <%/TMPL_IF%>
+    {%TMPL_IF NAME=var2%}
+      {%TMPL_VAR NAME=var1%}
+    {%TMPL_ELSE%}
+      {%TMPL_VAR NAME=var3%}
+    {%/TMPL_IF%}
   </div>
   <div id="unit14_res">
     
@@ -765,16 +774,16 @@
 
   <!-- unit 15 -->
   <div id="unit15">
-    <%TMPL_IF NAME=show_var1%>
-      <%TMPL_VAR NAME=var1%>
-    <%TMPL_ELSE%>
+    {%TMPL_IF NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+    {%TMPL_ELSE%}
       without var1
-    <%/TMPL_IF%>
-    <%TMPL_IF NAME=show_var2%>
-      <%TMPL_VAR NAME=var2%>
-    <%TMPL_ELSE%>
+    {%/TMPL_IF%}
+    {%TMPL_IF NAME=show_var2%}
+      {%TMPL_VAR NAME=var2%}
+    {%TMPL_ELSE%}
       without var2
-    <%/TMPL_IF%>
+    {%/TMPL_IF%}
   </div>
   <div id="unit15_res">
     
@@ -787,12 +796,12 @@
 
   <!-- unit 16 -->
   <div id="unit16">
-    <%TMPL_UNLESS NAME=show_var1%>
-      <%TMPL_VAR NAME=var1%>
-    <%/TMPL_UNLESS%>
-    <%TMPL_UNLESS NAME=show_var2%>
-      <%TMPL_VAR NAME=var2%>
-    <%/TMPL_UNLESS%>
+    {%TMPL_UNLESS NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+    {%/TMPL_UNLESS%}
+    {%TMPL_UNLESS NAME=show_var2%}
+      {%TMPL_VAR NAME=var2%}
+    {%/TMPL_UNLESS%}
   </div>
   <div id="unit16_res">
     
@@ -803,11 +812,11 @@
 
   <!-- unit 17 -->
   <div id="unit17">
-    <%TMPL_UNLESS NAME=var2%>
-      <%TMPL_VAR NAME=var1%>
-    <%TMPL_ELSE%>
-      <%TMPL_VAR NAME=var3%>
-    <%/TMPL_UNLESS%>
+    {%TMPL_UNLESS NAME=var2%}
+      {%TMPL_VAR NAME=var1%}
+    {%TMPL_ELSE%}
+      {%TMPL_VAR NAME=var3%}
+    {%/TMPL_UNLESS%}
   </div>
   <div id="unit17_res">
     
@@ -817,16 +826,16 @@
 
   <!-- unit 18 -->
   <div id="unit18">
-    <%TMPL_UNLESS NAME=show_var1%>
-      <%TMPL_VAR NAME=var1%>
-    <%TMPL_ELSE%>
+    {%TMPL_UNLESS NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+    {%TMPL_ELSE%}
       without var1
-    <%/TMPL_UNLESS%>
-    <%TMPL_UNLESS NAME=show_var2%>
-      <%TMPL_VAR NAME=var2%>
-    <%TMPL_ELSE%>
+    {%/TMPL_UNLESS%}
+    {%TMPL_UNLESS NAME=show_var2%}
+      {%TMPL_VAR NAME=var2%}
+    {%TMPL_ELSE%}
       without var2
-    <%/TMPL_UNLESS%>
+    {%/TMPL_UNLESS%}
   </div>
   <div id="unit18_res">
     
@@ -839,10 +848,10 @@
 
   <!-- unit 19 -->
   <div id="unit19"><!--
-    <%TMPL_LOOP NAME=loop1%>
-      <%TMPL_VAR NAME=var1%>
-      <%TMPL_VAR NAME=var2%>
-    <%/TMPL_LOOP%>
+    {%TMPL_LOOP NAME=loop1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_VAR NAME=var2%}
+    {%/TMPL_LOOP%}
   --></div>
   <div id="unit19_res">
     
@@ -854,35 +863,33 @@
   <!-- unit 20 -->
   <div id="unit20">
     <!--
-    <%TMPL_LOOP NAME=loop1%>
-      <%TMPL_VAR NAME=var1%>
-      <%TMPL_VAR NAME=var2%>
-    <%/TMPL_LOOP%>
+    {%TMPL_LOOP NAME=loop1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_VAR NAME=var2%}
+    {%/TMPL_LOOP%}
     -->
   </div>
   <div id="unit20_res">
     
-    
       123
       pooiu 
     
-    
-  </div>
+    </div>
 
   <!-- unit 21 -->
   <div id="unit21">
-    <%Tmpl_LooP NAMe=loop1%>
-      <%Tmpl_iF Name=var1%>
-        <%tmpl_var name=var1%>
-      <%Tmpl_elsE%>
+    {%Tmpl_LooP NAMe=loop1%}
+      {%Tmpl_iF Name=var1%}
+        {%tmpl_var name=var1%}
+      {%Tmpl_elsE%}
         ee
-      <%/tmpL_if%>
-      <%tmpl_unlESS NaME=var2%>
+      {%/tmpL_if%}
+      {%tmpl_unlESS NaME=var2%}
         ff
-      <%TMPL_else%>
-        <%tmpl_VAR NamE=var2%>
-      <%/tmpl_unless%>
-    <%/TmpL_LOOp%>
+      {%TMPL_else%}
+        {%tmpl_VAR NamE=var2%}
+      {%/tmpl_unless%}
+    {%/TmpL_LOOp%}
   </div>
   <div id="unit21_res">
     
@@ -923,42 +930,42 @@
 
   <!-- unit 23 -->
   <div id="unit23">
-    <%TMPL_LOOP NAME=loop1%>
-      <%TMPL_VAR NAME=var1%>
-      <%TMPL_VAR NAME=var3%>
-    <%/TMPL_LOOP%>
+    {%TMPL_LOOP NAME=loop1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_VAR NAME=var3%}
+    {%/TMPL_LOOP%}
   </div>
   <div id="unit23_res">
   </div>
 
   <!-- unit 24 -->
   <div id="unit24">
-    <%TMPL_LOOP NAME=loop2%>
-      <%TMPL_VAR NAME=var1%>
-      <%TMPL_VAR NAME=var3%>
-    <%/TMPL_LOOP%>
+    {%TMPL_LOOP NAME=loop2%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_VAR NAME=var3%}
+    {%/TMPL_LOOP%}
   </div>
   <div id="unit24_res">
   </div>
 
   <!-- unit 25 -->
   <div id="unit25">
-    <%TMPL_LOOP NAME=loop1%>
-      <%TMPL_IF NAME=var3%>
-        <%TMPL_VAR NAME=var1%>
-      <%/TMPL_IF%>
-    <%/TMPL_LOOP%>
+    {%TMPL_LOOP NAME=loop1%}
+      {%TMPL_IF NAME=var3%}
+        {%TMPL_VAR NAME=var1%}
+      {%/TMPL_IF%}
+    {%/TMPL_LOOP%}
   </div>
   <div id="unit25_res">
   </div>
 
   <!-- unit 26 -->
   <div id="unit26">
-    <%TmPl_loop NAME=loop1%>
-      <%tmpl_if NAME=var1%>
-        <%tmpl_Var NAME=var2%>
-      <%/Tmpl_If%>
-    <%/Tmpl_LoOp%>
+    {%TmPl_loop NAME=loop1%}
+      {%tmpl_if NAME=var1%}
+        {%tmpl_Var NAME=var2%}
+      {%/Tmpl_If%}
+    {%/Tmpl_LoOp%}
   </div>
   <div id="unit26_res">
     
@@ -970,9 +977,9 @@
 
   <!-- unit 27 -->
   <div id="unit27">
-    <%TMPL_VAR   NAME=var1%>
-    <%TMPL_VAR  DEFAULT=ee      NAME=var2%>
-    <%TMPL_VAR    DEFAULT=ee        NAME=var3%>
+    {%TMPL_VAR   NAME=var1%}
+    {%TMPL_VAR  DEFAULT=ee      NAME=var2%}
+    {%TMPL_VAR    DEFAULT=ee        NAME=var3%}
   </div>
   <div id="unit27_res">
     tt
@@ -982,9 +989,9 @@
 
   <!-- unit 28 -->
   <div id="unit28">
-    <%TMPL_LOOP    NAME=loop1%>
-      <%TMPL_VAR NAME=var1%>
-    <%/TMPL_LOOP%>
+    {%TMPL_LOOP    NAME=loop1%}
+      {%TMPL_VAR NAME=var1%}
+    {%/TMPL_LOOP%}
   </div>
   <div id="unit28_res">
     
@@ -994,12 +1001,12 @@
 
   <!-- unit 29 -->
   <div id="unit29">
-    <%TMPL_IF    NAME=show_var1%>
-      <%TMPL_VAR NAME=var1%>
-    <%/TMPL_IF%>
-    <%TMPL_IF     NAME=show_var2%>
-      <%TMPL_VAR NAME=var2%>
-    <%/TMPL_IF%>
+    {%TMPL_IF    NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+    {%/TMPL_IF%}
+    {%TMPL_IF     NAME=show_var2%}
+      {%TMPL_VAR NAME=var2%}
+    {%/TMPL_IF%}
   </div>
   <div id="unit29_res">
     
@@ -1010,12 +1017,12 @@
 
   <!-- unit 30 -->
   <div id="unit30">
-    <%TMPL_UNLESS    NAME=show_var1%>
-      <%TMPL_VAR NAME=var1%>
-    <%/TMPL_UNLESS%>
-    <%TMPL_UNLESS     NAME=show_var2%>
-      <%TMPL_VAR NAME=var2%>
-    <%/TMPL_UNLESS%>
+    {%TMPL_UNLESS    NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+    {%/TMPL_UNLESS%}
+    {%TMPL_UNLESS     NAME=show_var2%}
+      {%TMPL_VAR NAME=var2%}
+    {%/TMPL_UNLESS%}
   </div>
   <div id="unit30_res">
     
@@ -1026,9 +1033,9 @@
 
   <!-- unit 31 -->
   <div id="unit31">
-    <%TMPL_VAR  NAME="var1"%>
-    <%TMPL_VAR  DEFAULT="ee  "    NAME="var2"%>
-    <%TMPL_VAR    DEFAULT="ee j"       NAME=var3%>
+    {%TMPL_VAR  NAME="var1"%}
+    {%TMPL_VAR  DEFAULT="ee  "    NAME="var2"%}
+    {%TMPL_VAR    DEFAULT="ee j"       NAME=var3%}
   </div>
   <div id="unit31_res">
     tt

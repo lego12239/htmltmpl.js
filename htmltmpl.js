@@ -44,7 +44,7 @@
 	0 by default.
   err_on_no_data
         If we found a template tag and have no such property in a supplied
-	data, return undefined and set this.err_msg to error message.
+	data, throw an error.
 	0 by default.
   wrap_in
         Wrap a template into a specified html element.
@@ -56,160 +56,45 @@
 */
 function htmltmpl(tmpl, prms)
 {
-    this.p = {};
-    this.err_msg = "";
-    this.data = [];
-    this.match = {};
-    this.tmpl = { data: [],
-		  data_cur: undefined,
-		  str: undefined,
-		  pos: { cur: 0,
-			 start: 0 } };
-    this.priv = [];
-    // Initial phrases
-    this.phrases = [[ { phrase: "<%TMPL_VAR ",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_var_1_2 },
-		      { phrase: "&lt;%TMPL_VAR ",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_var_1_2 },
-		      { phrase: "&LT;%TMPL_VAR ",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_var_1_2 },
-		      { phrase: "<!--%TMPL_VAR ",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_var_1_2 },
-		      { phrase: "<%TMPL_LOOP ",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_loop_1_2 },
-		      { phrase: "&lt;%TMPL_LOOP ",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_loop_1_2 },
-		      { phrase: "&LT;%TMPL_LOOP ",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_loop_1_2 },
-		      { phrase: "<!--%TMPL_LOOP ",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_loop_1_2 },
-		      { phrase: "<%/TMPL_LOOP%>",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_loop_1_2_end },
-		      { phrase: "&lt;%/TMPL_LOOP%&gt;",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_loop_1_2_end },
-		      { phrase: "&LT;%/TMPL_LOOP%&GT;",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_loop_1_2_end },
-		      { phrase: "<!--%/TMPL_LOOP%-->",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_loop_1_2_end },
-		      { phrase: "<%TMPL_IF ",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_if_1_2 },
-		      { phrase: "&lt;%TMPL_IF ",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_if_1_2 },
-		      { phrase: "&LT;%TMPL_IF ",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_if_1_2 },
-		      { phrase: "<!--%TMPL_IF ",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_if_1_2 },
-		      { phrase: "<%/TMPL_IF%>",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_if_1_2_end },
-		      { phrase: "&lt;%/TMPL_IF%&gt;",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_if_1_2_end },
-		      { phrase: "&LT;%/TMPL_IF%&GT;",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_if_1_2_end },
-		      { phrase: "<!--%/TMPL_IF%-->",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_if_1_2_end },
-		      { phrase: "<%TMPL_UNLESS ",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_unless_1_2 },
-		      { phrase: "&lt;%TMPL_UNLESS ",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_unless_1_2 },
-		      { phrase: "&LT;%TMPL_UNLESS ",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_unless_1_2 },
-		      { phrase: "<!--%TMPL_UNLESS ",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_unless_1_2 },
-		      { phrase: "<%/TMPL_UNLESS%>",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_if_1_2_end },
-		      { phrase: "&lt;%/TMPL_UNLESS%&gt;",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_if_1_2_end },
-		      { phrase: "&LT;%/TMPL_UNLESS%&GT;",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_if_1_2_end },
-		      { phrase: "<!--%/TMPL_UNLESS%-->",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_if_1_2_end },
-		      { phrase: "<%TMPL_ELSE%>",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_if_1_2_else },
-		      { phrase: "&lt;%TMPL_ELSE%&gt;",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_if_1_2_else },
-		      { phrase: "&LT;%TMPL_ELSE%&GT;",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_if_1_2_else },
-		      { phrase: "<!--%TMPL_ELSE%-->",
-			is_match: 1,
-			oref: this,
-			hdlr_1_2: this.hdlr_tmpl_if_1_2_else } ]];
-    if ( typeof(tmpl) === "undefined" ) {
-	this.tmpl.str = "";
-    } else if ( typeof(tmpl) === "string" ) {
-	this.tmpl.str = tmpl;
-    } else if ( typeof(tmpl) === "object" ) {
-	this.tmpl.str = tmpl.innerHTML;
-    }
-    this.tmpl.data_cur = [ this.tmpl.data ];
+    this.tmpl = "";
+    this.tmpl_parsed = [];
+    this._s = { parse: [[]],
+		priv: [],
+		data: [] };
+    this.rex = { tag: /^(\S+)(\s+.+)?$/,
+		 tag_attrs: /\s+([^\s=]+)\s*=\s*("[^"]+"|'[^']+'|\S+)/g };
+    this.tags = {};
+    this.tags["TMPL_VAR"] = { pfunc: this.hdlr_var_parse,
+			      afunc: this.hdlr_var_apply,
+			      name: "TMPL_VAR" };
+    this.tags["TMPL_LOOP"] = { pfunc: this.hdlr_loop_parse,
+			       afunc: this.hdlr_loop_apply,
+			       name: "TMPL_LOOP" };
+    this.tags["/TMPL_LOOP"] = { pfunc: this.hdlr_loop_end_parse,
+				start_tag: [this.tags["TMPL_LOOP"]],
+				name: "/TMPL_LOOP" };
+    this.tags["TMPL_IF"] = { pfunc: this.hdlr_if_parse,
+			     afunc: this.hdlr_if_apply,
+			     name: "TMPL_IF" };
+    this.tags["TMPL_UNLESS"] = { pfunc: this.hdlr_if_parse,
+				 afunc: this.hdlr_unless_apply,
+				 name: "TMPL_UNLESS" };
+    this.tags["TMPL_ELSE"] = { pfunc: this.hdlr_else_parse,
+			       start_tag: [this.tags["TMPL_IF"], this.tags["TMPL_UNLESS"]],
+			       name: "TMPL_ELSE" };
+    this.tags["/TMPL_IF"] = { pfunc: this.hdlr_if_end_parse,
+			      start_tag: [this.tags["TMPL_IF"], this.tags["TMPL_ELSE"]],
+			      name: "/TMPL_IF" };
+    this.tags["/TMPL_UNLESS"] = { pfunc: this.hdlr_if_end_parse,
+				  start_tag: [this.tags["TMPL_UNLESS"], this.tags["TMPL_ELSE"]],
+				  name: "/TMPL_UNLESS" };
 
-    this.p.ph_case_sensitive = 1;
-    this.p.global_vars = 0;
-    this.p.loop_context_vars = 0;
-    this.p.tmpl_is_commented = 0;
-    this.p.err_on_no_data = 0;
-    this.p.ret_dom = 0;
+    this.p = { ph_case_sensitive: 1,
+	       global_vars: 0,
+	       loop_context_vars: 0,
+	       tmpl_is_commented: 0,
+	       err_on_no_data: 0,
+	       ret_dom: 0 };
     if ( prms != undefined ) {
 	if ( prms.ph_case_sensitive != undefined )
 	    this.p.ph_case_sensitive = prms.ph_case_sensitive;
@@ -219,298 +104,346 @@ function htmltmpl(tmpl, prms)
 	    this.p.loop_context_vars = prms.loop_context_vars;
 	if ( prms.tmpl_is_commented != undefined ) {
 	    this.p.tmpl_is_commented = prms.tmpl_is_commented;
-	    // MUST think about a better place for this code
-	    this.phrases.unshift([ { phrase: "<!--",
-				     is_match: 1,
-				     oref: this,
-				     hdlr_1_2: this.hdlr_enclosing_comment_start } ]);
 	}
 	if ( prms.err_on_no_data != undefined )
 	    this.p.err_on_no_data = prms.err_on_no_data;
 	if ( prms.wrap_in != undefined )
-	    this.tmpl.str = "<" + prms.wrap_in + ">" + this.tmpl.str +
+	    this.tmpl = "<" + prms.wrap_in + ">" + this.tmpl +
 	    "</" + prms.wrap_in + ">";
 	if ( prms.ret_dom != undefined )
 	    this.p.ret_dom = prms.ret_dom;
     }
-    // Set default handlers. It is an optional step. If a handler is ommited,
-    // then a default handler is used instead.
-    this.hdlrs = [{ hdlr_0_1: this.def_hdlr_0_1,
-		    hdlr_1_0: this.def_hdlr_1_0,
-		    hdlr_1_2: this.def_hdlr_1_2 }];
 
-    this._match_reset();
+    if ( typeof(tmpl) === "undefined" ) {
+	this.tmpl = "";
+    } else if ( typeof(tmpl) === "string" ) {
+	if ( this.p.tmpl_is_commented )
+	    this.tmpl = tmpl.replace(/^\s*<!--([^]+)-->\s*$/, "$1");
+	else
+	    this.tmpl = tmpl;
+    } else if ( typeof(tmpl) === "object" ) {
+	if ( this.p.tmpl_is_commented )
+	    this.tmpl = tmpl.innerHTML.replace(/^\s*<!--([^]+)-->\s*$/, "$1");
+	else
+	    this.tmpl = tmpl.innerHTML;
+    }
 
     this.tmpl_prepare();
 }
 
-htmltmpl.prototype._match_reset = function ()
+htmltmpl.prototype.tmpl_prepare = function()
 {
+    var chunks;
     var i;
-
-
-    // Is this line needed (from the perspective of set_state())?
-    this.match.state = 0;  /* 0 - no phrases are match
-			      1 - some phrases start to match
-			      2 - find the exact match of one phrase
-			   */
-    this.match.ph_chr_idx = 0;
-    this.match.phrase_idx = -1;
-    this.match.str = new String();
-    this.match.phrases_cnt = this.phrases[0].length;
-    for(i = 0; i < this.phrases[0].length; i++)
-	this.phrases[0][i].is_match = 1;
-}
-
-htmltmpl.prototype.set_state = function (newstate)
-{
-    var oldstate = this.match.state;
-
-
-    this.match.state = newstate;
-    switch (oldstate) {
-    case 0:
-	switch (this.match.state) {
-	case 0:
-	    if ( typeof(this.hdlrs[0].hdlr_0_0) === "function" )
-		this.hdlrs[0].hdlr_0_0.call(this);
-	    else
-		this.def_hdlr_0_0();
-	    break;
-	case 1:
-	    if ( typeof(this.hdlrs[0].hdlr_0_1) === "function" )
-		this.hdlrs[0].hdlr_0_1.call(this);
-	    else
-		this.def_hdlr_0_1();
-	    break;
-	case 2:
-	    if ( typeof(this.hdlrs[0].hdlr_0_2) === "function" )
-		this.hdlrs[0].hdlr_0_2.call(this);
-	    else
-		this.def_hdlr_0_2();
-	    return;
-	}
-	break;
-    case 1:
-	switch (this.match.state) {
-	case 0:
-	    if ( typeof(this.hdlrs[0].hdlr_1_0) === "function" )
-		this.hdlrs[0].hdlr_1_0.call(this);
-	    else
-		this.def_hdlr_1_0();
-	    break;
-	case 2:
-	    if ( typeof(this.hdlrs[0].hdlr_1_2) === "function" )
-		this.hdlrs[0].hdlr_1_2.call(this);
-	    else
-		this.def_hdlr_1_2();
-	    break;
-	}
-	break;
-    case 2:
-    }
-}
-
-htmltmpl.prototype.phrases_match = function (char)
-{
-    var i;
-    var chr;
+    var rex;
+    var m;
 
 
     if ( this.p.ph_case_sensitive )
-	chr = char;
+	rex = /^(\/?TMPL_.+?)%}([^]*)$/;
     else
-	chr = char.toUpperCase();
+	rex = /^(\/?TMPL_.+?)%}([^]*)$/i;
 
-    // Match against all phrases
-    for(i = 0; i < this.phrases[0].length; i++) {
-	if ( ! this.phrases[0][i].is_match )
-	    continue;
-	if ( this.phrases[0][i].phrase.charAt(this.match.ph_chr_idx) != chr ) {
-	    this.phrases[0][i].is_match = 0;
-	    this.match.phrases_cnt--;
-	} else {
-	    if ( this.phrases[0][i].phrase.length == (this.match.ph_chr_idx + 1) ) {
-		this.match.phrase_idx = i;
-		this.match.str += char;
-		return 2;
-	    }
-	}
+    chunks = this.tmpl.split(/{%/);
+
+    for(i = 0; i < chunks.length; i++) {
+	m = rex.exec(chunks[i]);
+	if ( m ) {
+	    this.parse_tag(m[1]);
+	    if ( m[2] != "" )
+		this._s.parse[0].push(["TEXT", m[2] ]);
+	} else
+	    this._s.parse[0].push(["TEXT", chunks[i] ]);
     }
-    if ( this.match.phrases_cnt ) {
-	this.match.ph_chr_idx++;
-	this.match.str += char;
-	return 1;
-    } else {
-	return 0;
-    }
+
+    this.tmpl_parsed = this._s.parse[0];
 }
 
-htmltmpl.prototype.tmpl_prepare = function()
+htmltmpl.prototype.parse_tag = function (tag)
 {
-    var str;
-    var out_el;
+    var m;
+    var tag_name, tag_attrs;
 
 
-    this.out_str = new String();
+    // Split a tag to a name and a body
+    m = this.rex.tag.exec(tag);
+    if ( ! m )
+	throw("parse_tag err: wrong tag format: " + tag);
 
-    for (;
-	 this.tmpl.pos.cur < this.tmpl.str.length;
-	 this.tmpl.pos.cur++ ) {
-	switch (this.match.state) {
-	case 0:
-	    res = this.phrases_match(this.tmpl.str.charAt(this.tmpl.pos.cur));
-	    this.set_state(res);
-	    break;
-	case 1:
-	    res = this.phrases_match(this.tmpl.str.charAt(this.tmpl.pos.cur));
-	    this.set_state(res);
-	    break;
-	case 2:
-	    break;
-	case -1:
-	    return;
-	}
-    }
+    if ( ! this.p.ph_case_sensitive )
+	tag_name = m[1].toUpperCase();
+    else
+	tag_name = m[1];
+    tag_attrs = m[2];
 
-    // Append last characters if we still in state 0
-    this.out_str += this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur);
-    this.tmpl.data_cur[0].push({ type: "text",
-				 data: this.out_str });
+    // Call a tag handler
+    if ( this.tags[tag_name] != undefined )
+	return this.tags[tag_name].pfunc.call(this,
+					      this.tags[tag_name], tag_attrs);
+
+    throw("parse_tag err: unknown tag: " + tag_name);
 }
 
-htmltmpl.prototype._find_data_by_name = function(name, data)
+htmltmpl.prototype._parse_tag_attrs = function(attrs)
+{
+    var m;
+    var name, val;
+    var res = {};
+
+
+    while ( m = this.rex.tag_attrs.exec(attrs) ) {
+	name = m[1];
+	if ( ! this.p.ph_case_sensitive )
+	    name = name.toUpperCase();
+
+	val = m[2];
+	if (( val.charAt(0) == "'" ) || ( val.charAt(0) == '"' ))
+	    val = val.substr(1, val.length - 2);
+	res[name] = val;
+    }
+
+    return res;
+}
+
+htmltmpl.prototype._get_data = function(name)
 {
     var len;
     var j;
 
 
-    if (( data == undefined ) ||
-	( typeof(data) !== "object" ) ||
-	( ! (data instanceof Array) ))
-	return;
-
     if ( this.p.global_vars )
-	len = data.length;
+	len = this._s.data.length;
     else
 	len = 1;
 
     for(j = 0; j < len; j++) {
-	if ( data[j][name] != undefined )
-	    return data[j][name];
+	if ( this._s.data[j][name] != undefined )
+	    return this._s.data[j][name];
     }
 
     return;
 }
 
-htmltmpl.prototype.set_loop_context_vars = function (data, loopidx, looplen)
+htmltmpl.prototype.is_tag_match = function(tag, tags)
+{
+    var i;
+
+
+    for(i = 0; i < tags.length; i++) {
+	if ( tag.name == tags[i].name )
+	    return true;
+    }
+
+    return false;
+}
+
+/**********************************************************************
+ * TMPL_VAR HANDLERS
+ **********************************************************************/
+htmltmpl.prototype.hdlr_var_parse = function(def, tag_attrs)
+{
+    var attrs;
+
+    attrs = this._parse_tag_attrs(tag_attrs);
+    this._s.parse[0].push([def.name, [ attrs ]]);
+}
+
+htmltmpl.prototype.hdlr_var_apply = function(def, tag)
+{
+    var attrs;
+    var val;
+
+
+    val = this._get_data(tag[0]["NAME"]);
+
+    if ( val != undefined )
+	this.out_str += val;
+    else if ( tag[0]["DEFAULT"] != undefined )
+	this.out_str += tag[0]["DEFAULT"];
+    else if ( this.p.err_on_no_data )
+	throw("Cann't find var '" + tag[0]["NAME"] + "'.");
+}
+
+/**********************************************************************
+ * TMPL_LOOP HANDLERS
+ **********************************************************************/
+htmltmpl.prototype.hdlr_loop_parse = function(def, tag_attrs)
+{
+    var attrs;
+
+
+    attrs = this._parse_tag_attrs(tag_attrs);
+    this._s.parse.unshift([]);
+    this._s.priv.unshift([def, attrs ]);
+}
+
+htmltmpl.prototype.hdlr_loop_end_parse = function(def)
+{
+    var priv;
+    var loop;
+
+
+    priv = this._s.priv[0];
+    if ( ! this.is_tag_match(priv[0], def.start_tag) )
+	throw("parse err: " + priv[0].name + " was opened, but " +
+	      def.name + " is being closed");
+
+    loop = this._s.parse.shift();
+    this._s.parse[0].push([priv[0].name, [ priv[1], loop ]]);
+    this._s.priv.shift();
+}
+
+htmltmpl.prototype.hdlr_loop_apply = function(def, tag)
+{
+    var attrs;
+    var val;
+    var i;
+
+
+    val = this._get_data(tag[0]["NAME"]);
+
+    if (( val != undefined ) && ( Array.isArray(val) ))
+	for(i = 0; i < val.length; i++) {
+	    this._s.data.unshift(val[i]);
+	    if ( this.p.loop_context_vars )
+		this.set_loop_context_vars(i, val.length);
+	    this._apply(tag[1]);
+	    this._s.data.shift();
+	}
+    else if ( this.p.err_on_no_data )
+	throw("Cann't find loop '" + tag[0]["NAME"] + "'.");
+}
+
+htmltmpl.prototype.set_loop_context_vars = function (loopidx, looplen)
 {
     // Reset the vars
-    data[0].__first__ = 0;
-    data[0].__last__ = 0;
-    data[0].__inner__ = 0;
-    data[0].__outer__ = 0;
+    this._s.data[0].__first__ = 0;
+    this._s.data[0].__last__ = 0;
+    this._s.data[0].__inner__ = 0;
+    this._s.data[0].__outer__ = 0;
 
     // Set the vars
     if ( loopidx == 0 ) {
-	data[0].__first__ = 1;
-	data[0].__outer__ = 1;
+	this._s.data[0].__first__ = 1;
+	this._s.data[0].__outer__ = 1;
     }
     if ( loopidx == (looplen - 1) ) {
-	data[0].__last__ = 1;
-	data[0].__outer__ = 1;
+	this._s.data[0].__last__ = 1;
+	this._s.data[0].__outer__ = 1;
     }
 
-    if ( ! data[0].__outer__ )
-	data[0].__inner__ = 1;
+    if ( ! this._s.data[0].__outer__ )
+	this._s.data[0].__inner__ = 1;
 
     if ( (loopidx + 1) % 2 == 0 ) {
-	data[0].__odd__ = 0;
-	data[0].__even__ = 1;
+	this._s.data[0].__odd__ = 0;
+	this._s.data[0].__even__ = 1;
     } else {
-	data[0].__odd__ = 1;
-	data[0].__even__ = 0;
+	this._s.data[0].__odd__ = 1;
+	this._s.data[0].__even__ = 0;
     }
 
-    data[0].__index__ = loopidx;
-    data[0].__counter__ = loopidx + 1;
+    this._s.data[0].__index__ = loopidx;
+    this._s.data[0].__counter__ = loopidx + 1;
 }
 
-htmltmpl.prototype._apply = function(tmpl, data)
+/**********************************************************************
+ * TMPL_IF HANDLERS
+ **********************************************************************/
+htmltmpl.prototype.hdlr_if_parse = function(def, tag_attrs)
+{
+    var attrs;
+
+
+    attrs = this._parse_tag_attrs(tag_attrs);
+    this._s.parse.unshift([]);
+    this._s.priv.unshift([def, attrs ]);
+}
+
+htmltmpl.prototype.hdlr_else_parse = function(def)
+{
+    var priv;
+
+
+    priv = this._s.priv[0];
+    if ( ! this.is_tag_match(priv[0], def.start_tag) )
+	throw("parse err: " + priv[0].name + " was opened, but " +
+	      def.name + " is being closed");
+    this._s.parse.unshift([]);
+    this._s.priv.unshift([def]);
+}
+
+htmltmpl.prototype.hdlr_if_end_parse = function(def)
+{
+    var priv;
+    var if_, else_;
+
+
+    priv = this._s.priv.shift();
+    if ( ! this.is_tag_match(priv[0], def.start_tag) )
+	throw("parse err: " + priv[0].name + " was opened, but " +
+	      def.name + " is being closed");
+    if ( priv[0].name == "TMPL_ELSE" ) {
+	else_ = this._s.parse.shift();
+	priv = this._s.priv.shift();
+    }
+
+    if_ = this._s.parse.shift();
+    this._s.parse[0].push([priv[0].name, [ priv[1], if_, else_ ]]);
+}
+
+htmltmpl.prototype.hdlr_if_apply = function(def, tag)
+{
+    var attrs;
+    var val;
+    var i;
+
+
+    val = this._get_data(tag[0]["NAME"]);
+
+    if ( val )
+	this._apply(tag[1]);
+    else if ( tag[2] != undefined )
+	this._apply(tag[2]);
+    else if ( this.p.err_on_no_data )
+	throw("Cann't find var '" + tag[0]["NAME"] + "'.");
+}
+
+/**********************************************************************
+ * TMPL_UNLESS HANDLERS
+ **********************************************************************/
+htmltmpl.prototype.hdlr_unless_apply = function(def, tag)
+{
+    var attrs;
+    var val;
+    var i;
+
+
+    val = this._get_data(tag[0]["NAME"]);
+
+    if ( ! val )
+	this._apply(tag[1]);
+    else if ( tag[2] != undefined )
+	this._apply(tag[2]);
+    else if ( this.p.err_on_no_data )
+	throw("Cann't find var '" + tag[0]["NAME"] + "'.");
+}
+
+htmltmpl.prototype._apply = function(tmpl)
 {
     var i, j;
     var found_d;
 
 
     for(i = 0; i < tmpl.length; i++) {
-	switch (tmpl[i].type) {
-	case "text":
-	    this.out_str += tmpl[i].data;
-	    break;
-	case "var":
-	    found_d = this._find_data_by_name(tmpl[i].name, data);
-
-	    if ( found_d != undefined )
-		this.out_str += found_d;
-	    else if ( tmpl[i].default != undefined )
-		this.out_str += tmpl[i].default;
-	    else if ( this.p.err_on_no_data ) {
-		this.err_msg = "Cann't find var '" + tmpl[i].name + "'.";
-		return 0;
-	    }
-	    break;
-	case "loop":
-	    found_d = this._find_data_by_name(tmpl[i].name, data);
-
-	    if (( found_d != undefined ) &&
-		( typeof(found_d) === "object" ) &&
-		( found_d instanceof Array )) {
-		for(j = 0; j < found_d.length; j++) {
-		    data.unshift(found_d[j]);
-		    if ( this.p.loop_context_vars )
-			this.set_loop_context_vars(data, j, found_d.length);
-		    if ( ! this._apply(tmpl[i].data, data) )
-			return 0;
-		    data.shift();
-		}
-	    } else if ( this.p.err_on_no_data ) {
-		this.err_msg = "Cann't find loop '" + tmpl[i].name + "'.";
-		return 0;
-	    }		
-	    break;
-	case "if":
-	    found_d = this._find_data_by_name(tmpl[i].name, data);
-
-	    if (( found_d == undefined ) && ( this.p.err_on_no_data )) {
-		this.err_msg = "Cann't find bool var '" + tmpl[i].name + "'.";
-		return 0;
-	    }
-
-	    if ( found_d ) {
-		if ( ! this._apply(tmpl[i].data, data) )
-		    return 0;
-	    } else {
-		if ( ! this._apply(tmpl[i].else_data, data) )
-		    return 0;
-	    }
-	    break;
-	case "unless":
-	    found_d = this._find_data_by_name(tmpl[i].name, data);
-
-	    if (( found_d == undefined ) && ( this.p.err_on_no_data )) {
-		this.err_msg = "Cann't find bool var '" + tmpl[i].name + "'.";
-		return 0;
-	    }
-
-	    if ( ! found_d ) {
-		if ( ! this._apply(tmpl[i].data, data) )
-		    return 0;
-	    } else {
-		if ( ! this._apply(tmpl[i].else_data, data) )
-		    return 0;
-	    }
-	    break;
-	}
+	if ( tmpl[i][0] == "TEXT" )
+	    this.out_str += tmpl[i][1];
+	else if ( this.tags[tmpl[i][0]] != undefined )
+	    this.tags[tmpl[i][0]].afunc.call(this,
+					     this.tags[tmpl[i][0]],
+					     tmpl[i][1]);
+	else
+	    throw("_apply err: unknown tag: " + tmpl[i][0]);
     }
 
     return 1;
@@ -524,9 +457,9 @@ htmltmpl.prototype.apply = function(data)
 
 
     this.out_str = new String();
+    this._s.data.unshift(data);
 
-    if ( ! this._apply(this.tmpl.data, [ data ]) )
-	return;
+    this._apply(this.tmpl_parsed);
 
     if ( this.p.ret_dom ) {
 	out_el = $.parseHTML(this.out_str);
@@ -537,408 +470,6 @@ htmltmpl.prototype.apply = function(data)
 	    return out_el;
     } else
 	return this.out_str;
-}
-
-/**********************************************************************
- * DEFAULT HANDLERS
- **********************************************************************/
-htmltmpl.prototype.def_hdlr_0_0 = function ()
-{
-//    console.log("0_0: ");
-    this._match_reset();
-}
-
-htmltmpl.prototype.def_hdlr_0_1 = function ()
-{
-//    console.log("0_1: " + this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur));
-    this.out_str += this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur);
-}
-
-htmltmpl.prototype.def_hdlr_1_0 = function ()
-{
-//    console.log("1_0: " + this.match.str);
-
-    this.tmpl.pos.start = this.tmpl.pos.cur;
-
-    this.out_str += this.match.str;
-    this._match_reset();
-}
-
-htmltmpl.prototype.def_hdlr_1_2 = function ()
-{
-    if ( this.out_str != "" ) {
-	this.tmpl.data_cur[0].push({ type: "text",
-				     data: this.out_str });
-	this.out_str = new String();
-    }
-
-//    console.log("1_2: " + JSON.stringify(this.tmpl.data));
-
-    if ( typeof(this.phrases[0][this.match.phrase_idx].hdlr_1_2) === "function" )
-	this.phrases[0][this.match.phrase_idx].hdlr_1_2.call(this);
-}
-
-htmltmpl.prototype.def_hdlr_0_2 = function ()
-{
-    if ( this.out_str != "" ) {
-	this.tmpl.data_cur[0].push({ type: "text",
-				     data: this.out_str });
-	this.out_str = new String();
-    }
-
-//    console.log("0_2: " + JSON.stringify(this.tmpl.data));
-
-    if ( typeof(this.phrases[0][this.match.phrase_idx].hdlr_0_2) === "function" )
-	this.phrases[0][this.match.phrase_idx].hdlr_0_2.call(this);
-}
-
-
-/**********************************************************************
- * ENCLOSING COMMENT HANDLERS
- **********************************************************************/
-htmltmpl.prototype.hdlr_enclosing_comment_start = function ()
-{
-//    alert("enclosing_comment_start");
-    this.phrases.shift();
-    this.phrases[0].unshift({ phrase: "-->",
-			      is_match: 1,
-			      oref: this,
-			      hdlr_1_2: this.hdlr_enclosing_comment_end });
-    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
-
-    this._match_reset();
-}
-
-htmltmpl.prototype.hdlr_enclosing_comment_end = function ()
-{
-//    alert("enclosing_comment_end");
-
-    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
-
-    this._match_reset();
-}
-
-
-/**********************************************************************
- * TAG HANDLERS
- **********************************************************************/
-/*
- * tag - a tag name
- * attrs - an array with searched attribute names
- * cb - a callback function to call on the end of a tag processing
- */
-htmltmpl.prototype.hdlr_tag = function (tag, attrs, cb)
-{
-    var phrases = [];
-    var i;
-
-
-//    alert("hdlr_tag");
-    for(i = 0; i < attrs.length; i++) {
-	phrases.push({ phrase: attrs[i] + "=",
-		       is_match: 1,
-		       oref: this,
-		       hdlr_1_2: this._hdlr_tag });
-    }
-    this.priv.unshift({ attrs: {},
-			ph_attrs: phrases,
-			ph_tag_stops: [ { phrase: "%>",
-					  is_match: 1,
-					  oref: this,
-					  hdlr_1_2: this._hdlr_tag_end },
-					{ phrase: "%&gt;",
-					  is_match: 1,
-					  oref: this,
-					  hdlr_1_2: this._hdlr_tag_end },
-					{ phrase: "%&GT;",
-					  is_match: 1,
-					  oref: this,
-					  hdlr_1_2: this._hdlr_tag_end },
-					{ phrase: "%-->",
-					  is_match: 1,
-					  oref: this,
-					  hdlr_1_2: this._hdlr_tag_end } ],
-			cb: cb,
-			attr_name: "",
-			is_quoted: 0,
-			tag: tag,
-			tokens: new String() });
-
-    this.phrases.unshift(phrases);
-
-    this.hdlrs.unshift({ hdlr_0_0: this._hdlr_tag_0_0,
-			 hdlr_0_1: this._hdlr_tag_0_1,
-			 hdlr_1_0: this._hdlr_tag_1_0 });
-
-    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
-
-    this._match_reset();
-}
-
-htmltmpl.prototype._hdlr_tag = function ()
-{
-    var ph_sp_q = [ { phrase: " ",
-		      is_match: 1,
-		      oref: this,
-		      hdlr_0_2: function () {
-			  this._hdlr_tag_0_2(this._hdlr_tag);
-		      } },
-		    { phrase: "\"",
-		      is_match: 1,
-		      oref: this,
-		      hdlr_0_2: this._hdlr_tag_quote },
-		    { phrase: "'",
-		      is_match: 1,
-		      oref: this,
-		      hdlr_0_2: this._hdlr_tag_quote } ];
-
-
-//    alert("_hdlr_tag");
-
-    this.hdlrs.shift();
-    this.phrases.shift();
-
-    if ( this.priv[0].is_quoted ) {
-	this.phrases.unshift(this.priv[0].ph_attrs.concat(this.priv[0].ph_tag_stops));
-
-	this.hdlrs.unshift({ hdlr_0_0: this._hdlr_tag_0_0,
-			     hdlr_0_1: this._hdlr_tag_0_1,
-			     hdlr_1_0: this._hdlr_tag_1_0 });
-	this.priv[0].is_quoted = 0;
-    } else if ( this.priv[0].attr_name != "" ) {
-	this.phrases.unshift(this.priv[0].ph_attrs);
-
-	this.hdlrs.unshift({ hdlr_0_0: this._hdlr_tag_0_0,
-			     hdlr_0_1: this._hdlr_tag_0_1,
-			     hdlr_1_0: this._hdlr_tag_1_0 });
-    } else {
-	this.phrases.unshift(this.priv[0].ph_tag_stops.concat(ph_sp_q));
-
-	this.hdlrs.unshift({ hdlr_0_1: this._hdlr_tag_0_1,
-			     hdlr_1_0: this._hdlr_tag_1_0 });
-    }
-
-
-    if ( this.priv[0].attr_name == "" ) {
-	this.priv[0].attr_name = this.tmpl.str.substring(this.tmpl.pos.start,
-							 this.tmpl.pos.cur).toLowerCase();
-	// For a work little speedup
-	this.priv[0].ph_attrs.splice(this.match.phrase_idx, 1);
-    } else {
-	// Save last tokens
-	this.priv[0].attrs[this.priv[0].attr_name] = this.priv[0].tokens;
-	this.priv[0].attr_name = "";
-    }
-
-    this.priv[0].tokens = new String();
-    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
-
-    this._match_reset();
-}
-
-htmltmpl.prototype._hdlr_tag_0_0 = function ()
-{
-//    console.log("tag_0_0: ");
-
-    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
-
-    this._match_reset();
-}
-
-htmltmpl.prototype._hdlr_tag_0_1 = function ()
-{
-    this.priv[0].tokens += this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur);
-//    console.log("tag_0_1: " + this.priv[0].tokens);
-}
-
-htmltmpl.prototype._hdlr_tag_0_2 = function (func)
-{
-    this.priv[0].tokens += this.tmpl.str.substring(this.tmpl.pos.start, this.tmpl.pos.cur);
-
-//    console.log("tag_0_2: " + this.priv[0].tokens);
-
-    func.call(this);
-}
-
-htmltmpl.prototype._hdlr_tag_1_0 = function ()
-{
-    this.tmpl.pos.start = this.tmpl.pos.cur;
-    this.priv[0].tokens += this.match.str;
-//    alert("tag_1_0: " + this.priv[0].tokens);
-}
-
-htmltmpl.prototype._hdlr_tag_quote = function ()
-{
-    var ph;
-
-
-//    console.log("_hdlr_tag_quote");
-
-    // If a quote is the first character, then wait the closing quote
-    if ( this.match.ph_chr_idx == 0 ) {
-	this.priv[0].is_quoted = 1;
-
-	ph = this.phrases[0][this.match.phrase_idx].phrase;
-	this.phrases.shift();
-	this.phrases.unshift([ { phrase: ph,
-				 is_match: 1,
-				 oref: this,
-				 hdlr_0_2: function () {
-				     this._hdlr_tag_0_2(this._hdlr_tag);
-				 } } ]);
-
-	this.tmpl.pos.start = this.tmpl.pos.cur + 1;
-	this._match_reset();
-    } else {
-	this.phrases[0].splice(this.match.phrase_idx, 1);
-    }
-}
-
-htmltmpl.prototype._hdlr_tag_end = function ()
-{
-//    console.log("_hdlr_tag_end: ");
-
-    // Save last tokens
-    this.priv[0].attrs[this.priv[0].attr_name] = this.priv[0].tokens;
-
-    this.priv[0].cb.call(this);
-
-    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
-
-    this.priv.shift();
-    this.phrases.shift();
-    this.hdlrs.shift();
-
-    this._match_reset();
-}
-
-
-/**********************************************************************
- * TMPL_VAR HANDLERS
- **********************************************************************/
-htmltmpl.prototype.hdlr_tmpl_var_1_2 = function ()
-{
-//    alert("tmp_var_1_2");
-    this.hdlr_tag("var", ["NAME", "DEFAULT"], this.hdlr_tmpl_var_1_2_tail);
-}
-
-htmltmpl.prototype.hdlr_tmpl_var_1_2_tail = function ()
-{
-//    alert("tmpl_var_1_2_tail: " + this.priv[0].tokens);
-    var i;
-    var len;
-    var name_is_found = 0;
-
-
-    this.tmpl.data_cur[0].push({ type: "var",
-				 name: this.priv[0].attrs.name,
-			         default: this.priv[0].attrs.default });
-}
-
-/**********************************************************************
- * TMPL_LOOP HANDLERS
- **********************************************************************/
-htmltmpl.prototype.hdlr_tmpl_loop_1_2 = function ()
-{
-//    console.log("tmp_loop_1_2");
-    this.hdlr_tag("loop", ["NAME"], this.hdlr_tmpl_loop_1_2_tail);
-}
-
-htmltmpl.prototype.hdlr_tmpl_loop_1_2_tail = function ()
-{
-    var loop;
-
-
-//    console.log("tmpl_loop_1_2_tail: " + this.priv[0].tokens);
-
-    loop = { type: "loop",
-	     name: this.priv[0].attrs.name,
-	     data: [] };
-
-    this.tmpl.data_cur[0].push(loop);
-    this.tmpl.data_cur.unshift(loop.data);
-
-    // because of _hdlr_tag_end() do this.priv.shift()
-    this.priv.unshift(this.priv[0]);
-}
-
-htmltmpl.prototype.hdlr_tmpl_loop_1_2_end = function ()
-{
-    var pcur, pstart;
-
-
-//    alert("tmpl_loop_1_2_end: " + this.priv[0].loopidx + "(" + this.priv[0].loop.length + ")");
-
-    this.tmpl.data_cur.shift();
-    this.priv.shift();
-
-    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
-    this._match_reset();
-}
-
-/**********************************************************************
- * TMPL_IF AND TMPL_UNLESS HANDLERS
- **********************************************************************/
-htmltmpl.prototype.hdlr_tmpl_if_1_2 = function ()
-{
-//    console.log("tmp_if_1_2");
-    this.hdlr_tag("if", ["NAME"], this.hdlr_tmpl_if_1_2_tail);
-}
-
-htmltmpl.prototype.hdlr_tmpl_unless_1_2 = function ()
-{
-//    console.log("tmp_unless_1_2");
-    this.hdlr_tag("unless", ["NAME"], this.hdlr_tmpl_if_1_2_tail);
-}
-
-htmltmpl.prototype.hdlr_tmpl_if_1_2_tail = function ()
-{
-    var if_;
-    var varname;
-    var i;
-    var len;
-    var phrase;
-    var name_is_found = 0;
-
-
-//    console.log("tmpl_if_1_2_tail(" + this.priv[0].tag + "): " + this.priv[0].attrs.name);
-
-    if_ = { type: this.priv[0].tag,
-	    name: this.priv[0].attrs.name,
-	    data: [],
-	    else_data: [] };
-
-    this.tmpl.data_cur[0].push(if_);
-    this.tmpl.data_cur.unshift(if_.data);
-
-    // because of _hdlr_tag_end() do this.priv.shift()
-    this.priv.unshift(this.priv[0]);
-}
-
-htmltmpl.prototype.hdlr_tmpl_if_1_2_else = function ()
-{
-    var phrase;
-    var len;
-
-
-//    console.log("tmpl_if_1_2_else(" + this.priv[0].tag + "): " + this.priv[0].attrs.name);
-
-    this.tmpl.data_cur.shift();
-    len = this.tmpl.data_cur[0].length;
-    this.tmpl.data_cur.unshift(this.tmpl.data_cur[0][len - 1].else_data);
-    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
-
-    this._match_reset();
-}
-
-htmltmpl.prototype.hdlr_tmpl_if_1_2_end = function ()
-{
-//    alert("tmpl_if_1_2_end(" + this.priv[0].phrase + "): " + this.priv[0].phrase + "(" + this.priv[0].varname + ")");
-
-    this.tmpl.data_cur.shift();
-    this.priv.shift();
-    this.tmpl.pos.start = this.tmpl.pos.cur + 1;
-    this._match_reset();
 }
 
 }
