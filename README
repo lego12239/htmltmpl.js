@@ -5,15 +5,15 @@ htmltmpl.js is the javascript html template library. It must has capabilities
 similar to HTML::Template perl module, but now it support only the next
 constructs:
 
-<%TMPL_VAR NAME=var_name%>
-<%TMPL_LOOP NAME=loop_name%>...<%/TMPL_LOOP%>
-<%TMPL_IF NAME=bool_var%>...<%TMPL_ELSE%>...<%/TMPL_IF%>
-<%TMPL_UNLESS NAME=bool_var%>...<%TMPL_ELSE%>...<%/TMPL_UNLESS%>
+{%TMPL_VAR NAME=var_name DEFAULT="def value"%}
+{%TMPL_LOOP NAME=loop_name%}...{%/TMPL_LOOP%}
+{%TMPL_IF NAME=bool_var%}...{%TMPL_ELSE%}...{%/TMPL_IF%}
+{%TMPL_UNLESS NAME=bool_var%}...{%TMPL_ELSE%}...{%/TMPL_UNLESS%}
 
 See ex*.html files for examples of use.
 
-You can open test.html in your browser to test that htmltmpl.js is works right
-(It doesn't work in ie now). If not so, please, report a bug.
+You can open test.html in your browser to test that htmltmpl.js is works right.
+If not so, please, report a bug.
 
 Using
 =====
@@ -24,28 +24,28 @@ argument:
 var tmpl = new htmltmpl(document.getElementById("tmpl_div"));
 ....
 <div style="display: none" id="tmpl_div">
-  <%TMPL_LOOP NAME=loop1%>
-    <div><%TMPL_VAR NAME=var1%></div>
-  <%/TMPL_LOOP%>
+  {%TMPL_LOOP NAME=loop1%}
+    <div>{%TMPL_VAR NAME=var1%}</div>
+  {%/TMPL_LOOP%}
 </div>
 
 In this case the content of the outer div is got as a template. That is
 (without quotes):
 
 "
-  <%TMPL_LOOP NAME=loop1%>
-    <div><%TMPL_VAR NAME=var1%></div>
-  <%/TMPL_LOOP%>
+  {%TMPL_LOOP NAME=loop1%}
+    <div>{%TMPL_VAR NAME=var1%}</div>
+  {%/TMPL_LOOP%}
 "
 
 A template can be a string instead of a html element:
 
-var tmpl = new htmltmpl("<div><%TMPL_VAR NAME=var1%></div>");
+var tmpl = new htmltmpl("<div>{%TMPL_VAR NAME=var1%}</div>");
 
 htmltmpl constructor accept parameters in second argument to change it
 behaviour. They are passed as object properties:
 
-  ph_case_sensitive (0/1)
+  case_sensitive (0/1)
         process template constructs in case-sensitive mode.
         1 by default.
   global_vars (0/1)
@@ -61,7 +61,7 @@ behaviour. They are passed as object properties:
         0 by default.
   err_on_no_data (0/1)
         If we found a template tag and have no such property in a supplied
-	data, return undefined and set this.err_msg to error message.
+	data, throw an error.
 	0 by default.
   wrap_in
 	Wrap a template into a specified html element.
@@ -74,13 +74,13 @@ behaviour. They are passed as object properties:
 For example:
 
 var tmpl = new htmltmpl(document.getElementById("tmpl_div"),
-                        { ph_case_sensitive: 0,
+                        { case_sensitive: 0,
 			  ret_dom: 1 });
 ...
 <div style="display: none" id="tmpl_div">
-  <%TMPL_LOOP NAME=loop1%>
-    <div><%TmPl_VaR NaMe=var1%></div>
-  <%/TMPL_LooP%>
+  {%TMPL_LOOP NAME=loop1%}
+    <div>{%TmPl_VaR NaMe=var1%}</div>
+  {%/TMPL_LooP%}
 </div>
 
 Next you must apply a data set to the template:
@@ -110,13 +110,15 @@ The more strict variant is to use a err_on_no_data option:
 var tmpl, el;
 
 tmpl = new htmltmpl(document.getElementById("tmpl_div"),
-                    { ph_case_sensitive: 0,
+                    { case_sensitive: 0,
                       err_on_no_data: 1 });
-el = tmpl.apply({ loop1: [{ var1: 123 },
-                          { var1: "string" },
-              	          { var1: "str 456" }] });
-if ( el == undefined )
-    return alert("Error has been occured: " + tmpl.err_msg);
+try {
+  el = tmpl.apply({ loop1: [{ var1: 123 },
+                            { var1: "string" },
+			    { var1: "str 456" }] });
+} catch (ex) {
+    return alert("Error has been occured: " + ex);
+}
 
 
 
@@ -124,30 +126,30 @@ Template tags
 ================
 
 TMPL_VAR
-    <%TMPL_VAR NAME=var_name%>
-    <%TMPL_VAR DEFAULT=123 NAME=var_name%>
+    {%TMPL_VAR NAME=var_name%}
+    {%TMPL_VAR DEFAULT=123 NAME=var_name%}
 
     This is simply replaced with value of var_name property. If you use
     TMPL_VAR tag with DEFAULT attribute, then if var_name property isn't found
     a tag is replaced with a value of DEFAULT attribute.
 
 TMPL_LOOP
-    <%TMPL_LOOP NAME=loop_name%>...<%/TMPL_LOOP%>
+    {%TMPL_LOOP NAME=loop_name%}...{%/TMPL_LOOP%}
 
     For this construct htmltmpl finds in a data set a property with name
     loop_name which contain an array.
 
 TMPL_IF
-    <%TMPL_IF NAME=bool_var%>...<%/TMPL_IF%>
-    <%TMPL_IF NAME=bool_var%>...<%TMPL_ELSE%>...<%/TMPL_IF%>
+    {%TMPL_IF NAME=bool_var%}...{%/TMPL_IF%}
+    {%TMPL_IF NAME=bool_var%}...{%TMPL_ELSE%}...{%/TMPL_IF%}
 
     This tag allows a conditional including of a html part in a result.
     If bool_var data set property evaluates to true, then a content
-    between <%TMPL_IF%> and <%/TMPL_IF%> or between <%TMPL_IF%> and
-    <%TMPL_ELSE%> is included in a result.
+    between {%TMPL_IF%} and {%/TMPL_IF%} or between {%TMPL_IF%} and
+    {%TMPL_ELSE%} is included in a result.
 
 TMPL_UNLESS
-    <%TMPL_UNLESS NAME=bool_var%>...<%/TMPL_UNLESS%>
-    <%TMPL_UNLESS NAME=bool_var%>...<%TMPL_ELSE%>...<%/TMPL_UNLESS%>
+    {%TMPL_UNLESS NAME=bool_var%}...{%/TMPL_UNLESS%}
+    {%TMPL_UNLESS NAME=bool_var%}...{%TMPL_ELSE%}...{%/TMPL_UNLESS%}
 
     The same as TMPL_IF, but bool_var property must evaluates to false.
