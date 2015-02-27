@@ -19,7 +19,7 @@
 {
     "use strict";
 /*
-  prms = { ph_case_sensitive: 0/1,
+  prms = { case_sensitive: 0/1,
            global_vars: 0/1,
 	   loop_context_vars: 0/1,
 	   tmpl_is_commented: 0/1,
@@ -28,7 +28,7 @@
            ret_dom: 0/1 }
 
   Process the tmpl as string or as html element.
-  ph_case_sensitive
+  case_sensitive
         process template constructs in case-sensitive mode.
 	1 by default.
   global_vars
@@ -89,15 +89,15 @@ function htmltmpl(tmpl, prms)
 				  start_tag: [this.tags["TMPL_UNLESS"], this.tags["TMPL_ELSE"]],
 				  name: "/TMPL_UNLESS" };
 
-    this.p = { ph_case_sensitive: 1,
+    this.p = { case_sensitive: 1,
 	       global_vars: 0,
 	       loop_context_vars: 0,
 	       tmpl_is_commented: 0,
 	       err_on_no_data: 0,
 	       ret_dom: 0 };
     if ( prms != undefined ) {
-	if ( prms.ph_case_sensitive != undefined )
-	    this.p.ph_case_sensitive = prms.ph_case_sensitive;
+	if ( prms.case_sensitive != undefined )
+	    this.p.case_sensitive = prms.case_sensitive;
 	if ( prms.global_vars != undefined )
 	    this.p.global_vars = prms.global_vars;
 	if ( prms.loop_context_vars != undefined )
@@ -139,7 +139,7 @@ htmltmpl.prototype.tmpl_prepare = function()
     var m;
 
 
-    if ( this.p.ph_case_sensitive )
+    if ( this.p.case_sensitive )
 	rex = /^(\/?TMPL_.+?)%}([^]*)$/;
     else
 	rex = /^(\/?TMPL_.+?)%}([^]*)$/i;
@@ -170,7 +170,7 @@ htmltmpl.prototype.parse_tag = function (tag)
     if ( ! m )
 	throw("parse_tag err: wrong tag format: " + tag);
 
-    if ( ! this.p.ph_case_sensitive )
+    if ( ! this.p.case_sensitive )
 	tag_name = m[1].toUpperCase();
     else
 	tag_name = m[1];
@@ -193,7 +193,7 @@ htmltmpl.prototype._parse_tag_attrs = function(attrs)
 
     while ( m = this.rex.tag_attrs.exec(attrs) ) {
 	name = m[1];
-	if ( ! this.p.ph_case_sensitive )
+	if ( ! this.p.case_sensitive )
 	    name = name.toUpperCase();
 
 	val = m[2];
