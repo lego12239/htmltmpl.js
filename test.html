@@ -277,7 +277,30 @@
                     title: "Test quoted arguments in TMPL_VAR",
                     prms: {},
                     data: { var1: "tt",
-                            var2: "qq" } } ];
+                            var2: "qq" } },
+                  { id: "unit32",
+                    id_res: "unit32_res",
+                    title: "TMPL_VAR in input attribute",
+                    prms: {},
+                    data: { var1: "name1" } },
+                  { id: "unit33",
+                    id_res: "unit33_res",
+                    title: "TMPL_LOOP and TMPL_VAR in select",
+                    prms: {},
+                    data: { loop1: [ { var1: "1", var2: "a1" },
+                                     { var1: "2", var2: "a2" } ] } },
+                  { id: "unit34",
+                    id_res: "unit34_res",
+                    title: "TMPL_LOOP and TMPL_VAR in table (should fail)",
+                    prms: {},
+                    data: { loop1: [ { loop2: [ {var1: "a1" }, { var1: "a2" } ] },
+                                     { loop2: [ {var1: "b1" }, { var1: "b2" } ] }]}},
+                  { id: "unit35",
+                    id_res: "unit35_res",
+                    title: "TMPL_LOOP and TMPL_VAR and tmpl_is_commented in table",
+                    prms: {tmpl_is_commented: 1},
+                    data: { loop1: [ { loop2: [ {var1: "a1" }, { var1: "a2" } ] },
+                                     { loop2: [ {var1: "b1" }, { var1: "b2" } ] }]}} ];
     function report_res(test, ex)
     {
         if ( test.is_err ) {
@@ -1041,6 +1064,108 @@
     tt
     qq
     ee j
+  </div>
+
+  <!-- unit 32 -->
+  <div id="unit32">
+    <input name="{%TMPL_VAR NAME=var1%}" value="d"/>
+  </div>
+  <div id="unit32_res">
+    <input name="name1" value="d"/>
+  </div>
+
+  <!-- unit 33 -->
+  <div id="unit33">
+    <select>
+      {%TMPL_LOOP NAME=loop1%}
+      <option value="{%TMPL_VAR NAME=var1%}">{%TMPL_VAR NAME=var2%}</option>
+      {%/TMPL_LOOP%}
+    </select>
+  </div>
+  <div id="unit33_res">
+    <select>
+      
+      <option value="1">a1</option>
+      
+      <option value="2">a2</option>
+      
+    </select>
+  </div>
+
+  <!-- unit 34 -->
+  <div id="unit34">
+    <table>
+      <tbody>
+      {%TMPL_LOOP NAME=loop1%}
+      <tr>
+        {%TMPL_LOOP NAME=loop2%}
+        <td>{%TMPL_VAR NAME=var1%}</td>
+        {%/TMPL_LOOP%}
+      </tr>
+      {%/TMPL_LOOP%}
+      </tbody>
+    </table>
+  </div>
+  <div id="unit34_res">
+    
+      
+      
+        
+        
+        
+        
+        
+      
+      
+      
+        
+        
+        
+        
+        
+      
+      
+      <table>
+      <tbody><tr><td></td></tr></tbody>
+    </table>
+  </div>
+
+  <!-- unit 35 -->
+  <div id="unit35"><!--
+    <table>
+      <tbody>
+      {%TMPL_LOOP NAME=loop1%}
+      <tr>
+        {%TMPL_LOOP NAME=loop2%}
+        <td>{%TMPL_VAR NAME=var1%}</td>
+        {%/TMPL_LOOP%}
+      </tr>
+      {%/TMPL_LOOP%}
+      </tbody>
+    </table>
+  --></div>
+  <div id="unit35_res">
+    <table>
+      <tbody>
+      
+      <tr>
+        
+        <td>a1</td>
+        
+        <td>a2</td>
+        
+      </tr>
+      
+      <tr>
+        
+        <td>b1</td>
+        
+        <td>b2</td>
+        
+      </tr>
+      
+      </tbody>
+    </table>
   </div>
 
   </div>
