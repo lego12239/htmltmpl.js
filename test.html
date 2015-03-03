@@ -306,14 +306,18 @@
         if ( test.is_err ) {
             if (( ex != undefined ) && ( test.err_msg == ex ))
                 report_ok(test);
-            else
+            else {
+                console.error(ex);
                 report_fail(test);
+            }
         } else {
             if (( ex == undefined ) &&
                 ( document.getElementById(test.id_res).innerHTML == tmpl.out_str ))
                 report_ok(test);
-            else
+            else {
+                console.error(ex);
                 report_fail(test);
+            }
         }
     }
     function report_ok(test)
