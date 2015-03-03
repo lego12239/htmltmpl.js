@@ -8,7 +8,9 @@ constructs:
 {%TMPL_VAR NAME=var_name DEFAULT="def value"%}
 {%TMPL_LOOP NAME=loop_name%}...{%/TMPL_LOOP%}
 {%TMPL_IF NAME=bool_var%}...{%TMPL_ELSE%}...{%/TMPL_IF%}
+{%TMPL_IFDEF NAME=bool_var%}...{%TMPL_ELSE%}...{%/TMPL_IFDEF%}
 {%TMPL_UNLESS NAME=bool_var%}...{%TMPL_ELSE%}...{%/TMPL_UNLESS%}
+{%TMPL_IFNDEF NAME=bool_var%}...{%TMPL_ELSE%}...{%/TMPL_IFNDEF%}
 
 See ex*.html files for examples of use.
 
@@ -153,3 +155,18 @@ TMPL_UNLESS
     {%TMPL_UNLESS NAME=bool_var%}...{%TMPL_ELSE%}...{%/TMPL_UNLESS%}
 
     The same as TMPL_IF, but bool_var property must evaluates to false.
+
+TMPL_IFDEF
+    {%TMPL_IFDEF NAME=bool_var%}...{%/TMPL_IFDEF%}
+    {%TMPL_IFDEF NAME=bool_var%}...{%TMPL_ELSE%}...{%/TMPL_IFDEF%}
+
+    This tag allows a conditional including of a html part in a result.
+    If bool_var is defined, then a content between {%TMPL_IFDEF%} and
+    {%/TMPL_IFDEF%} or between {%TMPL_IFDEF%} and {%TMPL_ELSE%} is
+    included in a result.
+
+TMPL_IFNDEF
+    {%TMPL_IFNDEF NAME=bool_var%}...{%/TMPL_IFNDEF%}
+    {%TMPL_IFNDEF NAME=bool_var%}...{%TMPL_ELSE%}...{%/TMPL_IFNDEF%}
+
+    The same as TMPL_IFDEF, but bool_var property must evaluates to undefined.
