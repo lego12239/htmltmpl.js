@@ -82,7 +82,7 @@ function htmltmpl(tmpl, prms)
     this.tags["TMPL_IFDEF"] = { pfunc: this.hdlr_ifdef_parse,
 				afunc: this.hdlr_ifdef_apply,
 				name: "TMPL_IFDEF" };
-    this.tags["TMPL_IFNDEF"] = { pfunc: this.hdlr_ifndef_parse,
+    this.tags["TMPL_IFNDEF"] = { pfunc: this.hdlr_ifdef_parse,
 				 afunc: this.hdlr_ifndef_apply,
 				 name: "TMPL_IFNDEF" };
     this.tags["TMPL_ELSE"] = { pfunc: this.hdlr_else_parse,
@@ -103,7 +103,7 @@ function htmltmpl(tmpl, prms)
 				 start_tag: [this.tags["TMPL_IFDEF"],
 					     this.tags["TMPL_ELSE"]],
 				 name: "/TMPL_IFDEF" };
-    this.tags["/TMPL_IFNDEF"] = { pfunc: this.hdlr_ifndef_end_parse,
+    this.tags["/TMPL_IFNDEF"] = { pfunc: this.hdlr_ifdef_end_parse,
 				  start_tag: [this.tags["TMPL_IFNDEF"],
 					      this.tags["TMPL_ELSE"]],
 				  name: "/TMPL_IFNDEF" };
@@ -496,6 +496,27 @@ htmltmpl.prototype.hdlr_ifdef_apply = function(def, tag)
     else if ( this.p.err_on_no_data )
 	throw("Cann't find var '" + tag[0]["NAME"] + "'.");
 }
+
+/**********************************************************************
+ * TMPL_IFNDEF HANDLERS
+ **********************************************************************/
+htmltmpl.prototype.hdlr_ifndef_apply = function(def, tag)
+{
+    var attrs;
+    var val;
+    var i;
+
+
+    val = this._get_data(tag[0]["NAME"]);
+
+    if ( val == undefined )
+	this._apply(tag[1]);
+    else if ( tag[2] != undefined )
+	this._apply(tag[2]);
+    else if ( this.p.err_on_no_data )
+	throw("Cann't find var '" + tag[0]["NAME"] + "'.");
+}
+
 
 htmltmpl.prototype._apply = function(tmpl)
 {

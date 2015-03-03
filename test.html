@@ -310,6 +310,16 @@
                     id_res: "unit37_res",
                     title: "TMPL_IFDEF with TMPL_ELSE",
                     prms: {},
+                    data: { var1: 0, var2: 1 }},
+                  { id: "unit38",
+                    id_res: "unit38_res",
+                    title: "TMPL_IFNDEF",
+                    prms: {},
+                    data: { var1: 0, var2: 1 }},
+                  { id: "unit38",
+                    id_res: "unit38_res",
+                    title: "TMPL_IFNDEF with TMPL_ELSE",
+                    prms: {},
                     data: { var1: 0, var2: 1 }} ];
     function report_res(test, ex)
     {
@@ -1204,6 +1214,30 @@
     test
     test
     here
+  </div>
+
+  <!-- unit 38 -->
+  <div id="unit38">
+    {%TMPL_IFNDEF NAME=var1%}test{%/TMPL_IFNDEF%}
+    {%TMPL_IFNDEF NAME=var2%}test{%/TMPL_IFNDEF%}
+    {%TMPL_IFNDEF NAME=var3%}test{%/TMPL_IFNDEF%}
+  </div>
+  <div id="unit38_res">
+    
+    
+    test
+  </div>
+
+  <!-- unit 39 -->
+  <div id="unit39">
+    {%TMPL_IFNDEF NAME=var1%}test{%TMPL_ELSE%}here{%/TMPL_IFNDEF%}
+    {%TMPL_IFNDEF NAME=var2%}test{%TMPL_ELSE%}here{%/TMPL_IFNDEF%}
+    {%TMPL_IFNDEF NAME=var3%}test{%TMPL_ELSE%}here{%/TMPL_IFNDEF%}
+  </div>
+  <div id="unit39_res">
+    here
+    here
+    test
   </div>
 
   </div>
