@@ -79,15 +79,34 @@ function htmltmpl(tmpl, prms)
     this.tags["TMPL_UNLESS"] = { pfunc: this.hdlr_if_parse,
 				 afunc: this.hdlr_unless_apply,
 				 name: "TMPL_UNLESS" };
+    this.tags["TMPL_IFDEF"] = { pfunc: this.hdlr_ifdef_parse,
+				afunc: this.hdlr_ifdef_apply,
+				name: "TMPL_IFDEF" };
+    this.tags["TMPL_IFNDEF"] = { pfunc: this.hdlr_ifndef_parse,
+				 afunc: this.hdlr_ifndef_apply,
+				 name: "TMPL_IFNDEF" };
     this.tags["TMPL_ELSE"] = { pfunc: this.hdlr_else_parse,
-			       start_tag: [this.tags["TMPL_IF"], this.tags["TMPL_UNLESS"]],
+			       start_tag: [this.tags["TMPL_IF"],
+					   this.tags["TMPL_UNLESS"],
+					   this.tags["TMPL_IFDEF"],
+					   this.tags["TMPL_IFNDEF"]],
 			       name: "TMPL_ELSE" };
     this.tags["/TMPL_IF"] = { pfunc: this.hdlr_if_end_parse,
-			      start_tag: [this.tags["TMPL_IF"], this.tags["TMPL_ELSE"]],
+			      start_tag: [this.tags["TMPL_IF"],
+					  this.tags["TMPL_ELSE"]],
 			      name: "/TMPL_IF" };
     this.tags["/TMPL_UNLESS"] = { pfunc: this.hdlr_if_end_parse,
-				  start_tag: [this.tags["TMPL_UNLESS"], this.tags["TMPL_ELSE"]],
+				  start_tag: [this.tags["TMPL_UNLESS"],
+					      this.tags["TMPL_ELSE"]],
 				  name: "/TMPL_UNLESS" };
+    this.tags["/TMPL_IFDEF"] = { pfunc: this.hdlr_ifdef_end_parse,
+				 start_tag: [this.tags["TMPL_IFDEF"],
+					     this.tags["TMPL_ELSE"]],
+				 name: "/TMPL_IFDEF" };
+    this.tags["/TMPL_IFNDEF"] = { pfunc: this.hdlr_ifndef_end_parse,
+				  start_tag: [this.tags["TMPL_IFNDEF"],
+					      this.tags["TMPL_ELSE"]],
+				  name: "/TMPL_IFNDEF" };
 
     this.p = { case_sensitive: 1,
 	       global_vars: 0,
@@ -422,6 +441,55 @@ htmltmpl.prototype.hdlr_unless_apply = function(def, tag)
     val = this._get_data(tag[0]["NAME"]);
 
     if ( ! val )
+	this._apply(tag[1]);
+    else if ( tag[2] != undefined )
+	this._apply(tag[2]);
+    else if ( this.p.err_on_no_data )
+	throw("Cann't find var '" + tag[0]["NAME"] + "'.");
+}
+
+/**********************************************************************
+ * TMPL_IFDEF HANDLERS
+ **********************************************************************/
+htmltmpl.prototype.hdlr_ifdef_parse = function(def, tag_attrs)
+{
+    var attrs;
+
+
+    attrs = this._parse_tag_attrs(tag_attrs);
+    this._s.parse.unshift([]);
+    this._s.priv.unshift([def, attrs ]);
+}
+
+htmltmpl.prototype.hdlr_ifdef_end_parse = function(def)
+{
+    var priv;
+    var if_, else_;
+
+
+    priv = this._s.priv.shift();
+    if ( ! this.is_tag_match(priv[0], def.start_tag) )
+	throw("parse err: " + priv[0].name + " was opened, but " +
+	      def.name + " is being closed");
+    if ( priv[0].name == "TMPL_ELSE" ) {
+	else_ = this._s.parse.shift();
+	priv = this._s.priv.shift();
+    }
+
+    if_ = this._s.parse.shift();
+    this._s.parse[0].push([priv[0].name, [ priv[1], if_, else_ ]]);
+}
+
+htmltmpl.prototype.hdlr_ifdef_apply = function(def, tag)
+{
+    var attrs;
+    var val;
+    var i;
+
+
+    val = this._get_data(tag[0]["NAME"]);
+
+    if ( val != undefined )
 	this._apply(tag[1]);
     else if ( tag[2] != undefined )
 	this._apply(tag[2]);

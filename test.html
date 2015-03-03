@@ -300,7 +300,17 @@
                     title: "TMPL_LOOP and TMPL_VAR and tmpl_is_commented in table",
                     prms: {tmpl_is_commented: 1},
                     data: { loop1: [ { loop2: [ {var1: "a1" }, { var1: "a2" } ] },
-                                     { loop2: [ {var1: "b1" }, { var1: "b2" } ] }]}} ];
+                                     { loop2: [ {var1: "b1" }, { var1: "b2" } ] }]}},
+                  { id: "unit36",
+                    id_res: "unit36_res",
+                    title: "TMPL_IFDEF",
+                    prms: {},
+                    data: { var1: 0, var2: 1 }},
+                  { id: "unit37",
+                    id_res: "unit37_res",
+                    title: "TMPL_IFDEF with TMPL_ELSE",
+                    prms: {},
+                    data: { var1: 0, var2: 1 }} ];
     function report_res(test, ex)
     {
         if ( test.is_err ) {
@@ -1170,6 +1180,30 @@
       
       </tbody>
     </table>
+  </div>
+
+  <!-- unit 36 -->
+  <div id="unit36">
+    {%TMPL_IFDEF NAME=var1%}test{%/TMPL_IFDEF%}
+    {%TMPL_IFDEF NAME=var2%}test{%/TMPL_IFDEF%}
+    {%TMPL_IFDEF NAME=var3%}test{%/TMPL_IFDEF%}
+  </div>
+  <div id="unit36_res">
+    test
+    test
+    
+  </div>
+
+  <!-- unit 37 -->
+  <div id="unit37">
+    {%TMPL_IFDEF NAME=var1%}test{%TMPL_ELSE%}here{%/TMPL_IFDEF%}
+    {%TMPL_IFDEF NAME=var2%}test{%TMPL_ELSE%}here{%/TMPL_IFDEF%}
+    {%TMPL_IFDEF NAME=var3%}test{%TMPL_ELSE%}here{%/TMPL_IFDEF%}
+  </div>
+  <div id="unit37_res">
+    test
+    test
+    here
   </div>
 
   </div>
