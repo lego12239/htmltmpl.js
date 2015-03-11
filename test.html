@@ -329,7 +329,16 @@
                             show_var11: 1,
                             show_var12: 0,
                             var1: 123,
-                            show_var2: 0 } } ];
+                            show_var2: 0 } },
+                  { id: "unit41",
+                    id_res: "unit41_res",
+                    title: "Test nested TMPL_UNLESS with TMPL_ELSE",
+                    prms: {},
+                    data: { show_var1: 0,
+                            show_var11: 0,
+                            show_var12: 1,
+                            var1: 123,
+                            show_var2: 1 } } ];
     function report_res(test, ex)
     {
         if ( test.is_err ) {
@@ -1335,6 +1344,96 @@
       without var2
       
         without var21
+      
+    
+  </div>
+
+  <!-- unit 41 -->
+  <div id="unit41">
+    {%TMPL_UNLESS NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_UNLESS NAME=show_var11%}
+        without var11
+      {%TMPL_ELSE%}
+        with var11
+      {%/TMPL_UNLESS%}
+    {%TMPL_ELSE%}
+      with var1
+      {%TMPL_UNLESS NAME=show_var11%}
+        without var11
+      {%TMPL_ELSE%}
+        with var11
+      {%/TMPL_UNLESS%}
+    {%/TMPL_UNLESS%}
+    {%TMPL_UNLESS NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_UNLESS NAME=show_var12%}
+        without var12
+      {%TMPL_ELSE%}
+        with var12
+      {%/TMPL_UNLESS%}
+    {%TMPL_ELSE%}
+      with var1
+      {%TMPL_UNLESS NAME=show_var11%}
+        without var11
+      {%TMPL_ELSE%}
+        with var11
+      {%/TMPL_UNLESS%}
+    {%/TMPL_UNLESS%}
+    {%TMPL_UNLESS NAME=show_var2%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_UNLESS NAME=show_var12%}
+        without var12
+      {%TMPL_ELSE%}
+        with var12
+      {%/TMPL_UNLESS%}
+    {%TMPL_ELSE%}
+      with var2
+      {%TMPL_UNLESS NAME=show_var11%}
+        without var11
+      {%TMPL_ELSE%}
+        with var11
+      {%/TMPL_UNLESS%}
+    {%/TMPL_UNLESS%}
+    {%TMPL_UNLESS NAME=show_var2%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_UNLESS NAME=show_var12%}
+        without var12
+      {%TMPL_ELSE%}
+        with var12
+      {%/TMPL_UNLESS%}
+    {%TMPL_ELSE%}
+      with var2
+      {%TMPL_UNLESS NAME=show_var12%}
+        without var21
+      {%TMPL_ELSE%}
+        with var21
+      {%/TMPL_UNLESS%}
+    {%/TMPL_UNLESS%}
+  </div>
+  <div id="unit41_res">
+    
+      123
+      
+        without var11
+      
+    
+    
+      123
+      
+        with var12
+      
+    
+    
+      with var2
+      
+        without var11
+      
+    
+    
+      with var2
+      
+        with var21
       
     
   </div>
