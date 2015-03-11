@@ -320,7 +320,16 @@
                     id_res: "unit38_res",
                     title: "TMPL_IFNDEF with TMPL_ELSE",
                     prms: {},
-                    data: { var1: 0, var2: 1 }} ];
+                    data: { var1: 0, var2: 1 }},
+                  { id: "unit40",
+                    id_res: "unit40_res",
+                    title: "Test nested TMPL_IF with TMPL_ELSE",
+                    prms: {},
+                    data: { show_var1: 1,
+                            show_var11: 1,
+                            show_var12: 0,
+                            var1: 123,
+                            show_var2: 0 } } ];
     function report_res(test, ex)
     {
         if ( test.is_err ) {
@@ -1238,6 +1247,96 @@
     here
     here
     test
+  </div>
+
+  <!-- unit 40 -->
+  <div id="unit40">
+    {%TMPL_IF NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IF NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_IF%}
+    {%TMPL_ELSE%}
+      without var1
+      {%TMPL_IF NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_IF%}
+    {%/TMPL_IF%}
+    {%TMPL_IF NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IF NAME=show_var12%}
+        with var12
+      {%TMPL_ELSE%}
+        without var12
+      {%/TMPL_IF%}
+    {%TMPL_ELSE%}
+      without var1
+      {%TMPL_IF NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_IF%}
+    {%/TMPL_IF%}
+    {%TMPL_IF NAME=show_var2%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IF NAME=show_var12%}
+        with var12
+      {%TMPL_ELSE%}
+        without var12
+      {%/TMPL_IF%}
+    {%TMPL_ELSE%}
+      without var2
+      {%TMPL_IF NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_IF%}
+    {%/TMPL_IF%}
+    {%TMPL_IF NAME=show_var2%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IF NAME=show_var12%}
+        with var12
+      {%TMPL_ELSE%}
+        without var12
+      {%/TMPL_IF%}
+    {%TMPL_ELSE%}
+      without var2
+      {%TMPL_IF NAME=show_var21%}
+        with var21
+      {%TMPL_ELSE%}
+        without var21
+      {%/TMPL_IF%}
+    {%/TMPL_IF%}
+  </div>
+  <div id="unit40_res">
+    
+      123
+      
+        with var11
+      
+    
+    
+      123
+      
+        without var12
+      
+    
+    
+      without var2
+      
+        with var11
+      
+    
+    
+      without var2
+      
+        without var21
+      
+    
   </div>
 
   </div>

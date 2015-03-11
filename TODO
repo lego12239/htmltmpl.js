@@ -2,3 +2,6 @@
 6. If we will can replace $.parseHTML(this.out_str) with an html-elements
    creating on the basis of the main algorithm, i think we will get a
    faster speed of work and totaly remove the need of jquery in htmltmpl.
+7. Think about TMPL_ELSE and close conditional tag. At close we test only
+   TMPL_ELSE, but strange things like TMPL_IF...TMPL_ELSE.../TMPL_IFNDEF is
+   considered correct.
