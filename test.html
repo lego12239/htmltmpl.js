@@ -338,7 +338,53 @@
                             show_var11: 0,
                             show_var12: 1,
                             var1: 123,
-                            show_var2: 1 } } ];
+                            show_var2: 1 } },
+                  { id: "unit42",
+                    id_res: "unit42_res",
+                    title: "Test TMPL_UNLESS inside TMPL_IF with TMPL_ELSE",
+                    prms: {},
+                    data: { show_var1: 1,
+                            show_var11: 1,
+                            show_var12: 0,
+                            var1: 123,
+                            show_var2: 0 } },
+                  { id: "unit43",
+                    id_res: "unit43_res",
+                    title: "Test TMPL_IF inside TMPL_UNLESS with TMPL_ELSE",
+                    prms: {},
+                    data: { show_var1: 1,
+                            show_var11: 1,
+                            show_var12: 0,
+                            var1: 123,
+                            show_var2: 0 } },
+                  { id: "unit44",
+                    id_res: "unit44_res",
+                    title: "Test nested TMPL_IFDEF with TMPL_ELSE",
+                    prms: {},
+                    data: { show_var1: 0,
+                            show_var11: 0,
+                            var1: 123 } },
+                  { id: "unit45",
+                    id_res: "unit45_res",
+                    title: "Test nested TMPL_IFNDEF with TMPL_ELSE",
+                    prms: {},
+                    data: { show_var12: 0,
+                            var1: 123,
+                            show_var2: 0 } },
+                  { id: "unit46",
+                    id_res: "unit46_res",
+                    title: "Test TMPL_IFNDEF inside TMPL_IFDEF with TMPL_ELSE",
+                    prms: {},
+                    data: { show_var1: 0,
+                            show_var11: 0,
+                            var1: 123 } },
+                  { id: "unit47",
+                    id_res: "unit47_res",
+                    title: "Test TMPL_IFDEF inside TMPL_IFNDEF with TMPL_ELSE",
+                    prms: {},
+                    data: { show_var1: 0,
+                            show_var11: 0,
+                            var1: 123 } } ];
     function report_res(test, ex)
     {
         if ( test.is_err ) {
@@ -1434,6 +1480,546 @@
       with var2
       
         with var21
+      
+    
+  </div>
+
+  <!-- unit 42 -->
+  <div id="unit42">
+    {%TMPL_IF NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_UNLESS NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_UNLESS%}
+    {%TMPL_ELSE%}
+      without var1
+      {%TMPL_UNLESS NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_UNLESS%}
+    {%/TMPL_IF%}
+    {%TMPL_IF NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_UNLESS NAME=show_var12%}
+        with var12
+      {%TMPL_ELSE%}
+        without var12
+      {%/TMPL_UNLESS%}
+    {%TMPL_ELSE%}
+      without var1
+      {%TMPL_UNLESS NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_UNLESS%}
+    {%/TMPL_IF%}
+    {%TMPL_IF NAME=show_var2%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_UNLESS NAME=show_var12%}
+        with var12
+      {%TMPL_ELSE%}
+        without var12
+      {%/TMPL_UNLESS%}
+    {%TMPL_ELSE%}
+      without var2
+      {%TMPL_UNLESS NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_UNLESS%}
+    {%/TMPL_IF%}
+    {%TMPL_IF NAME=show_var2%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_UNLESS NAME=show_var12%}
+        with var12
+      {%TMPL_ELSE%}
+        without var12
+      {%/TMPL_UNLESS%}
+    {%TMPL_ELSE%}
+      without var2
+      {%TMPL_UNLESS NAME=show_var12%}
+        with var21
+      {%TMPL_ELSE%}
+        without var21
+      {%/TMPL_UNLESS%}
+    {%/TMPL_IF%}
+  </div>
+  <div id="unit42_res">
+    
+      123
+      
+        without var11
+      
+    
+    
+      123
+      
+        with var12
+      
+    
+    
+      without var2
+      
+        without var11
+      
+    
+    
+      without var2
+      
+        with var21
+      
+    
+  </div>
+
+  <!-- unit 43 -->
+  <div id="unit43">
+    {%TMPL_UNLESS NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IF NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_IF%}
+    {%TMPL_ELSE%}
+      without var1
+      {%TMPL_IF NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_IF%}
+    {%/TMPL_UNLESS%}
+    {%TMPL_UNLESS NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IF NAME=show_var12%}
+        with var12
+      {%TMPL_ELSE%}
+        without var12
+      {%/TMPL_IF%}
+    {%TMPL_ELSE%}
+      without var1
+      {%TMPL_IF NAME=show_var12%}
+        with var12
+      {%TMPL_ELSE%}
+        without var12
+      {%/TMPL_IF%}
+    {%/TMPL_UNLESS%}
+    {%TMPL_UNLESS NAME=show_var2%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IF NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_IF%}
+    {%TMPL_ELSE%}
+      without var2
+      {%TMPL_IF NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_IF%}
+    {%/TMPL_UNLESS%}
+    {%TMPL_UNLESS NAME=show_var2%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IF NAME=show_var12%}
+        with var12
+      {%TMPL_ELSE%}
+        without var12
+      {%/TMPL_IF%}
+    {%TMPL_ELSE%}
+      without var2
+      {%TMPL_IF NAME=show_var12%}
+        with var12
+      {%TMPL_ELSE%}
+        without var12
+      {%/TMPL_IF%}
+    {%/TMPL_UNLESS%}
+  </div>
+  <div id="unit43_res">
+    
+      without var1
+      
+        with var11
+      
+    
+    
+      without var1
+      
+        without var12
+      
+    
+    
+      123
+      
+        with var11
+      
+    
+    
+      123
+      
+        without var12
+      
+    
+  </div>
+
+  <!-- unit 44 -->
+  <div id="unit44">
+    {%TMPL_IFDEF NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IFDEF NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_IFDEF%}
+    {%TMPL_ELSE%}
+      without var1
+      {%TMPL_IFDEF NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_IFDEF%}
+    {%/TMPL_IFDEF%}
+    {%TMPL_IFDEF NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IFDEF NAME=show_var12%}
+        with var12
+      {%TMPL_ELSE%}
+        without var12
+      {%/TMPL_IFDEF%}
+    {%TMPL_ELSE%}
+      without var1
+      {%TMPL_IFDEF NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_IFDEF%}
+    {%/TMPL_IFDEF%}
+    {%TMPL_IFDEF NAME=show_var2%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IFDEF NAME=show_var12%}
+        with var12
+      {%TMPL_ELSE%}
+        without var12
+      {%/TMPL_IFDEF%}
+    {%TMPL_ELSE%}
+      without var2
+      {%TMPL_IFDEF NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_IFDEF%}
+    {%/TMPL_IFDEF%}
+    {%TMPL_IFDEF NAME=show_var2%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IFDEF NAME=show_var12%}
+        with var12
+      {%TMPL_ELSE%}
+        without var12
+      {%/TMPL_IFDEF%}
+    {%TMPL_ELSE%}
+      without var2
+      {%TMPL_IFDEF NAME=show_var12%}
+        with var21
+      {%TMPL_ELSE%}
+        without var21
+      {%/TMPL_IFDEF%}
+    {%/TMPL_IFDEF%}
+  </div>
+  <div id="unit44_res">
+    
+      123
+      
+        with var11
+      
+    
+    
+      123
+      
+        without var12
+      
+    
+    
+      without var2
+      
+        with var11
+      
+    
+    
+      without var2
+      
+        without var21
+      
+    
+  </div>
+
+  <!-- unit 45 -->
+  <div id="unit45">
+    {%TMPL_IFNDEF NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IFNDEF NAME=show_var11%}
+        without var11
+      {%TMPL_ELSE%}
+        with var11
+      {%/TMPL_IFNDEF%}
+    {%TMPL_ELSE%}
+      with var1
+      {%TMPL_IFNDEF NAME=show_var11%}
+        without var11
+      {%TMPL_ELSE%}
+        with var11
+      {%/TMPL_IFNDEF%}
+    {%/TMPL_IFNDEF%}
+    {%TMPL_IFNDEF NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IFNDEF NAME=show_var12%}
+        without var12
+      {%TMPL_ELSE%}
+        with var12
+      {%/TMPL_IFNDEF%}
+    {%TMPL_ELSE%}
+      with var1
+      {%TMPL_IFNDEF NAME=show_var11%}
+        without var11
+      {%TMPL_ELSE%}
+        with var11
+      {%/TMPL_IFNDEF%}
+    {%/TMPL_IFNDEF%}
+    {%TMPL_IFNDEF NAME=show_var2%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IFNDEF NAME=show_var12%}
+        without var12
+      {%TMPL_ELSE%}
+        with var12
+      {%/TMPL_IFNDEF%}
+    {%TMPL_ELSE%}
+      with var2
+      {%TMPL_IFNDEF NAME=show_var11%}
+        without var11
+      {%TMPL_ELSE%}
+        with var11
+      {%/TMPL_IFNDEF%}
+    {%/TMPL_IFNDEF%}
+    {%TMPL_IFNDEF NAME=show_var2%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IFNDEF NAME=show_var12%}
+        without var12
+      {%TMPL_ELSE%}
+        with var12
+      {%/TMPL_IFNDEF%}
+    {%TMPL_ELSE%}
+      with var2
+      {%TMPL_IFNDEF NAME=show_var12%}
+        without var21
+      {%TMPL_ELSE%}
+        with var21
+      {%/TMPL_IFNDEF%}
+    {%/TMPL_IFNDEF%}
+  </div>
+  <div id="unit45_res">
+    
+      123
+      
+        without var11
+      
+    
+    
+      123
+      
+        with var12
+      
+    
+    
+      with var2
+      
+        without var11
+      
+    
+    
+      with var2
+      
+        with var21
+      
+    
+  </div>
+
+  <!-- unit 46 -->
+  <div id="unit46">
+    {%TMPL_IFDEF NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IFNDEF NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_IFNDEF%}
+    {%TMPL_ELSE%}
+      without var1
+      {%TMPL_IFNDEF NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_IFNDEF%}
+    {%/TMPL_IFDEF%}
+    {%TMPL_IFDEF NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IFNDEF NAME=show_var12%}
+        with var12
+      {%TMPL_ELSE%}
+        without var12
+      {%/TMPL_IFNDEF%}
+    {%TMPL_ELSE%}
+      without var1
+      {%TMPL_IFNDEF NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_IFNDEF%}
+    {%/TMPL_IFDEF%}
+    {%TMPL_IFDEF NAME=show_var2%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IFNDEF NAME=show_var12%}
+        with var12
+      {%TMPL_ELSE%}
+        without var12
+      {%/TMPL_IFNDEF%}
+    {%TMPL_ELSE%}
+      without var2
+      {%TMPL_IFNDEF NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_IFNDEF%}
+    {%/TMPL_IFDEF%}
+    {%TMPL_IFDEF NAME=show_var2%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IFNDEF NAME=show_var12%}
+        with var12
+      {%TMPL_ELSE%}
+        without var12
+      {%/TMPL_IFNDEF%}
+    {%TMPL_ELSE%}
+      without var2
+      {%TMPL_IFNDEF NAME=show_var12%}
+        with var21
+      {%TMPL_ELSE%}
+        without var21
+      {%/TMPL_IFNDEF%}
+    {%/TMPL_IFDEF%}
+  </div>
+  <div id="unit46_res">
+    
+      123
+      
+        without var11
+      
+    
+    
+      123
+      
+        with var12
+      
+    
+    
+      without var2
+      
+        without var11
+      
+    
+    
+      without var2
+      
+        with var21
+      
+    
+  </div>
+
+  <!-- unit 47 -->
+  <div id="unit47">
+    {%TMPL_IFNDEF NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IFDEF NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_IFDEF%}
+    {%TMPL_ELSE%}
+      without var1
+      {%TMPL_IFDEF NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_IFDEF%}
+    {%/TMPL_IFNDEF%}
+    {%TMPL_IFNDEF NAME=show_var1%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IFDEF NAME=show_var12%}
+        with var12
+      {%TMPL_ELSE%}
+        without var12
+      {%/TMPL_IFDEF%}
+    {%TMPL_ELSE%}
+      without var1
+      {%TMPL_IFDEF NAME=show_var12%}
+        with var12
+      {%TMPL_ELSE%}
+        without var12
+      {%/TMPL_IFDEF%}
+    {%/TMPL_IFNDEF%}
+    {%TMPL_IFNDEF NAME=show_var2%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IFDEF NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_IFDEF%}
+    {%TMPL_ELSE%}
+      without var2
+      {%TMPL_IFDEF NAME=show_var11%}
+        with var11
+      {%TMPL_ELSE%}
+        without var11
+      {%/TMPL_IFDEF%}
+    {%/TMPL_IFNDEF%}
+    {%TMPL_IFNDEF NAME=show_var2%}
+      {%TMPL_VAR NAME=var1%}
+      {%TMPL_IFDEF NAME=show_var12%}
+        with var12
+      {%TMPL_ELSE%}
+        without var12
+      {%/TMPL_IFDEF%}
+    {%TMPL_ELSE%}
+      without var2
+      {%TMPL_IFDEF NAME=show_var12%}
+        with var12
+      {%TMPL_ELSE%}
+        without var12
+      {%/TMPL_IFDEF%}
+    {%/TMPL_IFNDEF%}
+  </div>
+  <div id="unit47_res">
+    
+      without var1
+      
+        with var11
+      
+    
+    
+      without var1
+      
+        without var12
+      
+    
+    
+      123
+      
+        with var11
+      
+    
+    
+      123
+      
+        without var12
       
     
   </div>
