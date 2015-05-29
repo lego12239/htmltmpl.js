@@ -384,8 +384,14 @@
                     prms: {},
                     data: { show_var1: 0,
                             show_var11: 0,
-                            var1: 123 } } ];
-    function report_res(test, ex)
+                            var1: 123 } },
+                  { id: "unit48",
+                    id_res: "unit48_res",
+                    title: "Test ret_dom option",
+                    is_ret_dom: 1,
+                    prms: { ret_dom: 1 },
+                    data: { var1: 1 } } ];
+    function report_res(test, ret, ex)
     {
         if ( test.is_err ) {
             if (( ex != undefined ) && ( test.err_msg == ex ))
@@ -395,13 +401,23 @@
                 report_fail(test);
             }
         } else {
-            if (( ex == undefined ) &&
-                ( document.getElementById(test.id_res).innerHTML == tmpl.out_str ))
-                report_ok(test);
-            else {
+            if ( ex != undefined ) {
                 console.error(ex);
                 report_fail(test);
+                return;
             }
+    
+            if (( test.is_ret_dom ) &&
+                ( document.getElementById(test.id_res).innerHTML == ret[0].innerHTML )) {
+                report_ok(test);
+                return;
+            }
+            if ( document.getElementById(test.id_res).innerHTML == ret ) {
+                report_ok(test);
+                return;
+            }
+            console.error(ex);
+            report_fail(test);
         }
     }
     function report_ok(test)
@@ -451,16 +467,16 @@
 		else
                     tmpl = new htmltmpl(document.getElementById(tests[i].id), tests[i].prms);
 	    } catch (ex) {
-		report_res(tests[i], ex);
+		report_res(tests[i], undefined, ex);
                 continue;
 	    }
 	    try {
                 ret = tmpl.apply(tests[i].data);
             } catch (ex) {
-                report_res(tests[i], ex);
+                report_res(tests[i], undefined, ex);
                 continue;
             }
-	    report_res(tests[i], undefined);
+	    report_res(tests[i], ret, undefined);
 
             console.log("unit" + i + ": " + JSON.stringify(tmpl.tmpl_parsed));
 
@@ -2022,6 +2038,18 @@
         without var12
       
     
+  </div>
+
+  <!-- unit 48 -->
+  <div id="unit48"><div>
+    another
+    {%TMPL_VAR NAME=var1%}
+    text
+  </div></div>
+  <div id="unit48_res">
+    another
+    1
+    text
   </div>
 
   </div>
