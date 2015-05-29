@@ -25,7 +25,8 @@
 	   tmpl_is_commented: 0/1,
 	   err_on_no_data: 0/1,
 	   wrap_in: "div",
-           ret_dom: 0/1 }
+           ret_dom: 0/1,
+	   strip_wrap_spaces: 0/1 }
 
   Process the tmpl as string or as html element.
   case_sensitive
@@ -54,6 +55,9 @@
 	div element, assigning to it innerHTML property a resulted string and
 	returning childNodes of this div.
         0 by default.
+  strip_wrap_spaces
+        Remove white space at start and at end of a template.
+        1 by default.
 */
 function htmltmpl(tmpl, prms)
 {
@@ -114,7 +118,8 @@ function htmltmpl(tmpl, prms)
 	       loop_context_vars: 0,
 	       tmpl_is_commented: 0,
 	       err_on_no_data: 0,
-	       ret_dom: 0 };
+	       ret_dom: 0,
+	       strip_wrap_spaces: 1 };
     if ( prms != undefined ) {
 	if ( prms.case_sensitive != undefined )
 	    this.p.case_sensitive = prms.case_sensitive;
@@ -132,6 +137,8 @@ function htmltmpl(tmpl, prms)
 	    "</" + prms.wrap_in + ">";
 	if ( prms.ret_dom != undefined )
 	    this.p.ret_dom = prms.ret_dom;
+	if ( prms.strip_wrap_spaces != undefined )
+	    this.p.strip_wrap_spaces = prms.strip_wrap_spaces;
     }
 
     if ( typeof(tmpl) === "undefined" )
@@ -143,6 +150,8 @@ function htmltmpl(tmpl, prms)
 
     if ( this.p.tmpl_is_commented )
 	this.tmpl = this.tmpl.replace(/^\s*<!--([^]+)-->\s*$/, "$1");
+    if ( this.p.strip_wrap_spaces )
+	this.tmpl = this.tmpl.replace(/^\s*([^]+?)\s*$/, "$1");
 
     this.tmpl_prepare();
 }
