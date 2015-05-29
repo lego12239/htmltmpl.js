@@ -552,7 +552,7 @@ htmltmpl.prototype.apply = function(data)
 
 
     this.out_str = new String();
-    this._s.data.unshift(data);
+    this._s.data = [data];
 
     this._apply(this.tmpl_parsed);
 
