@@ -134,19 +134,15 @@ function htmltmpl(tmpl, prms)
 	    this.p.ret_dom = prms.ret_dom;
     }
 
-    if ( typeof(tmpl) === "undefined" ) {
+    if ( typeof(tmpl) === "undefined" )
 	this.tmpl = "";
-    } else if ( typeof(tmpl) === "string" ) {
-	if ( this.p.tmpl_is_commented )
-	    this.tmpl = tmpl.replace(/^\s*<!--([^]+)-->\s*$/, "$1");
-	else
-	    this.tmpl = tmpl;
-    } else if ( typeof(tmpl) === "object" ) {
-	if ( this.p.tmpl_is_commented )
-	    this.tmpl = tmpl.innerHTML.replace(/^\s*<!--([^]+)-->\s*$/, "$1");
-	else
-	    this.tmpl = tmpl.innerHTML;
-    }
+    else if ( typeof(tmpl) === "string" )
+	this.tmpl = tmpl;
+    else if ( typeof(tmpl) === "object" )
+	this.tmpl = tmpl.innerHTML;
+
+    if ( this.p.tmpl_is_commented )
+	this.tmpl = this.tmpl.replace(/^\s*<!--([^]+)-->\s*$/, "$1");
 
     this.tmpl_prepare();
 }
