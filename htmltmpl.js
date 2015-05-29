@@ -42,7 +42,7 @@
   tmpl_is_commented
         Enable this if a template is enclosed in <!--/-->. Thus,
 	the comment constuct is striped from a result.
-	0 by default.
+	1 by default.
   err_on_no_data
         If we found a template tag and have no such property in a supplied
 	data, throw an error.
@@ -116,7 +116,7 @@ function htmltmpl(tmpl, prms)
     this.p = { case_sensitive: 1,
 	       global_vars: 0,
 	       loop_context_vars: 0,
-	       tmpl_is_commented: 0,
+	       tmpl_is_commented: 1,
 	       err_on_no_data: 0,
 	       ret_dom: 0,
 	       strip_wrap_spaces: 1 };
