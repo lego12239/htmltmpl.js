@@ -562,7 +562,7 @@ htmltmpl.prototype._get_first_element_name = function ()
     var el_name;
 
 
-    el_name = this.out_str.match(this.rex.first_out_el);
+    el_name = this.out_str.toLowerCase().match(this.rex.first_out_el);
     if ( el_name != null )
 	switch (el_name[1]) {
 	case "tbody":

@@ -435,6 +435,18 @@
                     title: "Test ret_dom option: autodect of td first element",
                     is_ret_dom: 1,
                     prms: { ret_dom: 1 },
+                    data: { var1: 1 } },
+                  { id: "unit54",
+                    id_res: "unit54_res",
+                    title: "Test ret_dom option: autodect of tbody first element(upper case)",
+                    is_ret_dom: 1,
+                    prms: { ret_dom: 1 },
+                    data: { var1: 1 } },
+                  { id: "unit55",
+                    id_res: "unit55_res",
+                    title: "Test ret_dom option: autodect of tbody first element(mixed case)",
+                    is_ret_dom: 1,
+                    prms: { ret_dom: 1 },
                     data: { var1: 1 } } ];
     function report_res(test, ret, ex)
     {
@@ -2198,6 +2210,58 @@
     <tbody>
       <tr>
 	<td id="unit53_res">
+	  another
+	  1
+	  text
+	</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- unit 54 -->
+  <table id="unit54">
+    <!--
+    <TBODY>
+      <tr>
+	<td>
+	  another
+	  {%TMPL_VAR NAME=var1%}
+	  text
+	</td>
+      </tr>
+    </TBODY>
+    -->
+  </table>
+  <table>
+    <tbody id="unit54_res">
+      <tr>
+	<td>
+	  another
+	  1
+	  text
+	</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- unit 55 -->
+  <table id="unit55">
+    <!--
+    <tBoDy>
+      <tr>
+	<td>
+	  another
+	  {%TMPL_VAR NAME=var1%}
+	  text
+	</td>
+      </tr>
+    </tBoDy>
+    -->
+  </table>
+  <table>
+    <tbody id="unit55_res">
+      <tr>
+	<td>
 	  another
 	  1
 	  text
