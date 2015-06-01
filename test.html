@@ -417,6 +417,24 @@
                     is_ret_dom: 1,
                     prms: { ret_dom: 1,
                             strip_wrap_spaces: 1 },
+                    data: { var1: 1 } },
+                  { id: "unit51",
+                    id_res: "unit51_res",
+                    title: "Test ret_dom option: autodect of tbody first element",
+                    is_ret_dom: 1,
+                    prms: { ret_dom: 1 },
+                    data: { var1: 1 } },
+                  { id: "unit52",
+                    id_res: "unit52_res",
+                    title: "Test ret_dom option: autodect of tr first element",
+                    is_ret_dom: 1,
+                    prms: { ret_dom: 1 },
+                    data: { var1: 1 } },
+                  { id: "unit53",
+                    id_res: "unit53_res",
+                    title: "Test ret_dom option: autodect of td first element",
+                    is_ret_dom: 1,
+                    prms: { ret_dom: 1 },
                     data: { var1: 1 } } ];
     function report_res(test, ret, ex)
     {
@@ -2115,6 +2133,78 @@
     1
     text
     </div>
+
+  <!-- unit 51 -->
+  <table id="unit51">
+    <tbody>
+      <tr>
+	<td>
+	  another
+	  {%TMPL_VAR NAME=var1%}
+	  text
+	</td>
+      </tr>
+    </tbody>
+  </table>
+  <table>
+    <tbody id="unit51_res">
+      <tr>
+	<td>
+	  another
+	  1
+	  text
+	</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- unit 52 -->
+  <table>
+    <tbody id="unit52">
+      <tr>
+	<td>
+	  another
+	  {%TMPL_VAR NAME=var1%}
+	  text
+	</td>
+      </tr>
+    </tbody>
+  </table>
+  <table>
+    <tbody>
+      <tr id="unit52_res">
+	<td>
+	  another
+	  1
+	  text
+	</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- unit 53 -->
+  <table>
+    <tbody>
+      <tr id="unit53">
+	<td>
+	  another
+	  {%TMPL_VAR NAME=var1%}
+	  text
+	</td>
+      </tr>
+    </tbody>
+  </table>
+  <table>
+    <tbody>
+      <tr>
+	<td id="unit53_res">
+	  another
+	  1
+	  text
+	</td>
+      </tr>
+    </tbody>
+  </table>
 
   </div>
 </body>
