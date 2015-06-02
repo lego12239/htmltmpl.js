@@ -3,7 +3,6 @@
   <title>htmltmpl loop, if & global_vars example</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
   <script type="text/javascript" src="htmltmpl.js"></script>
-  <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
   <script type="text/javascript">
     var tmpl;  // make tmpl a global var for debug purposes
 
@@ -24,10 +23,12 @@
       data.id = document.getElementById("id").value;
       data.name = document.getElementById("name").value;
 
-      tmpl = new htmltmpl(document.getElementById("tbody_tmpl"), { global_vars: 1,
-		     loop_context_vars: 1 });
+      tmpl = new htmltmpl(document.getElementById("tbody_tmpl"),
+		     { global_vars: 1,
+		       loop_context_vars: 1,
+		       ret_dom: 1 });
       el = tmpl.apply(data);
-      document.getElementById("cntr").appendChild(el);
+      document.getElementById("cntr").appendChild(el[0]);
     }
   </script>
 </head>
@@ -36,29 +37,33 @@
     Example of using nested TMPL_LOOP and TMPL_UNLESS with global_vars option.
   </div>
 
-  <table id="tbody_tmpl" style="display: none"><tbody>
-      <!--%TMPL_LOOP NAME=fields%-->
+  <table id="tbody_tmpl" style="display: none">
+    <!--
+      <tbody>
+      {%TMPL_LOOP NAME=fields%}
       <tr>
         <td>array values:</td>
 	<td>
-	  <%TMPL_LOOP NAME=array%>
-	    <%TMPL_UNLESS NAME=__first__%>,<%/TMPL_UNLESS%>
-	    <%TMPL_VAR NAME=val%>
-	  <%/TMPL_LOOP%>
+	  {%TMPL_LOOP NAME=array%}
+	    {%TMPL_UNLESS NAME=__first__%},{%/TMPL_UNLESS%}
+	    {%TMPL_VAR NAME=val%}
+	  {%/TMPL_LOOP%}
 	</td>
       </tr>
       <tr>
         <td>
-	  <%TMPL_IF NAME=is_id%>id:<%TMPL_ELSE%>non-id:<%/TMPL_IF%>
+	  {%TMPL_IF NAME=is_id%}id:{%TMPL_ELSE%}non-id:{%/TMPL_IF%}
 	</td>
-	<td><%TMPL_VAR NAME=id%></td>
+	<td>{%TMPL_VAR NAME=id%}</td>
       </tr>
       <tr>
         <td>name:</td>
-	<td><%TMPL_VAR NAME=name%></td>
+	<td>{%TMPL_VAR NAME=name%}</td>
       </tr>
-      <!--%/TMPL_LOOP%-->
-  </tbody></table>
+      {%/TMPL_LOOP%}
+    </tbody>
+    -->
+  </table>
 
   <table>
     <tbody>

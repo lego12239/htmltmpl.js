@@ -3,7 +3,6 @@
   <title>htmltmpl usage example</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
   <script type="text/javascript" src="htmltmpl.js"></script>
-  <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
   <script type="text/javascript">
     var tmpl;  // make tmpl a global var for debug purposes
 
@@ -12,7 +11,8 @@
       var el;
 
 
-      tmpl = new htmltmpl(document.getElementById("tbody_tmpl"));
+      tmpl = new htmltmpl(document.getElementById("tbody_tmpl"),
+                          { ret_dom: 1 });
       el = tmpl.apply({ id: document.getElementById("id").value,
                         name: document.getElementById("name").value,
                         fields: [ { title: "First parameter",
@@ -20,33 +20,35 @@
                                   { is_exist: 1,
                                     title: "Second parameter",
                                     name: "prm2" } ] });
-      document.getElementById("cntr").appendChild(el);
+      document.getElementById("cntr").appendChild(el[0]);
     }
   </script>
 </head>
 <body>
-  <table id="tbody_tmpl" style="display: none"><tbody>
+  <div id="tbody_tmpl" style="display: none">
+    <!--<tbody>
       <tr>
         <td>id:</td>
-	<td><%TMPL_VAR NAME=id%></td>
+	<td>{%TMPL_VAR NAME=id%}</td>
       </tr>
       <tr>
         <td>name:</td>
-	<td><%TMPL_VAR NAME=name%></td>
+	<td>{%TMPL_VAR NAME=name%}</td>
       </tr>
-      <!--%TMPL_LOOP NAME=fields%-->
-        <!--%TMPL_IF NAME=is_exist%-->
+      {%TMPL_LOOP NAME=fields%}
+        {%TMPL_IF NAME=is_exist%}
           <tr>
-	    <td><%TMPL_VAR NAME=title%></td>
-	    <td><input type="text" name="<%TMPL_VAR NAME=name%>" value=""/></td>
+	    <td>{%TMPL_VAR NAME=title%}</td>
+	    <td><input type="text" name="{%TMPL_VAR NAME=name%}" value=""/></td>
 	  </tr>
-	<!--%TMPL_ELSE%-->
+	{%TMPL_ELSE%}
 	  <tr>
 	    <td cols="2">no title</td>
 	  </tr>
-	<!--%/TMPL_IF%-->
-      <!--%/TMPL_LOOP%-->
-  </tbody></table>
+	{%/TMPL_IF%}
+      {%/TMPL_LOOP%}
+    </tbody>-->
+  </div>
 
   <table>
     <tbody>
