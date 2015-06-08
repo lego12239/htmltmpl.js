@@ -60,7 +60,7 @@ behaviour. They are passed as object properties:
   tmpl_is_commented (0/1)
         Enable this if a template is enclosed in <!--/-->. Thus,
         the comment constuct is striped from a result.
-        0 by default.
+        1 by default.
   err_on_no_data (0/1)
         If we found a template tag and have no such property in a supplied
 	data, throw an error.
