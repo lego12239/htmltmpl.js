@@ -66,6 +66,7 @@ function htmltmpl(tmpl, prms)
     this.rex = { tag: /^(\S+)(\s+.+)?$/,
 		 tag_attrs: /\s+([^\s=]+)\s*=\s*("[^"]+"|'[^']+'|\S+)/g,
 		 first_out_el: /^\s*<([^\s>]+)(?:\s|>)/ };
+    this.funcs = {};
     this.tags = {};
     this.tags["TMPL_VAR"] = { pfunc: this.hdlr_var_parse,
 			      afunc: this.hdlr_var_apply,
@@ -110,6 +111,9 @@ function htmltmpl(tmpl, prms)
 				  start_tag: [this.tags["TMPL_IFNDEF"],
 					      this.tags["TMPL_ELSE"]],
 				  name: "/TMPL_IFNDEF" };
+    this.tags["TMPL_FUNC"] = { pfunc: this.hdlr_func_parse,
+			       afunc: this.hdlr_func_apply,
+			       name: "TMPL_FUNC" };
 
     this.p = { case_sensitive: 1,
 	       global_vars: 0,
@@ -219,7 +223,21 @@ htmltmpl.prototype._parse_tag_attrs = function(attrs)
 	val = m[2];
 	if (( val.charAt(0) == "'" ) || ( val.charAt(0) == '"' ))
 	    val = val.substr(1, val.length - 2);
-	res[name] = val;
+	if ( res[name] == undefined )
+	    res[name] = val;
+	else
+	    switch (typeof(res[name])) {
+	    case "string":
+		res[name] = [ res[name] ];
+		res[name].push(val);
+		break;
+	    case "object":
+		res[name].push(val);
+		break;
+	    default:
+		throw("_parse_tag_attrs err: unknown value type: " +
+		      typeof(res[name]));
+	    }
     }
 
     return res;
@@ -518,7 +536,36 @@ htmltmpl.prototype.hdlr_ifndef_apply = function(def, tag)
 	throw("Cann't find var '" + tag[0]["NAME"] + "'.");
 }
 
+/**********************************************************************
+ * TMPL_FUNC HANDLERS
+ **********************************************************************/
+htmltmpl.prototype.hdlr_func_parse = function(def, tag_attrs)
+{
+    var attrs;
 
+    attrs = this._parse_tag_attrs(tag_attrs);
+    if (( attrs.ARG != undefined ) && ( typeof(attrs.ARG) === "string" ))
+	attrs.ARG = [ attrs.ARG ];
+    this._s.parse[0].push([def.name, [ attrs ]]);
+}
+
+htmltmpl.prototype.hdlr_func_apply = function(def, tag)
+{
+    var attrs;
+    var val;
+
+
+    if ( this.funcs[tag[0]["NAME"]] != undefined ) {
+	val = this.funcs[tag[0]["NAME"]].apply(this, tag[0]["ARG"]);
+	if ( val != undefined )
+	    this.out_str += val;
+    } else if ( this.p.err_on_no_data )
+	throw("Cann't find func '" + tag[0]["NAME"] + "'.");
+}
+
+/**********************************************************************
+ * APPLY STUFF
+ **********************************************************************/
 htmltmpl.prototype._apply = function(tmpl)
 {
     var i, j;

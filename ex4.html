@@ -1,0 +1,65 @@
+<html>
+<head>
+  <title>htmltmpl usage example</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <script type="text/javascript" src="htmltmpl.js"></script>
+  <script type="text/javascript">
+    var tmpl;  // make tmpl a global var for debug purposes
+
+    function add()
+    {
+      var el;
+
+
+      tmpl = new htmltmpl(document.getElementById("tbody_tmpl"),
+                          { ret_dom: 1 });
+      tmpl.funcs.echo = function (separator) {
+      	var i, out = "";
+      	var str = this._get_data("text");
+      	var count = this._get_data("count");
+      	for(i = 0; i < count; i++)
+      		if ( i )
+      			out += separator + str;
+      		else
+      			out += str;
+      	return out;
+      };
+      el = tmpl.apply({ text: document.getElementById("text").value,
+                        count: document.getElementById("count").value });
+      document.getElementById("cntr").appendChild(el[0]);
+    }
+  </script>
+</head>
+<body>
+  <div id="tbody_tmpl" style="display: none">
+    <!--<tbody>
+      <tr>
+        <td>text/count:</td>
+		<td>{%TMPL_VAR NAME=text%}/{%TMPL_VAR NAME=count%}</td>
+      </tr>
+      <tr>
+        <td>result:</td>
+		<td>{%TMPL_FUNC NAME=echo ARG=" | "%}</td>
+      </tr>
+    </tbody>-->
+  </div>
+
+  <table>
+    <tbody>
+      <tr>
+	<td>text:</td>
+	<td><input type="text" id="text" value=""/></td>
+      </tr>
+      <tr>
+	<td>count:</td>
+	<td><input type="text" id="count" value=""/></td>
+      </tr>
+    </tbody>
+  </table>
+  <input type="button" onclick="add()" value="add"/>
+
+  <table id="cntr">
+  </table>
+</body>
+</html>
+
