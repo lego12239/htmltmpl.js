@@ -243,9 +243,15 @@ htmltmpl.prototype._parse_tag_attrs = function(attrs)
     return res;
 }
 
+// For use inside a this.funcs.*
+htmltmpl.prototype.get_data = function(name)
+{
+    return this._get_data(name.split("."));
+}
+
 htmltmpl.prototype._get_data = function(name)
 {
-    var len;
+    var len, v;
     var j;
 
 
@@ -255,11 +261,27 @@ htmltmpl.prototype._get_data = function(name)
 	len = 1;
 
     for(j = 0; j < len; j++) {
-	if ( this._s.data[j][name] != undefined )
-	    return this._s.data[j][name];
+	v = this.__get_data(this._s.data[j], name);
+	if ( v != undefined )
+	    return v;
     }
 
     return;
+}
+
+htmltmpl.prototype.__get_data = function(obj, name)
+{
+    var len = name.length - 1;
+    var i;
+
+
+    for(i = 0; i < len; i++) {
+    	if ( obj[name[i]] == undefined )
+    	    return;
+    	obj = obj[name[i]];
+    }
+
+    return obj[name[len]];
 }
 
 htmltmpl.prototype.is_tag_match = function(tag, tags)
@@ -280,10 +302,11 @@ htmltmpl.prototype.is_tag_match = function(tag, tags)
  **********************************************************************/
 htmltmpl.prototype.hdlr_var_parse = function(def, tag_attrs)
 {
-    var attrs;
+    var attrs, vname;
 
     attrs = this._parse_tag_attrs(tag_attrs);
-    this._s.parse[0].push([def.name, [ attrs ]]);
+    vname = attrs.NAME.split(".");
+    this._s.parse[0].push([def.name, [ vname, attrs ]]);
 }
 
 htmltmpl.prototype.hdlr_var_apply = function(def, tag)
@@ -292,14 +315,14 @@ htmltmpl.prototype.hdlr_var_apply = function(def, tag)
     var val;
 
 
-    val = this._get_data(tag[0]["NAME"]);
+    val = this._get_data(tag[0]);
 
     if ( val != undefined )
 	this.out_str += val;
-    else if ( tag[0]["DEFAULT"] != undefined )
-	this.out_str += tag[0]["DEFAULT"];
+    else if ( tag[1]["DEFAULT"] != undefined )
+	this.out_str += tag[1]["DEFAULT"];
     else if ( this.p.err_on_no_data )
-	throw("Cann't find var '" + tag[0]["NAME"] + "'.");
+	throw("Cann't find var '" + tag[0] + "'.");
 }
 
 /**********************************************************************
@@ -318,7 +341,7 @@ htmltmpl.prototype.hdlr_loop_parse = function(def, tag_attrs)
 htmltmpl.prototype.hdlr_loop_end_parse = function(def)
 {
     var priv;
-    var loop;
+    var vname, loop;
 
 
     priv = this._s.priv[0];
@@ -326,8 +349,9 @@ htmltmpl.prototype.hdlr_loop_end_parse = function(def)
 	throw("parse err: " + priv[0].name + " was opened, but " +
 	      def.name + " is being closed");
 
+    vname = priv[1].NAME.split(".");
     loop = this._s.parse.shift();
-    this._s.parse[0].push([priv[0].name, [ priv[1], loop ]]);
+    this._s.parse[0].push([priv[0].name, [ vname, priv[1], loop ]]);
     this._s.priv.shift();
 }
 
@@ -338,18 +362,18 @@ htmltmpl.prototype.hdlr_loop_apply = function(def, tag)
     var i;
 
 
-    val = this._get_data(tag[0]["NAME"]);
+    val = this._get_data(tag[0]);
 
     if (( val != undefined ) && ( Array.isArray(val) ))
 	for(i = 0; i < val.length; i++) {
 	    this._s.data.unshift(val[i]);
 	    if ( this.p.loop_context_vars )
 		this.set_loop_context_vars(i, val.length);
-	    this._apply(tag[1]);
+	    this._apply(tag[2]);
 	    this._s.data.shift();
 	}
     else if ( this.p.err_on_no_data )
-	throw("Cann't find loop '" + tag[0]["NAME"] + "'.");
+	throw("Cann't find loop '" + tag[0] + "'.");
 }
 
 htmltmpl.prototype.set_loop_context_vars = function (loopidx, looplen)
@@ -414,7 +438,7 @@ htmltmpl.prototype.hdlr_else_parse = function(def)
 htmltmpl.prototype.hdlr_if_end_parse = function(def)
 {
     var priv;
-    var if_, else_;
+    var vname, if_, else_;
 
 
     priv = this._s.priv.shift();
@@ -426,8 +450,9 @@ htmltmpl.prototype.hdlr_if_end_parse = function(def)
 	priv = this._s.priv.shift();
     }
 
+    vname = priv[1].NAME.split(".");
     if_ = this._s.parse.shift();
-    this._s.parse[0].push([priv[0].name, [ priv[1], if_, else_ ]]);
+    this._s.parse[0].push([priv[0].name, [ vname, priv[1], if_, else_ ]]);
 }
 
 htmltmpl.prototype.hdlr_if_apply = function(def, tag)
@@ -437,14 +462,14 @@ htmltmpl.prototype.hdlr_if_apply = function(def, tag)
     var i;
 
 
-    val = this._get_data(tag[0]["NAME"]);
+    val = this._get_data(tag[0]);
 
     if ( val )
-	this._apply(tag[1]);
-    else if ( tag[2] != undefined )
 	this._apply(tag[2]);
+    else if ( tag[3] != undefined )
+	this._apply(tag[3]);
     else if ( this.p.err_on_no_data )
-	throw("Cann't find var '" + tag[0]["NAME"] + "'.");
+	throw("Cann't find var '" + tag[0] + "'.");
 }
 
 /**********************************************************************
@@ -457,14 +482,14 @@ htmltmpl.prototype.hdlr_unless_apply = function(def, tag)
     var i;
 
 
-    val = this._get_data(tag[0]["NAME"]);
+    val = this._get_data(tag[0]);
 
     if ( ! val )
-	this._apply(tag[1]);
-    else if ( tag[2] != undefined )
 	this._apply(tag[2]);
+    else if ( tag[3] != undefined )
+	this._apply(tag[3]);
     else if ( this.p.err_on_no_data )
-	throw("Cann't find var '" + tag[0]["NAME"] + "'.");
+	throw("Cann't find var '" + tag[0] + "'.");
 }
 
 /**********************************************************************
@@ -483,7 +508,7 @@ htmltmpl.prototype.hdlr_ifdef_parse = function(def, tag_attrs)
 htmltmpl.prototype.hdlr_ifdef_end_parse = function(def)
 {
     var priv;
-    var if_, else_;
+    var vname, if_, else_;
 
 
     priv = this._s.priv.shift();
@@ -495,8 +520,9 @@ htmltmpl.prototype.hdlr_ifdef_end_parse = function(def)
 	priv = this._s.priv.shift();
     }
 
+    vname = priv[1].NAME.split(".");
     if_ = this._s.parse.shift();
-    this._s.parse[0].push([priv[0].name, [ priv[1], if_, else_ ]]);
+    this._s.parse[0].push([priv[0].name, [ vname, priv[1], if_, else_ ]]);
 }
 
 htmltmpl.prototype.hdlr_ifdef_apply = function(def, tag)
@@ -506,14 +532,14 @@ htmltmpl.prototype.hdlr_ifdef_apply = function(def, tag)
     var i;
 
 
-    val = this._get_data(tag[0]["NAME"]);
+    val = this._get_data(tag[0]);
 
     if ( val != undefined )
-	this._apply(tag[1]);
-    else if ( tag[2] != undefined )
 	this._apply(tag[2]);
+    else if ( tag[3] != undefined )
+	this._apply(tag[3]);
     else if ( this.p.err_on_no_data )
-	throw("Cann't find var '" + tag[0]["NAME"] + "'.");
+	throw("Cann't find var '" + tag[0] + "'.");
 }
 
 /**********************************************************************
@@ -526,14 +552,14 @@ htmltmpl.prototype.hdlr_ifndef_apply = function(def, tag)
     var i;
 
 
-    val = this._get_data(tag[0]["NAME"]);
+    val = this._get_data(tag[0]);
 
     if ( val == undefined )
-	this._apply(tag[1]);
-    else if ( tag[2] != undefined )
 	this._apply(tag[2]);
+    else if ( tag[3] != undefined )
+	this._apply(tag[3]);
     else if ( this.p.err_on_no_data )
-	throw("Cann't find var '" + tag[0]["NAME"] + "'.");
+	throw("Cann't find var '" + tag[0] + "'.");
 }
 
 /**********************************************************************

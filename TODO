@@ -3,3 +3,5 @@
    TMPL_ELSE, but strange things like TMPL_IF...TMPL_ELSE.../TMPL_IFNDEF is
    considered correct.
 8. Find all tag names which we need to include in _get_first_element_name().
+9. Add tests for TMPL_FUNC and long.var.names .
+10. Add docs for long.var.names.
