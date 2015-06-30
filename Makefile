@@ -1,11 +1,15 @@
+SRC_MIN := htmltmpl/core.min.js htmltmpl/ifdef.min.js
+SRC := htmltmpl/core.js htmltmpl/ifdef.js
 
 .PHONY: clean minify
 
 clean:
 	find . -name '*~' -exec rm -f '{}' \+
 
-minify: htmltmpl.js
-	jsmin < $^ > htmltmpl.min.js
-	echo "/* htmltmpl | Version 1.0.0 | License - GNU LGPL 3 */" > htmltmpl.min.js.tmp
-	cat htmltmpl.min.js >> htmltmpl.min.js.tmp
-	mv htmltmpl.min.js.tmp htmltmpl.min.js
+minify: $(SRC_MIN)
+
+%.min.js: %.js
+	jsmin < $^ > $@
+	sed -ne '1 p; 3 q' $^ > $@.tmp
+	cat $@ >> $@.tmp
+	mv $@.tmp $@
