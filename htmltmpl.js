@@ -64,57 +64,7 @@ function htmltmpl(tmpl, prms)
     this._s = { parse: [[]],
 		priv: [],
 		data: [] };
-    this.rex = { tag: /^(\S+)(\s+.+)?$/,
-		 tag_attrs: /\s+([^\s=]+)\s*=\s*("[^"]+"|'[^']+'|\S+)/g,
-		 first_out_el: /^\s*<([^\s>]+)(?:\s|>)/ };
     this.funcs = {};
-    this.tags = {};
-    this.tags["TMPL_VAR"] = { pfunc: this.hdlr_var_parse,
-			      afunc: this.hdlr_var_apply,
-			      name: "TMPL_VAR" };
-    this.tags["TMPL_LOOP"] = { pfunc: this.hdlr_loop_parse,
-			       afunc: this.hdlr_loop_apply,
-			       name: "TMPL_LOOP" };
-    this.tags["/TMPL_LOOP"] = { pfunc: this.hdlr_loop_end_parse,
-				start_tag: [this.tags["TMPL_LOOP"]],
-				name: "/TMPL_LOOP" };
-    this.tags["TMPL_IF"] = { pfunc: this.hdlr_if_parse,
-			     afunc: this.hdlr_if_apply,
-			     name: "TMPL_IF" };
-    this.tags["TMPL_UNLESS"] = { pfunc: this.hdlr_if_parse,
-				 afunc: this.hdlr_unless_apply,
-				 name: "TMPL_UNLESS" };
-    this.tags["TMPL_IFDEF"] = { pfunc: this.hdlr_ifdef_parse,
-				afunc: this.hdlr_ifdef_apply,
-				name: "TMPL_IFDEF" };
-    this.tags["TMPL_IFNDEF"] = { pfunc: this.hdlr_ifdef_parse,
-				 afunc: this.hdlr_ifndef_apply,
-				 name: "TMPL_IFNDEF" };
-    this.tags["TMPL_ELSE"] = { pfunc: this.hdlr_else_parse,
-			       start_tag: [this.tags["TMPL_IF"],
-					   this.tags["TMPL_UNLESS"],
-					   this.tags["TMPL_IFDEF"],
-					   this.tags["TMPL_IFNDEF"]],
-			       name: "TMPL_ELSE" };
-    this.tags["/TMPL_IF"] = { pfunc: this.hdlr_if_end_parse,
-			      start_tag: [this.tags["TMPL_IF"],
-					  this.tags["TMPL_ELSE"]],
-			      name: "/TMPL_IF" };
-    this.tags["/TMPL_UNLESS"] = { pfunc: this.hdlr_if_end_parse,
-				  start_tag: [this.tags["TMPL_UNLESS"],
-					      this.tags["TMPL_ELSE"]],
-				  name: "/TMPL_UNLESS" };
-    this.tags["/TMPL_IFDEF"] = { pfunc: this.hdlr_ifdef_end_parse,
-				 start_tag: [this.tags["TMPL_IFDEF"],
-					     this.tags["TMPL_ELSE"]],
-				 name: "/TMPL_IFDEF" };
-    this.tags["/TMPL_IFNDEF"] = { pfunc: this.hdlr_ifdef_end_parse,
-				  start_tag: [this.tags["TMPL_IFNDEF"],
-					      this.tags["TMPL_ELSE"]],
-				  name: "/TMPL_IFNDEF" };
-    this.tags["TMPL_FUNC"] = { pfunc: this.hdlr_func_parse,
-			       afunc: this.hdlr_func_apply,
-			       name: "TMPL_FUNC" };
 
     if ( prms == undefined )
 	prms = {};
@@ -651,5 +601,72 @@ htmltmpl.prototype._get_first_element_name = function ()
 
     return "div";
 }
+
+htmltmpl.prototype.rex = {
+    tag: /^(\S+)(\s+.+)?$/,
+    tag_attrs: /\s+([^\s=]+)\s*=\s*("[^"]+"|'[^']+'|\S+)/g,
+    first_out_el: /^\s*<([^\s>]+)(?:\s|>)/ };
+
+htmltmpl.prototype.tags = {};
+
+htmltmpl.prototype.tags["TMPL_VAR"] = {
+    pfunc: htmltmpl.prototype.hdlr_var_parse,
+    afunc: htmltmpl.prototype.hdlr_var_apply,
+    name: "TMPL_VAR" };
+htmltmpl.prototype.tags["TMPL_LOOP"] = {
+    pfunc: htmltmpl.prototype.hdlr_loop_parse,
+    afunc: htmltmpl.prototype.hdlr_loop_apply,
+    name: "TMPL_LOOP" };
+htmltmpl.prototype.tags["/TMPL_LOOP"] = {
+    pfunc: htmltmpl.prototype.hdlr_loop_end_parse,
+    start_tag: [htmltmpl.prototype.tags["TMPL_LOOP"]],
+    name: "/TMPL_LOOP" };
+htmltmpl.prototype.tags["TMPL_IF"] = {
+    pfunc: htmltmpl.prototype.hdlr_if_parse,
+    afunc: htmltmpl.prototype.hdlr_if_apply,
+    name: "TMPL_IF" };
+htmltmpl.prototype.tags["TMPL_UNLESS"] = {
+    pfunc: htmltmpl.prototype.hdlr_if_parse,
+    afunc: htmltmpl.prototype.hdlr_unless_apply,
+    name: "TMPL_UNLESS" };
+htmltmpl.prototype.tags["TMPL_IFDEF"] = {
+    pfunc: htmltmpl.prototype.hdlr_ifdef_parse,
+    afunc: htmltmpl.prototype.hdlr_ifdef_apply,
+    name: "TMPL_IFDEF" };
+htmltmpl.prototype.tags["TMPL_IFNDEF"] = {
+    pfunc: htmltmpl.prototype.hdlr_ifdef_parse,
+    afunc: htmltmpl.prototype.hdlr_ifndef_apply,
+    name: "TMPL_IFNDEF" };
+htmltmpl.prototype.tags["TMPL_ELSE"] = {
+    pfunc: htmltmpl.prototype.hdlr_else_parse,
+    start_tag: [htmltmpl.prototype.tags["TMPL_IF"],
+		htmltmpl.prototype.tags["TMPL_UNLESS"],
+		htmltmpl.prototype.tags["TMPL_IFDEF"],
+		htmltmpl.prototype.tags["TMPL_IFNDEF"]],
+    name: "TMPL_ELSE" };
+htmltmpl.prototype.tags["/TMPL_IF"] = {
+    pfunc: htmltmpl.prototype.hdlr_if_end_parse,
+    start_tag: [htmltmpl.prototype.tags["TMPL_IF"],
+		htmltmpl.prototype.tags["TMPL_ELSE"]],
+    name: "/TMPL_IF" };
+htmltmpl.prototype.tags["/TMPL_UNLESS"] = {
+    pfunc: htmltmpl.prototype.hdlr_if_end_parse,
+    start_tag: [htmltmpl.prototype.tags["TMPL_UNLESS"],
+		htmltmpl.prototype.tags["TMPL_ELSE"]],
+    name: "/TMPL_UNLESS" };
+htmltmpl.prototype.tags["/TMPL_IFDEF"] = {
+    pfunc: htmltmpl.prototype.hdlr_ifdef_end_parse,
+    start_tag: [htmltmpl.prototype.tags["TMPL_IFDEF"],
+		htmltmpl.prototype.tags["TMPL_ELSE"]],
+    name: "/TMPL_IFDEF" };
+htmltmpl.prototype.tags["/TMPL_IFNDEF"] = {
+    pfunc: htmltmpl.prototype.hdlr_ifdef_end_parse,
+    start_tag: [htmltmpl.prototype.tags["TMPL_IFNDEF"],
+		htmltmpl.prototype.tags["TMPL_ELSE"]],
+    name: "/TMPL_IFNDEF" };
+htmltmpl.prototype.tags["TMPL_FUNC"] = {
+    pfunc: htmltmpl.prototype.hdlr_func_parse,
+    afunc: htmltmpl.prototype.hdlr_func_apply,
+    name: "TMPL_FUNC" };
 
 }
