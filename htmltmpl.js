@@ -58,6 +58,7 @@
 */
 function htmltmpl(tmpl, prms)
 {
+    this.p = {};
     this.tmpl = "";
     this.tmpl_parsed = [];
     this._s = { parse: [[]],
@@ -115,30 +116,15 @@ function htmltmpl(tmpl, prms)
 			       afunc: this.hdlr_func_apply,
 			       name: "TMPL_FUNC" };
 
-    this.p = { case_sensitive: 1,
-	       global_vars: 0,
-	       loop_context_vars: 0,
-	       tmpl_is_commented: 1,
-	       err_on_no_data: 0,
-	       ret_dom: 0,
-	       strip_wrap_spaces: 1 };
-    if ( prms != undefined ) {
-	if ( prms.case_sensitive != undefined )
-	    this.p.case_sensitive = prms.case_sensitive;
-	if ( prms.global_vars != undefined )
-	    this.p.global_vars = prms.global_vars;
-	if ( prms.loop_context_vars != undefined )
-	    this.p.loop_context_vars = prms.loop_context_vars;
-	if ( prms.tmpl_is_commented != undefined ) {
-	    this.p.tmpl_is_commented = prms.tmpl_is_commented;
-	}
-	if ( prms.err_on_no_data != undefined )
-	    this.p.err_on_no_data = prms.err_on_no_data;
-	if ( prms.ret_dom != undefined )
-	    this.p.ret_dom = prms.ret_dom;
-	if ( prms.strip_wrap_spaces != undefined )
-	    this.p.strip_wrap_spaces = prms.strip_wrap_spaces;
-    }
+    if ( prms == undefined )
+	prms = {};
+    this._set_prm("case_sensitive", prms.case_sensitive);
+    this._set_prm("global_vars", prms.global_vars);
+    this._set_prm("loop_context_vars", prms.loop_context_vars);
+    this._set_prm("tmpl_is_commented", prms.tmpl_is_commented);
+    this._set_prm("err_on_no_data", prms.err_on_no_data);
+    this._set_prm("ret_dom", prms.ret_dom);
+    this._set_prm("strip_wrap_spaces", prms.strip_wrap_spaces);
 
     if ( typeof(tmpl) === "undefined" )
 	this.tmpl = "";
@@ -153,6 +139,23 @@ function htmltmpl(tmpl, prms)
 	this.tmpl = this.tmpl.replace(/^\s*([^]+?)\s*$/, "$1");
 
     this.tmpl_prepare();
+}
+
+htmltmpl.p = {
+    case_sensitive: 1,
+    global_vars: 0,
+    loop_context_vars: 0,
+    tmpl_is_commented: 1,
+    err_on_no_data: 0,
+    ret_dom: 0,
+    strip_wrap_spaces: 1 };
+
+htmltmpl.prototype._set_prm = function (n, v)
+{
+    if ( v == undefined )
+	this.p[n] = htmltmpl.p[n];
+    else
+	this.p[n] = v;
 }
 
 htmltmpl.prototype.tmpl_prepare = function()

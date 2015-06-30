@@ -76,7 +76,14 @@ behaviour. They are passed as object properties:
         Remove white space at start and at end of a template.
         1 by default.
 
-For example:
+Parameters default values also can be changed by changing an object
+htmltmpl.p. E.g:
+
+htmltmpl.p.ret_dom = 1;
+
+So, you shouldn't supply this option on every htmltmpl constructor invocation.
+
+Example:
 
 var tmpl = new htmltmpl(document.getElementById("tmpl_div"),
                         { case_sensitive: 0,
