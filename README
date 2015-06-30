@@ -43,7 +43,7 @@ solid target of Makefile. Do:
 
 	make && make solid
 
-and you got htmltmpl.solid.min.js in the current directory.
+and you get htmltmpl.solid.min.js in the current directory.
 
 Using
 =====
