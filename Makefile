@@ -1,5 +1,5 @@
-SRC_MIN := htmltmpl/core.min.js htmltmpl/ifdef.min.js
-SRC := htmltmpl/core.js htmltmpl/ifdef.js
+SRC_MIN := htmltmpl/core.min.js htmltmpl/ifdef.min.js htmltmpl/func.min.js
+SRC := htmltmpl/core.js htmltmpl/ifdef.js htmltmpl/func.js
 
 .PHONY: build clean minify
 

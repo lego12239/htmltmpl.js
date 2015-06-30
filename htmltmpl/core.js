@@ -65,7 +65,6 @@ function htmltmpl(tmpl, prms)
     this._s = { parse: [[]],
 		priv: [],
 		data: [] };
-    this.funcs = {};
 
     this._set_prms(prms);
 
@@ -210,12 +209,6 @@ htmltmpl.prototype._parse_tag_attrs = function(attrs)
     }
 
     return res;
-}
-
-// For use inside a this.funcs.*
-htmltmpl.prototype.get_data = function(name)
-{
-    return this._get_data(name.split("."));
 }
 
 htmltmpl.prototype._get_data = function(name)
@@ -462,33 +455,6 @@ htmltmpl.prototype.hdlr_unless_apply = function(def, tag)
 }
 
 /**********************************************************************
- * TMPL_FUNC HANDLERS
- **********************************************************************/
-htmltmpl.prototype.hdlr_func_parse = function(def, tag_attrs)
-{
-    var attrs;
-
-    attrs = this._parse_tag_attrs(tag_attrs);
-    if (( attrs.ARG != undefined ) && ( typeof(attrs.ARG) === "string" ))
-	attrs.ARG = [ attrs.ARG ];
-    this._s.parse[0].push([def.name, [ attrs ]]);
-}
-
-htmltmpl.prototype.hdlr_func_apply = function(def, tag)
-{
-    var attrs;
-    var val;
-
-
-    if ( this.funcs[tag[0]["NAME"]] != undefined ) {
-	val = this.funcs[tag[0]["NAME"]].apply(this, tag[0]["ARG"]);
-	if ( val != undefined )
-	    this.out_str += val;
-    } else if ( this.p.err_on_no_data )
-	throw("Cann't find func '" + tag[0]["NAME"] + "'.");
-}
-
-/**********************************************************************
  * APPLY STUFF
  **********************************************************************/
 htmltmpl.prototype._apply = function(tmpl)
@@ -593,9 +559,5 @@ htmltmpl.prototype.tags["/TMPL_UNLESS"] = {
     start_tag: [htmltmpl.prototype.tags["TMPL_UNLESS"],
 		htmltmpl.prototype.tags["TMPL_ELSE"]],
     name: "/TMPL_UNLESS" };
-htmltmpl.prototype.tags["TMPL_FUNC"] = {
-    pfunc: htmltmpl.prototype.hdlr_func_parse,
-    afunc: htmltmpl.prototype.hdlr_func_apply,
-    name: "TMPL_FUNC" };
 
 }
