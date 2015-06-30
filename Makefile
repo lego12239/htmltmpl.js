@@ -1,7 +1,9 @@
 SRC_MIN := htmltmpl/core.min.js htmltmpl/ifdef.min.js
 SRC := htmltmpl/core.js htmltmpl/ifdef.js
 
-.PHONY: clean minify
+.PHONY: build clean minify
+
+build: minify
 
 clean:
 	find . -name '*~' -exec rm -f '{}' \+
