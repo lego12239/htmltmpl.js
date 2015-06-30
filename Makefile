@@ -2,7 +2,7 @@ SRC_MIN := htmltmpl/core.min.js htmltmpl/ifdef.min.js htmltmpl/func.min.js
 SRC := htmltmpl/core.js htmltmpl/ifdef.js htmltmpl/func.js
 VERSION := 1.1.0
 
-.PHONY: build upd_version clean minify
+.PHONY: build upd_version clean minify solid
 
 build: upd_version
 	$(MAKE) minify
@@ -14,6 +14,9 @@ upd_version: $(SRC)
 	sed -i -re 's/\| htmltmpl ([0-9.]+)/| htmltmpl $(VERSION)/' $^
 
 minify: $(SRC_MIN)
+
+solid: $(SRC_MIN)
+	cat $^ > htmltmpl.solid.min.js
 
 %.min.js: %.js
 	jsmin < $^ > $@
