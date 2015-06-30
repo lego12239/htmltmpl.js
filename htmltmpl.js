@@ -66,15 +66,7 @@ function htmltmpl(tmpl, prms)
 		data: [] };
     this.funcs = {};
 
-    if ( prms == undefined )
-	prms = {};
-    this._set_prm("case_sensitive", prms.case_sensitive);
-    this._set_prm("global_vars", prms.global_vars);
-    this._set_prm("loop_context_vars", prms.loop_context_vars);
-    this._set_prm("tmpl_is_commented", prms.tmpl_is_commented);
-    this._set_prm("err_on_no_data", prms.err_on_no_data);
-    this._set_prm("ret_dom", prms.ret_dom);
-    this._set_prm("strip_wrap_spaces", prms.strip_wrap_spaces);
+    this._set_prms(prms);
 
     if ( typeof(tmpl) === "undefined" )
 	this.tmpl = "";
@@ -99,6 +91,18 @@ htmltmpl.p = {
     err_on_no_data: 0,
     ret_dom: 0,
     strip_wrap_spaces: 1 };
+
+htmltmpl.prototype._set_prms = function (prms)
+{
+    var p;
+
+
+    if ( prms == undefined )
+	prms = {};
+
+    for(p in htmltmpl.p)
+	this._set_prm(p, prms[p]);
+}
 
 htmltmpl.prototype._set_prm = function (n, v)
 {
