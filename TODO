@@ -5,3 +5,35 @@
 8. Find all tag names which we need to include in _get_first_element_name().
 9. Add tests for TMPL_FUNC and long.var.names .
 11. Group tests in test.html by modules(core,ifdef,func).
+12. May be this.funcs = {} must not be in init function. May be it must
+    exist in prototype(or like htmltmpl.p), thus we can assign to it functions for all htmltmpl
+    instances. Init in such a case can be the next:
+    htmltmpl.prototype.inits.push(function () {
+      var f;
+
+
+      this.funcs = {};
+      for(f in htmltmpl.funcs)
+        this.funcs[f] = htmltmpl.funcs[f];
+    }
+13. Create a separate property for extensions data. E.g. htmltmpl.e.funcs.funcs instead of
+    this.funcs(htmltmpl.funcs); htmltmpl.prototype.e.funcs.get_data instead of
+    htmltmpl.prototype.get_data; htmltmpl.prototype.e.funcs.hdlr_funcs_parse instead of
+    htmltmpl.prototype.hdlr_funcs_parse.
+14. Add characters escaping for a tag value. Something like a ESCAPE attribute with
+    values HTML_TEXT and HTML_ATTR. For HTML_TEXT do:
+      & -> &amp;
+      < -> &lt;
+      > -> &gt;
+    for HTML_ATTR do:
+      " -> &quot;
+      ' -> &#39;
+    May be conveniently would be to add a global parameter to switch on/off escaping
+    by default. In such a case we need a third value - NO. To disable escaping for
+    a single tag, if escaping is turn on by default.
+    Don't forget about case_sensitive parameter behaviour towards to ESCAPE attribute
+    values.
+15. May be we have a bug with {%. A template is splited by {%. If we can't find a tag
+    we append a text and possily without {%. Check this.
+16. Use for loop context vars a separate data stack? We must not modify a source data if
+    this possible.
