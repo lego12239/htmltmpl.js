@@ -78,7 +78,7 @@ function htmltmpl(tmpl, prms)
     if ( this.p.strip_wrap_spaces )
 	this.tmpl = this.tmpl.replace(/^\s*([^]+?)\s*$/, "$1");
 
-    this._call_inits();
+    this._cb_run(this.cb.init);
 
     this.tmpl_prepare();
 }
@@ -112,13 +112,13 @@ htmltmpl.prototype._set_prm = function (n, v)
 	this.p[n] = v;
 }
 
-htmltmpl.prototype._call_inits = function ()
+htmltmpl.prototype._cb_run = function (cb)
 {
     var i;
 
 
-    for(i = 0; i < this.inits.length; i++)
-	this.inits[i].call(this);
+    for(i = 0; i < cb.length; i++)
+	cb[i].call(this);
 }
 
 htmltmpl.prototype.tmpl_prepare = function()
@@ -512,8 +512,8 @@ htmltmpl.prototype._get_first_element_name = function ()
     return "div";
 }
 
-/* init functions for extensions */
-htmltmpl.prototype.inits = [];
+/* callbacks for extensions */
+htmltmpl.prototype.cb = {init: []};
 
 htmltmpl.prototype.rex = {
     tag: /^(\S+)(\s+.+)?$/,

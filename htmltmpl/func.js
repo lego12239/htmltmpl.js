@@ -18,7 +18,7 @@
 {
 "use strict";
 
-htmltmpl.prototype.inits.push(function () {
+htmltmpl.prototype.cb.init.push(function () {
     this.funcs = {};
 });
 
