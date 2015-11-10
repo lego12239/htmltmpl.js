@@ -1,5 +1,5 @@
-SRC_MIN := htmltmpl/core.min.js htmltmpl/ifdef.min.js htmltmpl/func.min.js
 SRC := htmltmpl/core.js htmltmpl/ifdef.js htmltmpl/func.js
+SRC_MIN := $(patsubst %.js, %.min.js,$(SRC))
 VERSION := 1.2.0
 
 .PHONY: build upd_version clean minify solid
