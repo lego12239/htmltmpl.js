@@ -488,7 +488,10 @@ htmltmpl.prototype.apply = function(data)
     if ( this.p.ret_dom ) {
 	el = document.createElement(this._get_first_element_name());
 	el.innerHTML = this.out_str;
-	return el.childNodes;
+	if ( el.childNodes.length == 1 )
+	    return el.childNodes[0];
+	else
+	    return el.childNodes;
     } else
 	return this.out_str;
 }
