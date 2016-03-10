@@ -37,3 +37,5 @@
     we append a text and possily without {%. Check this.
 16. Use for loop context vars a separate data stack? We must not modify a source data if
     this possible.
+17. Fix constructor for the case of String object as tmpl parameter. typeof(tmpl) will
+    be "object" in this case and instanceof String is true.
