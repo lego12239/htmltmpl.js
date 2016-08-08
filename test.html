@@ -381,27 +381,48 @@
                     ret_to_str_fun: node_to_str },
                   { id: "unit52",
                     id_res: "unit52_res",
-                    title: "Test ret_dom option: autodect of tr first element",
-                    prms: { ret_dom: 1,
+                    title: "Test ret_dom option: autodect of thead first element",
+                   prms: { ret_dom: 1,
                             strip_wrap_spaces: 1 },
                     data: { var1: 1 },
                     ret_to_str_fun: node_to_str },
                   { id: "unit53",
                     id_res: "unit53_res",
-                    title: "Test ret_dom option: autodect of td first element",
-                    prms: { ret_dom: 1,
+                    title: "Test ret_dom option: autodect of tfoot first element",
+                   prms: { ret_dom: 1,
                             strip_wrap_spaces: 1 },
                     data: { var1: 1 },
                     ret_to_str_fun: node_to_str },
                   { id: "unit54",
                     id_res: "unit54_res",
-                    title: "Test ret_dom option: autodect of tbody first element(upper case)",
+                    title: "Test ret_dom option: autodect of tr first element",
                     prms: { ret_dom: 1,
                             strip_wrap_spaces: 1 },
                     data: { var1: 1 },
                     ret_to_str_fun: node_to_str },
                   { id: "unit55",
                     id_res: "unit55_res",
+                    title: "Test ret_dom option: autodect of th first element",
+                    prms: { ret_dom: 1,
+                            strip_wrap_spaces: 1 },
+                    data: { var1: 1 },
+                    ret_to_str_fun: node_to_str },
+                  { id: "unit56",
+                    id_res: "unit56_res",
+                    title: "Test ret_dom option: autodect of td first element",
+                    prms: { ret_dom: 1,
+                            strip_wrap_spaces: 1 },
+                    data: { var1: 1 },
+                    ret_to_str_fun: node_to_str },
+                  { id: "unit57",
+                    id_res: "unit57_res",
+                    title: "Test ret_dom option: autodect of tbody first element(upper case)",
+                    prms: { ret_dom: 1,
+                            strip_wrap_spaces: 1 },
+                    data: { var1: 1 },
+                    ret_to_str_fun: node_to_str },
+                  { id: "unit58",
+                    id_res: "unit58_res",
                     title: "Test ret_dom option: autodect of tbody first element(mixed case)",
                     prms: { ret_dom: 1,
                             strip_wrap_spaces: 1 },
@@ -2157,8 +2178,52 @@
     </tbody></table>
 
   <!-- unit 52 -->
+  <table id="unit52">
+    <thead>
+      <tr>
+	<td>
+	  another
+	  {%TMPL_VAR NAME=var1%}
+	  text
+	</td>
+      </tr>
+    </thead>
+  </table>
+  <table id="unit52_res"><thead>
+      <tr>
+	<td>
+	  another
+	  1
+	  text
+	</td>
+      </tr>
+    </thead></table>
+    
+  <!-- unit 53 -->
+  <table id="unit53">
+    <tfoot>
+      <tr>
+	<td>
+	  another
+	  {%TMPL_VAR NAME=var1%}
+	  text
+	</td>
+      </tr>
+    </tfoot>
+  </table>
+  <table id="unit53_res"><tfoot>
+      <tr>
+	<td>
+	  another
+	  1
+	  text
+	</td>
+      </tr>
+    </tfoot></table>
+    
+  <!-- unit 54 -->
   <table>
-    <tbody id="unit52">
+    <tbody id="unit54">
       <tr>
 	<td>
 	  another
@@ -2169,7 +2234,7 @@
     </tbody>
   </table>
   <table>
-    <tbody id="unit52_res"><tr>
+    <tbody id="unit54_res"><tr>
 	<td>
 	  another
 	  1
@@ -2178,10 +2243,32 @@
       </tr></tbody>
   </table>
 
-  <!-- unit 53 -->
+  <!-- unit 55 -->
   <table>
     <tbody>
-      <tr id="unit53">
+      <tr id="unit55">
+	<th>
+	  another
+	  {%TMPL_VAR NAME=var1%}
+	  text
+	</th>
+      </tr>
+    </tbody>
+  </table>
+  <table>
+    <tbody>
+      <tr id="unit55_res"><th>
+	  another
+	  1
+	  text
+	</th></tr>
+    </tbody>
+  </table>
+
+  <!-- unit 56 -->
+  <table>
+    <tbody>
+      <tr id="unit56">
 	<td>
 	  another
 	  {%TMPL_VAR NAME=var1%}
@@ -2192,7 +2279,7 @@
   </table>
   <table>
     <tbody>
-      <tr id="unit53_res"><td>
+      <tr id="unit56_res"><td>
 	  another
 	  1
 	  text
@@ -2200,8 +2287,8 @@
     </tbody>
   </table>
 
-  <!-- unit 54 -->
-  <table id="unit54">
+  <!-- unit 57 -->
+  <table id="unit57">
     <!--
     <TBODY>
       <tr>
@@ -2214,7 +2301,7 @@
     </TBODY>
     -->
   </table>
-  <table id="unit54_res"><tbody>
+  <table id="unit57_res"><tbody>
       <tr>
 	<td>
 	  another
@@ -2224,8 +2311,8 @@
       </tr>
     </tbody></table>
 
-  <!-- unit 55 -->
-  <table id="unit55">
+  <!-- unit 58 -->
+  <table id="unit58">
     <!--
     <tBoDy>
       <tr>
@@ -2238,7 +2325,7 @@
     </tBoDy>
     -->
   </table>
-  <table id="unit55_res"><tbody>
+  <table id="unit58_res"><tbody>
       <tr>
 	<td>
 	  another
