@@ -39,3 +39,7 @@
     this possible.
 17. Fix constructor for the case of String object as tmpl parameter. typeof(tmpl) will
     be "object" in this case and instanceof String is true.
+18. Add examples related to tmpl_is_commented option.
+19. Add info to tmpl_is_commented option overview about usecases(when template
+    contains table element or select element).
+
