@@ -505,10 +505,16 @@ htmltmpl.prototype._get_first_element_name = function ()
     el_name = this.out_str.toLowerCase().match(this.rex.first_out_el);
     if ( el_name != null )
 	switch (el_name[1]) {
+	case "thead":
+	    return "table";
+	case "tfoot":
+	    return "table";
 	case "tbody":
 	    return "table";
 	case "tr":
 	    return "tbody";
+	case "th":
+	    return "tr";
 	case "td":
 	    return "tr";
 	}
