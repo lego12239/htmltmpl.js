@@ -356,96 +356,108 @@
                   { id: "unit48",
                     id_res: "unit48_res",
                     title: "Test ret_dom option",
-                    is_ret_dom: 1,
                     prms: { ret_dom: 1 },
-                    data: { var1: 1 } },
+                    data: { var1: 1 },
+                    ret_to_str_fun: node_to_str },
                   { id: "unit49",
                     id_res: "unit49_res",
                     title: "Test ret_dom option with strip_wrap_spaces=0",
-                    is_ret_dom: 1,
                     prms: { ret_dom: 1 },
-                    data: { var1: 1 } },
+                    data: { var1: 1 },
+                    ret_to_str_fun: nodes_to_str },
                   { id: "unit50",
                     id_res: "unit50_res",
                     title: "Test ret_dom option with strip_wrap_spaces=1",
-                    is_ret_dom: 1,
                     prms: { ret_dom: 1,
                             strip_wrap_spaces: 1 },
-                    data: { var1: 1 } },
+                    data: { var1: 1 },
+                    ret_to_str_fun: node_to_str },
                   { id: "unit51",
                     id_res: "unit51_res",
                     title: "Test ret_dom option: autodect of tbody first element",
-                    is_ret_dom: 1,
-                    prms: { ret_dom: 1,
+                   prms: { ret_dom: 1,
                             strip_wrap_spaces: 1 },
-                    data: { var1: 1 } },
+                    data: { var1: 1 },
+                    ret_to_str_fun: node_to_str },
                   { id: "unit52",
                     id_res: "unit52_res",
                     title: "Test ret_dom option: autodect of tr first element",
-                    is_ret_dom: 1,
                     prms: { ret_dom: 1,
                             strip_wrap_spaces: 1 },
-                    data: { var1: 1 } },
+                    data: { var1: 1 },
+                    ret_to_str_fun: node_to_str },
                   { id: "unit53",
                     id_res: "unit53_res",
                     title: "Test ret_dom option: autodect of td first element",
-                    is_ret_dom: 1,
                     prms: { ret_dom: 1,
                             strip_wrap_spaces: 1 },
-                    data: { var1: 1 } },
+                    data: { var1: 1 },
+                    ret_to_str_fun: node_to_str },
                   { id: "unit54",
                     id_res: "unit54_res",
                     title: "Test ret_dom option: autodect of tbody first element(upper case)",
-                    is_ret_dom: 1,
                     prms: { ret_dom: 1,
                             strip_wrap_spaces: 1 },
-                    data: { var1: 1 } },
+                    data: { var1: 1 },
+                    ret_to_str_fun: node_to_str },
                   { id: "unit55",
                     id_res: "unit55_res",
                     title: "Test ret_dom option: autodect of tbody first element(mixed case)",
-                    is_ret_dom: 1,
                     prms: { ret_dom: 1,
                             strip_wrap_spaces: 1 },
-                    data: { var1: 1 } } ];
+                    data: { var1: 1 },
+                    ret_to_str_fun: node_to_str } ];
     function report_res(test, ret, ex)
     {
         var val;
 
 
-        if ( test.is_err ) {
+        if ( test.is_err )
             if (( ex != undefined ) && ( test.err_msg == ex ))
-                report_ok(test);
+                return report_ok(test);
             else {
                 console.error(ex);
-                report_fail(test);
+                return report_fail(test);
             }
-            return;
-        }
 
         if ( ex != undefined ) {
             console.error(ex);
-            report_fail(test);
-            return;
+            return report_fail(test);
         }
-    
-        if ( test.is_ret_dom ) {
-            if ( ret[0].innerHTML == undefined )
-                val = ret[0].data;
-            else
-                val = ret[0].innerHTML;
 
-            if ( document.getElementById(test.id_res).innerHTML == val )
-                report_ok(test);
-            else 
-                report_fail(test);
-            return;
-        }
+        if (test.ret_to_str_fun != undefined)
+            ret = test.ret_to_str_fun(ret)
+
         if ( document.getElementById(test.id_res).innerHTML == ret )
-            report_ok(test);
-        else
-            report_fail(test);
-
-        return;
+            return report_ok(test);
+        
+        return report_fail(test);
+    }
+    
+    function node_to_str(ret)
+    {
+    	var el;
+    	
+    	
+    	el = document.createElement("div");
+    	el.appendChild(ret);
+    	return el.innerHTML;
+    }
+    
+    function nodes_to_str(ret)
+    {
+        var el, i, els = [];
+        
+        
+        el = document.createElement("div");
+        console.log(ret.length);
+        for(i = 0; i < ret.length; i++) {
+            els[i] = ret[i];
+        }
+        for(i = 0; i < els.length; i++) {
+            el.appendChild(els[i]);
+        }
+        return el.innerHTML;
     }
 
     function report_ok(test)
@@ -459,6 +471,8 @@
         el.appendChild(span);
         el.appendChild(span_ok.cloneNode(true));
         res_cntr_el.appendChild(el);
+        
+        return 1;
     }
 
     function report_fail(test)
@@ -472,6 +486,8 @@
         el.appendChild(span);
         el.appendChild(span_fail.cloneNode(true));
         res_cntr_el.appendChild(el);
+        
+        return 0;
     }
 
     function do_tests()
@@ -506,7 +522,13 @@
                 report_res(tests[i], undefined, ex);
                 continue;
             }
-	    report_res(tests[i], ret, undefined);
+            try {
+	        if (!report_res(tests[i], ret, null))
+	            continue;
+	    } catch (ex) {
+	        report_res(tests[i], null, ex);
+	        continue;
+	    }
 
             console.log("unit" + i + ": " + JSON.stringify(tmpl.tmpl_parsed));
 
@@ -2076,11 +2098,11 @@
     {%TMPL_VAR NAME=var1%}
     text
   </div></div>
-  <div id="unit48_res">
+  <div id="unit48_res"><div>
     another
     1
     text
-  </div>
+  </div></div>
 
   <!-- unit 49 -->
   <div id="unit49">
@@ -2091,7 +2113,12 @@
     </div>
   </div>
   <div id="unit49_res">
+    <div>
+    another
+    1
+    text
     </div>
+  </div>
 
   <!-- unit 50 -->
   <div id="unit50">
@@ -2101,11 +2128,11 @@
     text
     </div>
   </div>
-  <div id="unit50_res">
+  <div id="unit50_res"><div>
     another
     1
     text
-    </div>
+    </div></div>
 
   <!-- unit 51 -->
   <table id="unit51">
@@ -2119,8 +2146,7 @@
       </tr>
     </tbody>
   </table>
-  <table>
-    <tbody id="unit51_res">
+  <table id="unit51_res"><tbody>
       <tr>
 	<td>
 	  another
@@ -2128,8 +2154,7 @@
 	  text
 	</td>
       </tr>
-    </tbody>
-  </table>
+    </tbody></table>
 
   <!-- unit 52 -->
   <table>
@@ -2144,15 +2169,13 @@
     </tbody>
   </table>
   <table>
-    <tbody>
-      <tr id="unit52_res">
+    <tbody id="unit52_res"><tr>
 	<td>
 	  another
 	  1
 	  text
 	</td>
-      </tr>
-    </tbody>
+      </tr></tbody>
   </table>
 
   <!-- unit 53 -->
@@ -2169,13 +2192,11 @@
   </table>
   <table>
     <tbody>
-      <tr>
-	<td id="unit53_res">
+      <tr id="unit53_res"><td>
 	  another
 	  1
 	  text
-	</td>
-      </tr>
+	</td></tr>
     </tbody>
   </table>
 
@@ -2193,8 +2214,7 @@
     </TBODY>
     -->
   </table>
-  <table>
-    <tbody id="unit54_res">
+  <table id="unit54_res"><tbody>
       <tr>
 	<td>
 	  another
@@ -2202,8 +2222,7 @@
 	  text
 	</td>
       </tr>
-    </tbody>
-  </table>
+    </tbody></table>
 
   <!-- unit 55 -->
   <table id="unit55">
@@ -2219,8 +2238,7 @@
     </tBoDy>
     -->
   </table>
-  <table>
-    <tbody id="unit55_res">
+  <table id="unit55_res"><tbody>
       <tr>
 	<td>
 	  another
@@ -2228,8 +2246,7 @@
 	  text
 	</td>
       </tr>
-    </tbody>
-  </table>
+    </tbody></table>
 
   </div>
 </body>
