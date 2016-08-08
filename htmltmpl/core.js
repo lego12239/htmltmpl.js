@@ -75,8 +75,6 @@ function htmltmpl(tmpl, prms)
 
     if ( this.p.tmpl_is_commented )
 	this.tmpl = this.tmpl.replace(/^\s*<!--([^]+)-->\s*$/, "$1");
-    if ( this.p.strip_wrap_spaces )
-	this.tmpl = this.tmpl.replace(/^\s*([^]+?)\s*$/, "$1");
 
     this._cb_run(this.cb.init);
 
@@ -485,6 +483,9 @@ htmltmpl.prototype.apply = function(data)
 
     this._apply(this.tmpl_parsed);
 
+    if ( this.p.strip_wrap_spaces )
+	this.out_str = this.out_str.replace(/^\s*([^]+?)\s*$/, "$1");
+    
     if ( this.p.ret_dom ) {
 	el = document.createElement(this._get_first_element_name());
 	el.innerHTML = this.out_str;
