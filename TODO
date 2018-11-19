@@ -42,4 +42,6 @@
 18. Add examples related to tmpl_is_commented option.
 19. Add info to tmpl_is_commented option overview about usecases(when template
     contains table element or select element).
-
+20. ret_dom:1 or ret_dom:true - all variants are good.
+21. prefix error messages with "htmltmpl." to distinguish htmltmpl errors from others.
+22. Remake internal array structures with objects.
