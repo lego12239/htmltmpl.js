@@ -104,6 +104,7 @@ change it behaviour. Properties names:
   tmpl_is_commented (0/1)
 	Enable this if a template is enclosed in <!--/-->. Thus,
 	the comment constuct is striped from a result.
+	This is need if we place a template inside a table.
 	1 by default.
   err_on_no_data (0/1)
 	If we found a template tag and have no such property in a supplied
