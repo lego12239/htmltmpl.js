@@ -1,0 +1,266 @@
+/* htmltmpl.ifeq | htmltmpl 1.3.0 | License - GNU LGPL 3 */
+/*
+  This library is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+  https://github.com/lego12239/htmltmpl
+*/
+{
+"use strict";
+
+/**********************************************************************
+ * TMPL_IFEQ HANDLERS
+ **********************************************************************/
+htmltmpl.prototype.hdlr_ifeq_parse = function(def, tag_attrs)
+{
+	var attrs;
+
+	attrs = this._parse_tag_attrs(tag_attrs);
+	this._s.parse.unshift([]);
+	this._s.priv.unshift([def, attrs ]);
+}
+
+htmltmpl.prototype.hdlr_ifeq_end_parse = function(def)
+{
+	var priv;
+	var vname, if_, else_;
+
+	priv = this._s.priv.shift();
+	if (!this.is_tag_match(priv[0], def.start_tag))
+		throw("parse err: " + priv[0].name + " was opened, but " +
+		  def.name + " is being closed");
+	if (priv[0].name == "TMPL_ELSE") {
+		else_ = this._s.parse.shift();
+		priv = this._s.priv.shift();
+	}
+
+	vname = priv[1].NAME.split(".");
+	if_ = this._s.parse.shift();
+	this._s.parse[0].push([priv[0].name, [ vname, priv[1], if_, else_ ]]);
+}
+
+htmltmpl.prototype.hdlr_ifeq_apply = function(def, tag)
+{
+	var attrs;
+	var val, val2;
+	var i;
+
+	val = this._get_data(tag[0]);
+	if (tag[1].WITH != null)
+		val2 = this._get_data(tag[1].WITH.split("."));
+	else
+		val2 = tag[1].VALUE;
+
+	if ((this.p.err_on_no_data) && (val == null))
+		throw("Cann't find var '" + tag[0] + "'.");
+	if ((this.p.err_on_no_data) && (val2 == null))
+		throw("Cann't find var '" + tag[1].WITH + "'.");
+
+	if (val == val2)
+		this._apply(tag[2]);
+	else if (tag[3] != undefined)
+		this._apply(tag[3]);
+}
+
+/**********************************************************************
+ * TMPL_IFNEQ HANDLERS
+ **********************************************************************/
+htmltmpl.prototype.hdlr_ifneq_apply = function(def, tag)
+{
+	var attrs;
+	var val, val2;
+	var i;
+
+	val = this._get_data(tag[0]);
+	if (tag[1].WITH != null)
+		val2 = this._get_data(tag[1].WITH.split("."));
+	else
+		val2 = tag[1].VALUE;
+
+	if ((this.p.err_on_no_data) && (val == null))
+		throw("Cann't find var '" + tag[0] + "'.");
+	if ((this.p.err_on_no_data) && (val2 == null))
+		throw("Cann't find var '" + tag[1].WITH + "'.");
+
+	if (val != val2)
+		this._apply(tag[2]);
+	else if (tag[3] != undefined)
+		this._apply(tag[3]);
+}
+
+/**********************************************************************
+ * TMPL_IFGT HANDLERS
+ **********************************************************************/
+htmltmpl.prototype.hdlr_ifgt_apply = function(def, tag)
+{
+	var attrs;
+	var val, val2;
+	var i;
+
+	val = this._get_data(tag[0]);
+	if (tag[1].WITH != null)
+		val2 = this._get_data(tag[1].WITH.split("."));
+	else
+		val2 = tag[1].VALUE;
+
+	if ((this.p.err_on_no_data) && (val == null))
+		throw("Cann't find var '" + tag[0] + "'.");
+	if ((this.p.err_on_no_data) && (val2 == null))
+		throw("Cann't find var '" + tag[1].WITH + "'.");
+
+	if (val > val2)
+		this._apply(tag[2]);
+	else if (tag[3] != undefined)
+		this._apply(tag[3]);
+}
+
+/**********************************************************************
+ * TMPL_IFGE HANDLERS
+ **********************************************************************/
+htmltmpl.prototype.hdlr_ifge_apply = function(def, tag)
+{
+	var attrs;
+	var val, val2;
+	var i;
+
+	val = this._get_data(tag[0]);
+	if (tag[1].WITH != null)
+		val2 = this._get_data(tag[1].WITH.split("."));
+	else
+		val2 = tag[1].VALUE;
+
+	if ((this.p.err_on_no_data) && (val == null))
+		throw("Cann't find var '" + tag[0] + "'.");
+	if ((this.p.err_on_no_data) && (val2 == null))
+		throw("Cann't find var '" + tag[1].WITH + "'.");
+
+	if (val >= val2)
+		this._apply(tag[2]);
+	else if (tag[3] != undefined)
+		this._apply(tag[3]);
+}
+
+/**********************************************************************
+ * TMPL_IFLT HANDLERS
+ **********************************************************************/
+htmltmpl.prototype.hdlr_iflt_apply = function(def, tag)
+{
+	var attrs;
+	var val, val2;
+	var i;
+
+	val = this._get_data(tag[0]);
+	if (tag[1].WITH != null)
+		val2 = this._get_data(tag[1].WITH.split("."));
+	else
+		val2 = tag[1].VALUE;
+
+	if ((this.p.err_on_no_data) && (val == null))
+		throw("Cann't find var '" + tag[0] + "'.");
+	if ((this.p.err_on_no_data) && (val2 == null))
+		throw("Cann't find var '" + tag[1].WITH + "'.");
+
+	if (val < val2)
+		this._apply(tag[2]);
+	else if (tag[3] != undefined)
+		this._apply(tag[3]);
+}
+
+/**********************************************************************
+ * TMPL_IFLE HANDLERS
+ **********************************************************************/
+htmltmpl.prototype.hdlr_ifle_apply = function(def, tag)
+{
+	var attrs;
+	var val, val2;
+	var i;
+
+	val = this._get_data(tag[0]);
+	if (tag[1].WITH != null)
+		val2 = this._get_data(tag[1].WITH.split("."));
+	else
+		val2 = tag[1].VALUE;
+
+	if ((this.p.err_on_no_data) && (val == null))
+		throw("Cann't find var '" + tag[0] + "'.");
+	if ((this.p.err_on_no_data) && (val2 == null))
+		throw("Cann't find var '" + tag[1].WITH + "'.");
+
+	if (val <= val2)
+		this._apply(tag[2]);
+	else if (tag[3] != undefined)
+		this._apply(tag[3]);
+}
+
+htmltmpl.prototype.tags["TMPL_IFEQ"] = {
+	pfunc: htmltmpl.prototype.hdlr_ifeq_parse,
+	afunc: htmltmpl.prototype.hdlr_ifeq_apply,
+	name: "TMPL_IFEQ" };
+htmltmpl.prototype.tags["TMPL_IFNEQ"] = {
+	pfunc: htmltmpl.prototype.hdlr_ifeq_parse,
+	afunc: htmltmpl.prototype.hdlr_ifneq_apply,
+	name: "TMPL_IFNEQ" };
+htmltmpl.prototype.tags["TMPL_IFGT"] = {
+	pfunc: htmltmpl.prototype.hdlr_ifeq_parse,
+	afunc: htmltmpl.prototype.hdlr_ifgt_apply,
+	name: "TMPL_IFGT" };
+htmltmpl.prototype.tags["TMPL_IFGE"] = {
+	pfunc: htmltmpl.prototype.hdlr_ifeq_parse,
+	afunc: htmltmpl.prototype.hdlr_ifge_apply,
+	name: "TMPL_IFGE" };
+htmltmpl.prototype.tags["TMPL_IFLT"] = {
+	pfunc: htmltmpl.prototype.hdlr_ifeq_parse,
+	afunc: htmltmpl.prototype.hdlr_iflt_apply,
+	name: "TMPL_IFLT" };
+htmltmpl.prototype.tags["TMPL_IFLE"] = {
+	pfunc: htmltmpl.prototype.hdlr_ifeq_parse,
+	afunc: htmltmpl.prototype.hdlr_ifle_apply,
+	name: "TMPL_IFLE" };
+htmltmpl.prototype.tags["/TMPL_IFEQ"] = {
+	pfunc: htmltmpl.prototype.hdlr_ifeq_end_parse,
+	start_tag: [htmltmpl.prototype.tags["TMPL_IFEQ"],
+		htmltmpl.prototype.tags["TMPL_ELSE"]],
+	name: "/TMPL_IFEQ" };
+htmltmpl.prototype.tags["/TMPL_IFNEQ"] = {
+	pfunc: htmltmpl.prototype.hdlr_ifeq_end_parse,
+	start_tag: [htmltmpl.prototype.tags["TMPL_IFNEQ"],
+		htmltmpl.prototype.tags["TMPL_ELSE"]],
+	name: "/TMPL_IFNEQ" };
+htmltmpl.prototype.tags["/TMPL_IFGT"] = {
+	pfunc: htmltmpl.prototype.hdlr_ifeq_end_parse,
+	start_tag: [htmltmpl.prototype.tags["TMPL_IFGT"],
+		htmltmpl.prototype.tags["TMPL_ELSE"]],
+	name: "/TMPL_IFGT" };
+htmltmpl.prototype.tags["/TMPL_IFGE"] = {
+	pfunc: htmltmpl.prototype.hdlr_ifeq_end_parse,
+	start_tag: [htmltmpl.prototype.tags["TMPL_IFGE"],
+		htmltmpl.prototype.tags["TMPL_ELSE"]],
+	name: "/TMPL_IFGE" };
+htmltmpl.prototype.tags["/TMPL_IFLT"] = {
+	pfunc: htmltmpl.prototype.hdlr_ifeq_end_parse,
+	start_tag: [htmltmpl.prototype.tags["TMPL_IFLT"],
+		htmltmpl.prototype.tags["TMPL_ELSE"]],
+	name: "/TMPL_IFLT" };
+htmltmpl.prototype.tags["/TMPL_IFLE"] = {
+	pfunc: htmltmpl.prototype.hdlr_ifeq_end_parse,
+	start_tag: [htmltmpl.prototype.tags["TMPL_IFLE"],
+		htmltmpl.prototype.tags["TMPL_ELSE"]],
+	name: "/TMPL_IFLE" };
+
+htmltmpl.prototype.tags["TMPL_ELSE"].start_tag.push(htmltmpl.prototype.tags["TMPL_IFEQ"]);
+htmltmpl.prototype.tags["TMPL_ELSE"].start_tag.push(htmltmpl.prototype.tags["TMPL_IFNEQ"]);
+}
+htmltmpl.prototype.tags["TMPL_ELSE"].start_tag.push(htmltmpl.prototype.tags["TMPL_IFGT"]);
+htmltmpl.prototype.tags["TMPL_ELSE"].start_tag.push(htmltmpl.prototype.tags["TMPL_IFGE"]);
+htmltmpl.prototype.tags["TMPL_ELSE"].start_tag.push(htmltmpl.prototype.tags["TMPL_IFLT"]);
+htmltmpl.prototype.tags["TMPL_ELSE"].start_tag.push(htmltmpl.prototype.tags["TMPL_IFLE"]);

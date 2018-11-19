@@ -14,6 +14,20 @@ with ifdef extension:
 {%TMPL_IFDEF NAME=bool_var%}...{%TMPL_ELSE%}...{%/TMPL_IFDEF%}
 {%TMPL_IFNDEF NAME=bool_var%}...{%TMPL_ELSE%}...{%/TMPL_IFNDEF%}
 
+with ifeq extension:
+{%TMPL_IFEQ NAME=var VALUE=VAL%}...{%TMPL_ELSE%}...{%/TMPL_IFEQ%}
+{%TMPL_IFEQ NAME=var WITH=another_var%}...{%TMPL_ELSE%}...{%/TMPL_IFEQ%}
+{%TMPL_IFNEQ NAME=var VALUE=VAL%}...{%TMPL_ELSE%}...{%/TMPL_IFNEQ%}
+{%TMPL_IFNEQ NAME=var WITH=another_var%}...{%TMPL_ELSE%}...{%/TMPL_IFNEQ%}
+{%TMPL_IFGT NAME=var VALUE=VAL%}...{%TMPL_ELSE%}...{%/TMPL_IFGT%}
+{%TMPL_IFGT NAME=var WITH=another_var%}...{%TMPL_ELSE%}...{%/TMPL_IFGT%}
+{%TMPL_IFGE NAME=var VALUE=VAL%}...{%TMPL_ELSE%}...{%/TMPL_IFGE%}
+{%TMPL_IFGE NAME=var WITH=another_var%}...{%TMPL_ELSE%}...{%/TMPL_IFGE%}
+{%TMPL_IFLT NAME=var VALUE=VAL%}...{%TMPL_ELSE%}...{%/TMPL_IFLT%}
+{%TMPL_IFLT NAME=var WITH=another_var%}...{%TMPL_ELSE%}...{%/TMPL_IFLT%}
+{%TMPL_IFLE NAME=var VALUE=VAL%}...{%TMPL_ELSE%}...{%/TMPL_IFLE%}
+{%TMPL_IFLE NAME=var WITH=another_var%}...{%TMPL_ELSE%}...{%/TMPL_IFLE%}
+
 with func extension:
 {%TMPL_FUNC NAME=func_name ARG=arg_1 ARG=arg_2%}
 
@@ -179,6 +193,64 @@ ifdef:
 	{%TMPL_IFNDEF NAME=bool_var%}...{%TMPL_ELSE%}...{%/TMPL_IFNDEF%}
 
 	The same as TMPL_IFDEF, but bool_var property must evaluates to undefined.
+
+ifeq:
+  TMPL_IFEQ
+	{%TMPL_IFEQ NAME=var VALUE=VAL%}...{%/TMPL_IFEQ%}
+	{%TMPL_IFEQ NAME=var WITH=another_var%}...{%/TMPL_IFEQ%}
+	{%TMPL_IFEQ NAME=var VALUE=VAL%}...{%TMPL_ELSE%}...{%/TMPL_IFEQ%}
+	{%TMPL_IFEQ NAME=var WITH=another_var%}...{%TMPL_ELSE%}...{%/TMPL_IFEQ%}
+
+	This tag allows a conditional including of a html part in a result.
+	If var is equal to specified value VAL (or in form with WITH keyword,
+	equal to a value of a specified variable), then a content between
+	{%TMPL_IFEQ%} and {%/TMPL_IFEQ%} or between {%TMPL_IFEQ%} and
+	{%TMPL_ELSE%} is included in a result.
+
+  TMPL_IFNEQ
+	{%TMPL_IFNEQ NAME=var VALUE=VAL%}...{%/TMPL_IFNEQ%}
+	{%TMPL_IFNEQ NAME=var WITH=another_var%}...{%/TMPL_IFNEQ%}
+	{%TMPL_IFNEQ NAME=var VALUE=VAL%}...{%TMPL_ELSE%}...{%/TMPL_IFNEQ%}
+	{%TMPL_IFNEQ NAME=var WITH=another_var%}...{%TMPL_ELSE%}...{%/TMPL_IFNEQ%}
+
+	The same as TMPL_IFEQ, but var property must not be equal to specified
+	VAL or another_var property value.
+
+  TMPL_IFGT
+	{%TMPL_IFGT NAME=var VALUE=VAL%}...{%/TMPL_IFGT%}
+	{%TMPL_IFGT NAME=var WITH=another_var%}...{%/TMPL_IFGT%}
+	{%TMPL_IFGT NAME=var VALUE=VAL%}...{%TMPL_ELSE%}...{%/TMPL_IFGT%}
+	{%TMPL_IFGT NAME=var WITH=another_var%}...{%TMPL_ELSE%}...{%/TMPL_IFGT%}
+
+	The same as TMPL_IFEQ, but var property must be greater than specified
+	VAL or another_var property value.
+
+  TMPL_IFGE
+	{%TMPL_IFGE NAME=var VALUE=VAL%}...{%/TMPL_IFGE%}
+	{%TMPL_IFGE NAME=var WITH=another_var%}...{%/TMPL_IFGE%}
+	{%TMPL_IFGE NAME=var VALUE=VAL%}...{%TMPL_ELSE%}...{%/TMPL_IFGE%}
+	{%TMPL_IFGE NAME=var WITH=another_var%}...{%TMPL_ELSE%}...{%/TMPL_IFGE%}
+
+	The same as TMPL_IFEQ, but var property must be greater or equal to
+	specified VAL or another_var property value.
+
+  TMPL_IFLT
+	{%TMPL_IFLT NAME=var VALUE=VAL%}...{%/TMPL_IFLT%}
+	{%TMPL_IFLT NAME=var WITH=another_var%}...{%/TMPL_IFLT%}
+	{%TMPL_IFLT NAME=var VALUE=VAL%}...{%TMPL_ELSE%}...{%/TMPL_IFLT%}
+	{%TMPL_IFLT NAME=var WITH=another_var%}...{%TMPL_ELSE%}...{%/TMPL_IFLT%}
+
+	The same as TMPL_IFEQ, but var property must be less than specified
+	VAL or another_var property value.
+
+  TMPL_IFLE
+	{%TMPL_IFLE NAME=var VALUE=VAL%}...{%/TMPL_IFLE%}
+	{%TMPL_IFLE NAME=var WITH=another_var%}...{%/TMPL_IFLE%}
+	{%TMPL_IFLE NAME=var VALUE=VAL%}...{%TMPL_ELSE%}...{%/TMPL_IFLE%}
+	{%TMPL_IFLE NAME=var WITH=another_var%}...{%TMPL_ELSE%}...{%/TMPL_IFLE%}
+
+	The same as TMPL_IFEQ, but var property must be less or equal to specified
+	VAL or another_var property value.
 
 func:
   TMPL_FUNC

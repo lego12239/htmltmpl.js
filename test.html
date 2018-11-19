@@ -5,6 +5,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
   <script type="text/javascript" src="htmltmpl/core.js"></script>
   <script type="text/javascript" src="htmltmpl/ifdef.js"></script>
+  <script type="text/javascript" src="htmltmpl/ifeq.js"></script>
   <script type="text/javascript">
     var tmpl;  // make tmpl a global var for debug purposes
     var span_ok, span_fail, res_cntr_el;
@@ -427,7 +428,143 @@
                     prms: { ret_dom: 1,
                             strip_wrap_spaces: 1 },
                     data: { var1: 1 },
-                    ret_to_str_fun: node_to_str } ];
+                    ret_to_str_fun: node_to_str },
+                  { id: "unit59",
+                    id_res: "unit59_res",
+                    title: "Test TMPL_IFEQ",
+                    data: { var1: 1 }},
+                  { id: "unit60",
+                    id_res: "unit60_res",
+                    title: "Test TMPL_IFEQ (not matched)",
+                    data: { var1: 1 }},
+                  { id: "unit61",
+                    id_res: "unit61_res",
+                    title: "Test TMPL_IFEQ with TMPL_ELSE",
+                    data: { var1: 1 }},
+                  { id: "unit62",
+                    id_res: "unit62_res",
+                    title: "Test TMPL_IFEQ (not matched) with TMPL_ELSE",
+                    data: { var1: 1 }},
+                  { id: "unit63",
+                    id_res: "unit63_res",
+                    title: "Test TMPL_IFEQ WITH",
+                    data: { var1: 1,
+                    	var2: 1 }},
+                  { id: "unit64",
+                    id_res: "unit64_res",
+                    title: "Test TMPL_IFEQ WITH (not matched)",
+                    data: { var1: 1,
+                    	var2: 2 }},
+                  { id: "unit65",
+                    id_res: "unit65_res",
+                    title: "Test TMPL_IFEQ WITH with TMPL_ELSE",
+                    data: { var1: 1,
+                    	var2: 1 }},
+                  { id: "unit66",
+                    id_res: "unit66_res",
+                    title: "Test TMPL_IFEQ WITH (not matched) with TMPL_ELSE",
+                    data: { var1: 1,
+                    	var2: 2 }},
+                  { id: "unit67",
+                    id_res: "unit67_res",
+                    title: "Test TMPL_IFNEQ",
+                    data: { var1: 1 }},
+                  { id: "unit68",
+                    id_res: "unit68_res",
+                    title: "Test TMPL_IFNEQ (not matched)",
+                    data: { var1: 1 }},
+                  { id: "unit69",
+                    id_res: "unit69_res",
+                    title: "Test TMPL_IFNEQ with TMPL_ELSE",
+                    data: { var1: 1 }},
+                  { id: "unit70",
+                    id_res: "unit70_res",
+                    title: "Test TMPL_IFNEQ (not matched) with TMPL_ELSE",
+                    data: { var1: 1 }},
+                  { id: "unit71",
+                    id_res: "unit71_res",
+                    title: "Test TMPL_IFNEQ WITH",
+                    data: { var1: 1,
+                    	var2: 2 }},
+                  { id: "unit72",
+                    id_res: "unit72_res",
+                    title: "Test TMPL_IFNEQ WITH (not matched)",
+                    data: { var1: 1,
+                    	var2: 1 }},
+                  { id: "unit73",
+                    id_res: "unit73_res",
+                    title: "Test TMPL_IFNEQ WITH with TMPL_ELSE",
+                    data: { var1: 1,
+                    	var2: 2 }},
+                  { id: "unit74",
+                    id_res: "unit74_res",
+                    title: "Test TMPL_IFNEQ WITH (not matched) with TMPL_ELSE",
+                    data: { var1: 1,
+                    	var2: 1 }},
+                  { id: "unit75",
+                    id_res: "unit75_res",
+                    title: "Test TMPL_IFGT",
+                    data: { var1: 5 }},
+                  { id: "unit76",
+                    id_res: "unit76_res",
+                    title: "Test TMPL_IFGT (not matched)",
+                    data: { var1: 5 }},
+                  { id: "unit77",
+                    id_res: "unit77_res",
+                    title: "Test TMPL_IFGT with TMPL_ELSE",
+                    data: { var1: 5 }},
+                  { id: "unit78",
+                    id_res: "unit78_res",
+                    title: "Test TMPL_IFGT (not matched) with TMPL_ELSE",
+                    data: { var1: 5 }},
+                  { id: "unit79",
+                    id_res: "unit79_res",
+                    title: "Test TMPL_IFGE",
+                    data: { var1: 5 }},
+                  { id: "unit80",
+                    id_res: "unit80_res",
+                    title: "Test TMPL_IFGE (not matched)",
+                    data: { var1: 5 }},
+                  { id: "unit81",
+                    id_res: "unit81_res",
+                    title: "Test TMPL_IFGE with TMPL_ELSE",
+                    data: { var1: 5 }},
+                  { id: "unit82",
+                    id_res: "unit82_res",
+                    title: "Test TMPL_IFGE (not matched) with TMPL_ELSE",
+                    data: { var1: 5 }},
+                  { id: "unit83",
+                    id_res: "unit83_res",
+                    title: "Test TMPL_IFLT",
+                    data: { var1: 5 }},
+                  { id: "unit84",
+                    id_res: "unit84_res",
+                    title: "Test TMPL_IFLT (not matched)",
+                    data: { var1: 5 }},
+                  { id: "unit85",
+                    id_res: "unit85_res",
+                    title: "Test TMPL_IFLT with TMPL_ELSE",
+                    data: { var1: 5 }},
+                  { id: "unit86",
+                    id_res: "unit86_res",
+                    title: "Test TMPL_IFLT (not matched) with TMPL_ELSE",
+                    data: { var1: 5 }},
+                  { id: "unit87",
+                    id_res: "unit87_res",
+                    title: "Test TMPL_IFLE",
+                    data: { var1: 5 }},
+                  { id: "unit88",
+                    id_res: "unit88_res",
+                    title: "Test TMPL_IFLE (not matched)",
+                    data: { var1: 5 }},
+                  { id: "unit89",
+                    id_res: "unit89_res",
+                    title: "Test TMPL_IFLE with TMPL_ELSE",
+                    data: { var1: 5 }},
+                  { id: "unit90",
+                    id_res: "unit90_res",
+                    title: "Test TMPL_IFLE (not matched) with TMPL_ELSE",
+                    data: { var1: 5 }} ];
     function report_res(test, ret, ex)
     {
         var val;
@@ -2334,6 +2471,326 @@
 	</td>
       </tr>
     </tbody></table>
+
+  <!-- unit 59 -->
+  <div id="unit59">
+    {%TMPL_IFEQ NAME=var1 VALUE=1%}test{%/TMPL_IFEQ%}
+    {%TMPL_IFEQ NAME=var2 VALUE=2%}test{%/TMPL_IFEQ%}
+  </div>
+  <div id="unit59_res">
+    test
+    
+  </div>
+
+  <!-- unit 60 -->
+  <div id="unit60">
+    {%TMPL_IFEQ NAME=var1 VALUE=2%}test{%/TMPL_IFEQ%}
+    {%TMPL_IFEQ NAME=var2 VALUE=2%}test{%/TMPL_IFEQ%}
+  </div>
+  <div id="unit60_res">
+    
+    
+  </div>
+
+  <!-- unit 61 -->
+  <div id="unit61">
+    {%TMPL_IFEQ NAME=var1 VALUE=1%}test{%TMPL_ELSE%}here{%/TMPL_IFEQ%}
+    {%TMPL_IFEQ NAME=var2 VALUE=2%}test{%TMPL_ELSE%}here{%/TMPL_IFEQ%}
+  </div>
+  <div id="unit61_res">
+    test
+    here
+  </div>
+
+  <!-- unit 62 -->
+  <div id="unit62">
+    {%TMPL_IFEQ NAME=var1 VALUE=2%}test{%TMPL_ELSE%}here{%/TMPL_IFEQ%}
+    {%TMPL_IFEQ NAME=var2 VALUE=2%}test{%TMPL_ELSE%}here{%/TMPL_IFEQ%}
+  </div>
+  <div id="unit62_res">
+    here
+    here
+  </div>
+
+  <!-- unit 63 -->
+  <div id="unit63">
+    {%TMPL_IFEQ NAME=var1 WITH=var2%}test{%/TMPL_IFEQ%}
+    {%TMPL_IFEQ NAME=var2 WITH=var1%}test{%/TMPL_IFEQ%}
+  </div>
+  <div id="unit63_res">
+    test
+    test
+  </div>
+
+  <!-- unit 64 -->
+  <div id="unit64">
+    {%TMPL_IFEQ NAME=var1 WITH=var2%}test{%/TMPL_IFEQ%}
+    {%TMPL_IFEQ NAME=var2 WITH=var1%}test{%/TMPL_IFEQ%}
+  </div>
+  <div id="unit64_res">
+    
+    
+  </div>
+
+  <!-- unit 65 -->
+  <div id="unit65">
+    {%TMPL_IFEQ NAME=var1 WITH=var2%}test{%TMPL_ELSE%}here{%/TMPL_IFEQ%}
+    {%TMPL_IFEQ NAME=var2 WITH=var1%}test{%TMPL_ELSE%}here{%/TMPL_IFEQ%}
+  </div>
+  <div id="unit65_res">
+    test
+    test
+  </div>
+
+  <!-- unit 66 -->
+  <div id="unit66">
+    {%TMPL_IFEQ NAME=var1 WITH=var2%}test{%TMPL_ELSE%}here{%/TMPL_IFEQ%}
+    {%TMPL_IFEQ NAME=var2 WITH=var1%}test{%TMPL_ELSE%}here{%/TMPL_IFEQ%}
+  </div>
+  <div id="unit66_res">
+    here
+    here
+  </div>
+
+  <!-- unit 67 -->
+  <div id="unit67">
+    {%TMPL_IFNEQ NAME=var1 VALUE=1%}test{%/TMPL_IFNEQ%}
+    {%TMPL_IFNEQ NAME=var2 VALUE=2%}test{%/TMPL_IFNEQ%}
+  </div>
+  <div id="unit67_res">
+    
+    test
+  </div>
+
+  <!-- unit 68 -->
+  <div id="unit68">
+    {%TMPL_IFNEQ NAME=var1 VALUE=1%}test{%/TMPL_IFNEQ%}
+    {%TMPL_IFNEQ NAME=var2 VALUE=2%}test{%/TMPL_IFNEQ%}
+  </div>
+  <div id="unit68_res">
+    
+    test
+  </div>
+
+  <!-- unit 69 -->
+  <div id="unit69">
+    {%TMPL_IFNEQ NAME=var1 VALUE=2%}test{%TMPL_ELSE%}here{%/TMPL_IFNEQ%}
+    {%TMPL_IFNEQ NAME=var2 VALUE=2%}test{%TMPL_ELSE%}here{%/TMPL_IFNEQ%}
+  </div>
+  <div id="unit69_res">
+    test
+    test
+  </div>
+
+  <!-- unit 70 -->
+  <div id="unit70">
+    {%TMPL_IFNEQ NAME=var1 VALUE=1%}test{%TMPL_ELSE%}here{%/TMPL_IFNEQ%}
+    {%TMPL_IFNEQ NAME=var2 VALUE=2%}test{%TMPL_ELSE%}here{%/TMPL_IFNEQ%}
+  </div>
+  <div id="unit70_res">
+    here
+    test
+  </div>
+
+  <!-- unit 71 -->
+  <div id="unit71">
+    {%TMPL_IFNEQ NAME=var1 WITH=var2%}test{%/TMPL_IFNEQ%}
+    {%TMPL_IFNEQ NAME=var2 WITH=var1%}test{%/TMPL_IFNEQ%}
+  </div>
+  <div id="unit71_res">
+    test
+    test
+  </div>
+
+  <!-- unit 72 -->
+  <div id="unit72">
+    {%TMPL_IFNEQ NAME=var1 WITH=var2%}test{%/TMPL_IFNEQ%}
+    {%TMPL_IFNEQ NAME=var2 WITH=var1%}test{%/TMPL_IFNEQ%}
+  </div>
+  <div id="unit72_res">
+    
+    
+  </div>
+
+  <!-- unit 73 -->
+  <div id="unit73">
+    {%TMPL_IFNEQ NAME=var1 WITH=var2%}test{%TMPL_ELSE%}here{%/TMPL_IFNEQ%}
+    {%TMPL_IFNEQ NAME=var2 WITH=var1%}test{%TMPL_ELSE%}here{%/TMPL_IFNEQ%}
+  </div>
+  <div id="unit73_res">
+    test
+    test
+  </div>
+
+  <!-- unit 74 -->
+  <div id="unit74">
+    {%TMPL_IFNEQ NAME=var1 WITH=var2%}test{%TMPL_ELSE%}here{%/TMPL_IFNEQ%}
+    {%TMPL_IFNEQ NAME=var2 WITH=var1%}test{%TMPL_ELSE%}here{%/TMPL_IFNEQ%}
+  </div>
+  <div id="unit74_res">
+    here
+    here
+  </div>
+
+  <!-- unit 75 -->
+  <div id="unit75">
+    {%TMPL_IFGT NAME=var1 VALUE=4%}test{%/TMPL_IFGT%}
+    {%TMPL_IFGT NAME=var2 VALUE=2%}test{%/TMPL_IFGT%}
+  </div>
+  <div id="unit75_res">
+    test
+    
+  </div>
+
+  <!-- unit 76 -->
+  <div id="unit76">
+    {%TMPL_IFGT NAME=var1 VALUE=5%}test{%/TMPL_IFGT%}
+    {%TMPL_IFGT NAME=var2 VALUE=2%}test{%/TMPL_IFGT%}
+  </div>
+  <div id="unit76_res">
+    
+    
+  </div>
+
+  <!-- unit 77 -->
+  <div id="unit77">
+    {%TMPL_IFGT NAME=var1 VALUE=4%}test{%TMPL_ELSE%}here{%/TMPL_IFGT%}
+    {%TMPL_IFGT NAME=var2 VALUE=2%}test{%TMPL_ELSE%}here{%/TMPL_IFGT%}
+  </div>
+  <div id="unit77_res">
+    test
+    here
+  </div>
+
+  <!-- unit 78 -->
+  <div id="unit78">
+    {%TMPL_IFGT NAME=var1 VALUE=5%}test{%TMPL_ELSE%}here{%/TMPL_IFGT%}
+    {%TMPL_IFGT NAME=var2 VALUE=2%}test{%TMPL_ELSE%}here{%/TMPL_IFGT%}
+  </div>
+  <div id="unit78_res">
+    here
+    here
+  </div>
+
+  <!-- unit 79 -->
+  <div id="unit79">
+    {%TMPL_IFGE NAME=var1 VALUE=5%}test{%/TMPL_IFGE%}
+    {%TMPL_IFGE NAME=var2 VALUE=2%}test{%/TMPL_IFGE%}
+  </div>
+  <div id="unit79_res">
+    test
+    
+  </div>
+
+  <!-- unit 80 -->
+  <div id="unit80">
+    {%TMPL_IFGE NAME=var1 VALUE=6%}test{%/TMPL_IFGE%}
+    {%TMPL_IFGE NAME=var2 VALUE=2%}test{%/TMPL_IFGE%}
+  </div>
+  <div id="unit80_res">
+    
+    
+  </div>
+
+  <!-- unit 81 -->
+  <div id="unit81">
+    {%TMPL_IFGE NAME=var1 VALUE=5%}test{%TMPL_ELSE%}here{%/TMPL_IFGE%}
+    {%TMPL_IFGE NAME=var2 VALUE=2%}test{%TMPL_ELSE%}here{%/TMPL_IFGE%}
+  </div>
+  <div id="unit81_res">
+    test
+    here
+  </div>
+
+  <!-- unit 82 -->
+  <div id="unit82">
+    {%TMPL_IFGE NAME=var1 VALUE=6%}test{%TMPL_ELSE%}here{%/TMPL_IFGE%}
+    {%TMPL_IFGE NAME=var2 VALUE=2%}test{%TMPL_ELSE%}here{%/TMPL_IFGE%}
+  </div>
+  <div id="unit82_res">
+    here
+    here
+  </div>
+
+  <!-- unit 83 -->
+  <div id="unit83">
+    {%TMPL_IFLT NAME=var1 VALUE=6%}test{%/TMPL_IFLT%}
+    {%TMPL_IFLT NAME=var2 VALUE=2%}test{%/TMPL_IFLT%}
+  </div>
+  <div id="unit83_res">
+    test
+    
+  </div>
+
+  <!-- unit 84 -->
+  <div id="unit84">
+    {%TMPL_IFLT NAME=var1 VALUE=5%}test{%/TMPL_IFLT%}
+    {%TMPL_IFLT NAME=var2 VALUE=2%}test{%/TMPL_IFLT%}
+  </div>
+  <div id="unit84_res">
+    
+    
+  </div>
+
+  <!-- unit 85 -->
+  <div id="unit85">
+    {%TMPL_IFLT NAME=var1 VALUE=6%}test{%TMPL_ELSE%}here{%/TMPL_IFLT%}
+    {%TMPL_IFLT NAME=var2 VALUE=2%}test{%TMPL_ELSE%}here{%/TMPL_IFLT%}
+  </div>
+  <div id="unit85_res">
+    test
+    here
+  </div>
+
+  <!-- unit 86 -->
+  <div id="unit86">
+    {%TMPL_IFLT NAME=var1 VALUE=5%}test{%TMPL_ELSE%}here{%/TMPL_IFLT%}
+    {%TMPL_IFLT NAME=var2 VALUE=2%}test{%TMPL_ELSE%}here{%/TMPL_IFLT%}
+  </div>
+  <div id="unit86_res">
+    here
+    here
+  </div>
+
+  <!-- unit 87 -->
+  <div id="unit87">
+    {%TMPL_IFLE NAME=var1 VALUE=5%}test{%/TMPL_IFLE%}
+    {%TMPL_IFLE NAME=var2 VALUE=2%}test{%/TMPL_IFLE%}
+  </div>
+  <div id="unit87_res">
+    test
+    
+  </div>
+
+  <!-- unit 88 -->
+  <div id="unit88">
+    {%TMPL_IFLE NAME=var1 VALUE=4%}test{%/TMPL_IFLE%}
+    {%TMPL_IFLE NAME=var2 VALUE=2%}test{%/TMPL_IFLE%}
+  </div>
+  <div id="unit88_res">
+    
+    
+  </div>
+
+  <!-- unit 89 -->
+  <div id="unit89">
+    {%TMPL_IFLE NAME=var1 VALUE=7%}test{%TMPL_ELSE%}here{%/TMPL_IFLE%}
+    {%TMPL_IFLE NAME=var2 VALUE=2%}test{%TMPL_ELSE%}here{%/TMPL_IFLE%}
+  </div>
+  <div id="unit89_res">
+    test
+    here
+  </div>
+
+  <!-- unit 90 -->
+  <div id="unit90">
+    {%TMPL_IFLE NAME=var1 VALUE=4%}test{%TMPL_ELSE%}here{%/TMPL_IFLE%}
+    {%TMPL_IFLE NAME=var2 VALUE=2%}test{%TMPL_ELSE%}here{%/TMPL_IFLE%}
+  </div>
+  <div id="unit90_res">
+    here
+    here
+  </div>
 
   </div>
 </body>
