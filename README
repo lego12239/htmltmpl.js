@@ -9,6 +9,8 @@ constructs:
 {%TMPL_LOOP NAME=loop_name%}...{%/TMPL_LOOP%}
 {%TMPL_IF NAME=bool_var%}...{%TMPL_ELSE%}...{%/TMPL_IF%}
 {%TMPL_UNLESS NAME=bool_var%}...{%TMPL_ELSE%}...{%/TMPL_UNLESS%}
+{%TMPL_INCLUDE NAME=tmpl_name%}
+{%TMPL_INCLUDE NAME=tmpl_name VAR=var_name%}
 
 with ifdef extension:
 {%TMPL_IFDEF NAME=bool_var%}...{%TMPL_ELSE%}...{%/TMPL_IFDEF%}
@@ -178,6 +180,17 @@ core:
 	{%TMPL_UNLESS NAME=bool_var%}...{%TMPL_ELSE%}...{%/TMPL_UNLESS%}
 
 	The same as TMPL_IF, but bool_var property must evaluates to false.
+
+  TMPL_INCLUDE
+	{%TMPL_INCLUDE NAME=tmpl_name%}
+	{%TMPL_INCLUDE NAME=tmpl_name VAR=var_name%}
+	
+	On template applying here will be located an output of applying a template
+	with a name tmpl_name. The second form used for applying a
+    specified template only if var_name var is defined; in this case
+	a content of var_name var is used as data source for a template tmp_name
+	applying. All needed templates must be placed in tmpls property of a
+	htmltmpl object and must be htmltmpl objects by itself.
 
 ifdef:
   TMPL_IFDEF

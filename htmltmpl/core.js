@@ -60,6 +60,7 @@ function htmltmpl(tmpl, prms)
     this.p = {};
     this.tmpl = "";
     this.tmpl_parsed = [];
+    this.tmpls = {};
     this._s = { parse: [[]],
 		priv: [],
 		data: [] };
@@ -451,6 +452,43 @@ htmltmpl.prototype.hdlr_unless_apply = function(def, tag)
 }
 
 /**********************************************************************
+ * TMPL_INCLUDE HANDLERS
+ **********************************************************************/
+htmltmpl.prototype.hdlr_include_parse = function(def, tag_attrs)
+{
+    var attrs, vname;
+
+    attrs = this._parse_tag_attrs(tag_attrs);
+    if (attrs.VAR != null)
+	    vname = attrs.VAR.split(".");
+    this._s.parse[0].push([def.name, [ vname, attrs ]]);
+}
+
+htmltmpl.prototype.hdlr_include_apply = function(def, tag)
+{
+    var attrs;
+    var val;
+
+	if (tag[0] != null) {
+		val = this._get_data(tag[0]);
+		if (val == null) {
+			if (this.p.err_on_no_data)
+				throw("Cann't find var '" + tag[0] + "'.");
+			return;
+		}
+	}
+	
+	if (this.tmpls[tag[1].NAME] != null) {
+		if (val != null)
+			this._s.data.unshift(val);
+		this._apply(this.tmpls[tag[1].NAME].tmpl_parsed);
+		if (val != null)
+			this._s.data.shift();
+	} else if (this.p.err_on_no_data)
+		throw("Cann't find template '" + tag[1].NAME + "'.");
+}
+
+/**********************************************************************
  * APPLY STUFF
  **********************************************************************/
 htmltmpl.prototype._apply = function(tmpl)
@@ -567,5 +605,9 @@ htmltmpl.prototype.tags["/TMPL_UNLESS"] = {
     start_tag: [htmltmpl.prototype.tags["TMPL_UNLESS"],
 		htmltmpl.prototype.tags["TMPL_ELSE"]],
     name: "/TMPL_UNLESS" };
+htmltmpl.prototype.tags["TMPL_INCLUDE"] = {
+    pfunc: htmltmpl.prototype.hdlr_include_parse,
+    afunc: htmltmpl.prototype.hdlr_include_apply,
+    name: "TMPL_INCLUDE" };
 
 }
