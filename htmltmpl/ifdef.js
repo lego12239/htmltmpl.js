@@ -23,49 +23,46 @@
  **********************************************************************/
 htmltmpl.prototype.hdlr_ifdef_parse = function(def, tag_attrs)
 {
-    var attrs;
+	var attrs;
 
-
-    attrs = this._parse_tag_attrs(tag_attrs);
-    this._s.parse.unshift([]);
-    this._s.priv.unshift([def, attrs ]);
+	attrs = this._parse_tag_attrs(tag_attrs);
+	this._s.parse.unshift([]);
+	this._s.priv.unshift([def, attrs ]);
 }
 
 htmltmpl.prototype.hdlr_ifdef_end_parse = function(def)
 {
-    var priv;
-    var vname, if_, else_;
+	var priv;
+	var vname, if_, else_;
 
-
-    priv = this._s.priv.shift();
-    if ( ! this.is_tag_match(priv[0], def.start_tag) )
-	throw("parse err: " + priv[0].name + " was opened, but " +
-	      def.name + " is being closed");
-    if ( priv[0].name == "TMPL_ELSE" ) {
-	else_ = this._s.parse.shift();
 	priv = this._s.priv.shift();
-    }
+	if (!this.is_tag_match(priv[0], def.start_tag))
+		throw("parse err: " + priv[0].name + " was opened, but " +
+		  def.name + " is being closed");
+	if (priv[0].name == "TMPL_ELSE") {
+		else_ = this._s.parse.shift();
+		priv = this._s.priv.shift();
+	}
 
-    vname = priv[1].NAME.split(".");
-    if_ = this._s.parse.shift();
-    this._s.parse[0].push([priv[0].name, [ vname, priv[1], if_, else_ ]]);
+	vname = priv[1].NAME.split(".");
+	if_ = this._s.parse.shift();
+	this._s.parse[0].push([priv[0].name, [ vname, priv[1], if_, else_ ]]);
 }
 
 htmltmpl.prototype.hdlr_ifdef_apply = function(def, tag)
 {
-    var attrs;
-    var val;
-    var i;
+	var attrs;
+	var val;
+	var i;
 
+	val = this._get_data(tag[0]);
 
-    val = this._get_data(tag[0]);
-
-    if ( val != undefined )
-	this._apply(tag[2]);
-    else if ( tag[3] != undefined )
-	this._apply(tag[3]);
-    else if ( this.p.err_on_no_data )
-	throw("Cann't find var '" + tag[0] + "'.");
+	if (val != undefined)
+		this._apply(tag[2]);
+	else if (tag[3] != undefined)
+		this._apply(tag[3]);
+	else if (this.p.err_on_no_data)
+		throw("Cann't find var '" + tag[0] + "'.");
 }
 
 /**********************************************************************
@@ -73,39 +70,38 @@ htmltmpl.prototype.hdlr_ifdef_apply = function(def, tag)
  **********************************************************************/
 htmltmpl.prototype.hdlr_ifndef_apply = function(def, tag)
 {
-    var attrs;
-    var val;
-    var i;
+	var attrs;
+	var val;
+	var i;
 
+	val = this._get_data(tag[0]);
 
-    val = this._get_data(tag[0]);
-
-    if ( val == undefined )
-	this._apply(tag[2]);
-    else if ( tag[3] != undefined )
-	this._apply(tag[3]);
-    else if ( this.p.err_on_no_data )
-	throw("Cann't find var '" + tag[0] + "'.");
+	if (val == undefined)
+		this._apply(tag[2]);
+	else if (tag[3] != undefined)
+		this._apply(tag[3]);
+	else if (this.p.err_on_no_data)
+		throw("Cann't find var '" + tag[0] + "'.");
 }
 
 htmltmpl.prototype.tags["TMPL_IFDEF"] = {
-    pfunc: htmltmpl.prototype.hdlr_ifdef_parse,
-    afunc: htmltmpl.prototype.hdlr_ifdef_apply,
-    name: "TMPL_IFDEF" };
+	pfunc: htmltmpl.prototype.hdlr_ifdef_parse,
+	afunc: htmltmpl.prototype.hdlr_ifdef_apply,
+	name: "TMPL_IFDEF" };
 htmltmpl.prototype.tags["TMPL_IFNDEF"] = {
-    pfunc: htmltmpl.prototype.hdlr_ifdef_parse,
-    afunc: htmltmpl.prototype.hdlr_ifndef_apply,
-    name: "TMPL_IFNDEF" };
+	pfunc: htmltmpl.prototype.hdlr_ifdef_parse,
+	afunc: htmltmpl.prototype.hdlr_ifndef_apply,
+	name: "TMPL_IFNDEF" };
 htmltmpl.prototype.tags["/TMPL_IFDEF"] = {
-    pfunc: htmltmpl.prototype.hdlr_ifdef_end_parse,
-    start_tag: [htmltmpl.prototype.tags["TMPL_IFDEF"],
+	pfunc: htmltmpl.prototype.hdlr_ifdef_end_parse,
+	start_tag: [htmltmpl.prototype.tags["TMPL_IFDEF"],
 		htmltmpl.prototype.tags["TMPL_ELSE"]],
-    name: "/TMPL_IFDEF" };
+	name: "/TMPL_IFDEF" };
 htmltmpl.prototype.tags["/TMPL_IFNDEF"] = {
-    pfunc: htmltmpl.prototype.hdlr_ifdef_end_parse,
-    start_tag: [htmltmpl.prototype.tags["TMPL_IFNDEF"],
+	pfunc: htmltmpl.prototype.hdlr_ifdef_end_parse,
+	start_tag: [htmltmpl.prototype.tags["TMPL_IFNDEF"],
 		htmltmpl.prototype.tags["TMPL_ELSE"]],
-    name: "/TMPL_IFNDEF" };
+	name: "/TMPL_IFNDEF" };
 
 htmltmpl.prototype.tags["TMPL_ELSE"].start_tag.push(htmltmpl.prototype.tags["TMPL_IFDEF"]);
 htmltmpl.prototype.tags["TMPL_ELSE"].start_tag.push(htmltmpl.prototype.tags["TMPL_IFNDEF"]);

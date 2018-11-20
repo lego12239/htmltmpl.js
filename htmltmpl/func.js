@@ -19,13 +19,13 @@
 "use strict";
 
 htmltmpl.prototype.cb.init.push(function () {
-    this.funcs = {};
+	this.funcs = {};
 });
 
 // For use inside a this.funcs.*
 htmltmpl.prototype.get_data = function(name)
 {
-    return this._get_data(name.split("."));
+	return this._get_data(name.split("."));
 }
 
 /**********************************************************************
@@ -33,30 +33,30 @@ htmltmpl.prototype.get_data = function(name)
  **********************************************************************/
 htmltmpl.prototype.hdlr_func_parse = function(def, tag_attrs)
 {
-    var attrs;
+	var attrs;
 
-    attrs = this._parse_tag_attrs(tag_attrs);
-    if (( attrs.ARG != undefined ) && ( typeof(attrs.ARG) === "string" ))
-	attrs.ARG = [ attrs.ARG ];
-    this._s.parse[0].push([def.name, [ attrs ]]);
+	attrs = this._parse_tag_attrs(tag_attrs);
+	if ((attrs.ARG != undefined) && (typeof(attrs.ARG) === "string"))
+		attrs.ARG = [ attrs.ARG ];
+	this._s.parse[0].push([def.name, [ attrs ]]);
 }
 
 htmltmpl.prototype.hdlr_func_apply = function(def, tag)
 {
-    var attrs;
-    var val;
+	var attrs;
+	var val;
 
-
-    if ( this.funcs[tag[0]["NAME"]] != undefined ) {
-	val = this.funcs[tag[0]["NAME"]].apply(this, tag[0]["ARG"]);
-	if ( val != undefined )
-	    this.out_str += val;
-    } else if ( this.p.err_on_no_data )
-	throw("Cann't find func '" + tag[0]["NAME"] + "'.");
+	if (this.funcs[tag[0]["NAME"]] != undefined) {	
+		val = this.funcs[tag[0]["NAME"]].apply(this, tag[0]["ARG"]);
+		if (val != undefined)
+			this.out_str += val;
+	} else if (this.p.err_on_no_data) {
+		throw("Cann't find func '" + tag[0]["NAME"] + "'.");
+	}
 }
 
 htmltmpl.prototype.tags["TMPL_FUNC"] = {
-    pfunc: htmltmpl.prototype.hdlr_func_parse,
-    afunc: htmltmpl.prototype.hdlr_func_apply,
-    name: "TMPL_FUNC" };
+	pfunc: htmltmpl.prototype.hdlr_func_parse,
+	afunc: htmltmpl.prototype.hdlr_func_apply,
+	name: "TMPL_FUNC" };
 }
