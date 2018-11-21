@@ -564,6 +564,10 @@
                   { id: "unit90",
                     id_res: "unit90_res",
                     title: "Test TMPL_IFLE (not matched) with TMPL_ELSE",
+                    data: { var1: 5 }},
+                  { id: "unit91",
+                    id_res: "unit91_res",
+                    title: "Test {% in template",
                     data: { var1: 5 }} ];
     function report_res(test, ret, ex)
     {
@@ -2790,6 +2794,16 @@
   <div id="unit90_res">
     here
     here
+  </div>
+
+  <!-- unit 91 -->
+  <div id="unit91">
+    {%this {% is{%%}
+    correct %} template
+  </div>
+  <div id="unit91_res">
+    {%this {% is{%%}
+    correct %} template
   </div>
 
   </div>

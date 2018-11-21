@@ -138,10 +138,13 @@ htmltmpl.prototype.tmpl_prepare = function()
 			this.parse_tag(m[1]);
 			if (m[2] != "")
 				this._s.parse[0].push(["TEXT", m[2] ]);
-		} else
+		} else {
+			this._s.parse[0].push(["TEXT", "{%"]);
 			this._s.parse[0].push(["TEXT", chunks[i] ]);
+		}
 	}
 
+	this._s.parse[0].shift();
 	this.tmpl_parsed = this._s.parse[0];
 }
 
