@@ -33,8 +33,6 @@
     a single tag, if escaping is turn on by default.
     Don't forget about case_sensitive parameter behaviour towards to ESCAPE attribute
     values.
-15. May be we have a bug with {%. A template is splited by {%. If we can't find a tag
-    we append a text and possily without {%. Check this.
 16. Use for loop context vars a separate data stack? We must not modify a source data if
     this possible.
 17. Fix constructor for the case of String object as tmpl parameter. typeof(tmpl) will
@@ -45,3 +43,6 @@
 20. ret_dom:1 or ret_dom:true - all variants are good.
 21. prefix error messages with "htmltmpl." to distinguish htmltmpl errors from others.
 22. Remake internal array structures with objects.
+23. Check throw constructs. May be a bug with variable name reporting. Because
+    it can be an array, not only a string.
+24. Add tests for TMPL_INCLUDE
