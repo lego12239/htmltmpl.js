@@ -48,7 +48,7 @@ base tags set you must include only the core module:
 
 	<script type="text/javascript" src="htmltmpl/core.min.js"></script>
 
-If you need, for example, TMPL_IFDEF/TMPL_IFNDEF tags, you must include 
+If you need, for example, TMPL_IFDEF/TMPL_IFNDEF tags, you must include
 ifdef.js extension module after the core:
 
 	<script type="text/javascript" src="htmltmpl/core.min.js"></script>
@@ -98,7 +98,7 @@ change it behaviour. Properties names:
 	1 by default.
   global_vars (0/1)
 	make variables defined outside a loop visible.
-	0 by default.        
+	0 by default.
   loop_context_vars (0/1)
 	Enable loop variables (__first__, __last__, __inner__,
 	__outer__, __odd__, __even__, __counter__, __index__).
@@ -134,7 +134,7 @@ example, override ret_dom parameter default value for your every template,
 more easier is to change htmltmpl default values with:
 
 	htmltmpl.p.ret_dom = 1;
-	
+
 before a first call of htmltmpl constructor.
 
 You can use as NAME attribute value a name of an inner object property:
@@ -184,7 +184,7 @@ core:
   TMPL_INCLUDE
 	{%TMPL_INCLUDE NAME=tmpl_name%}
 	{%TMPL_INCLUDE NAME=tmpl_name VAR=var_name%}
-	
+
 	On template applying here will be located an output of applying a template
 	with a name tmpl_name. The second form used for applying a
     specified template only if var_name var is defined; in this case
@@ -271,25 +271,25 @@ func:
 	{%TMPL_FUNC NAME=func1%}
 	{%TMPL_FUNC NAME=func2 ARG=arg_1%}
 	{%TMPL_FUNC NAME=func2 ARG=arg_1 ARG=arg_2%}
-	
+
 	Call a js function with a name pointed in NAME attribute value and use
 	it return value as a replacement text. Optional arguments can be given to
 	function using ARG attributes. Before apply() method is called, all needed
 	functions must be placed in funcs property of an htmltmpl object:
-	
+
 	var tmpl = new htmltmpl(document.getElementById("tmpl_data"));
 	tmpl.funcs.echo = function (str) { return "echoing " + str; };
 	var result = tmpl.apply({ var: "data" });
-	
+
 	where html code is:
-    
+
 	<div id="tmpl_data" style="display: none">
 		{%TMPL_VAR NAME=var%}
 		{%TMPL_FUNC NAME=echo ARG="first argument"%}
 	</div>
-	
+
 	and result is:
-	
+
 	"
 		data
 		echoing first argument
@@ -325,13 +325,13 @@ html code:
 
 "
 	<div>
-	
+
 		<div>123</div>
-	
+
 		<div>string</div>
-	
+
 		<div>str 456</div>
-	
+
 	</div>
 "
 

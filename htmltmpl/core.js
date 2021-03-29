@@ -32,7 +32,7 @@
 	1 by default.
   global_vars
 		make variables defined outside a loop visible.
-		0 by default.		
+		0 by default.
   loop_context_vars
 		Enable loop variables (__first__, __last__, __inner__,
 	__outer__, __odd__, __even__, __counter__, __index__).
@@ -178,11 +178,11 @@ htmltmpl.prototype._parse_tag_attrs = function(attrs)
 	var name, val;
 	var res = {};
 
-	while ( m = this.rex.tag_attrs.exec(attrs) ) {	
+	while ( m = this.rex.tag_attrs.exec(attrs) ) {
 		name = m[1];
 		if (!this.p.case_sensitive)
 			name = name.toUpperCase();
-	
+
 		val = m[2];
 		if ((val.charAt(0) == "'") || (val.charAt(0) == '"'))
 			val = val.substr(1, val.length - 2);
@@ -339,7 +339,7 @@ htmltmpl.prototype.set_loop_context_vars = function (loopidx, looplen)
 		this._s.data[0].__first__ = 1;
 		this._s.data[0].__outer__ = 1;
 	}
-	if (loopidx == (looplen - 1)) {	
+	if (loopidx == (looplen - 1)) {
 		this._s.data[0].__last__ = 1;
 		this._s.data[0].__outer__ = 1;
 	}
@@ -347,10 +347,10 @@ htmltmpl.prototype.set_loop_context_vars = function (loopidx, looplen)
 	if (!this._s.data[0].__outer__)
 		this._s.data[0].__inner__ = 1;
 
-	if ((loopidx + 1) % 2 == 0) {	
+	if ((loopidx + 1) % 2 == 0) {
 		this._s.data[0].__odd__ = 0;
 		this._s.data[0].__even__ = 1;
-	} else {	
+	} else {
 		this._s.data[0].__odd__ = 1;
 		this._s.data[0].__even__ = 0;
 	}
@@ -463,7 +463,7 @@ htmltmpl.prototype.hdlr_include_apply = function(def, tag)
 			return;
 		}
 	}
-	
+
 	if (this.tmpls[tag[1].NAME] != null) {
 		if (val != null)
 			this._s.data.unshift(val);
@@ -482,7 +482,7 @@ htmltmpl.prototype._apply = function(tmpl)
 	var i, j;
 	var found_d;
 
-	for(i = 0; i < tmpl.length; i++) {	
+	for(i = 0; i < tmpl.length; i++) {
 		if (tmpl[i][0] == "TEXT")
 			this.out_str += tmpl[i][1];
 		else if (this.tags[tmpl[i][0]] != undefined)
@@ -506,8 +506,8 @@ htmltmpl.prototype.apply = function(data)
 
 	if (this.p.strip_wrap_spaces)
 		this.out_str = this.out_str.replace(/^\s*([^]+?)\s*$/, "$1");
-	
-	if (this.p.ret_dom) {	
+
+	if (this.p.ret_dom) {
 		el = document.createElement(this._get_first_element_name());
 		el.innerHTML = this.out_str;
 		if (el.childNodes.length == 1)
