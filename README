@@ -54,7 +54,7 @@ ifdef.js extension module after the core:
 	<script type="text/javascript" src="htmltmpl/core.min.js"></script>
 	<script type="text/javascript" src="htmltmpl/ifdef.min.js"></script>
 
-For those who want a single js file with all modules in it, exist 
+For those who want a single js file with all modules in it, there is
 solid target of Makefile. Do:
 
 	make && make solid
