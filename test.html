@@ -627,7 +627,22 @@
                     id_res: "unit104_res",
                     prms: { global_vars: 1 },
                     title: "Test TMPL_LIST(with TMPL_VAR, global_vars)",
-                    data: {w: "T", list1: [1, "word", 3]}}];
+                    data: {w: "T", list1: [1, "word", 3]}},
+                  { id: "unit105",
+                    id_res: "unit105_res",
+                    prms: { loop_context_vars: 1 },
+                    title: "Test TMPL_LIST (3 pass) with loop_context_vars option",
+                    data: {list1: [1, "word", 3]}},
+                  { id: "unit106",
+                    id_res: "unit106_res",
+                    prms: { loop_context_vars: 1 },
+                    title: "Test TMPL_LIST (2 pass) with loop_context_vars option",
+                    data: {list1: [1, "word"]}},
+                  { id: "unit107",
+                    id_res: "unit107_res",
+                    prms: { loop_context_vars: 1 },
+                    title: "Test TMPL_LIST (1 pass) with loop_context_vars option",
+                    data: {list1: [1]}}];
     function report_res(test, ret, ex)
     {
         var val;
@@ -2981,6 +2996,108 @@
     qwordaT
   
     q3aT
+  </div>
+
+  <!-- unit 105 -->
+  <div id="unit105">{%TMPL_LIST NAME=list1%}
+    q{%TMPL_LISTITEM%}a{%TMPL_VAR NAME=w%}
+    {%TMPL_VAR NAME=__first__%}
+    {%TMPL_VAR NAME=__last__%}
+    {%TMPL_VAR NAME=__inner__%}
+    {%TMPL_VAR NAME=__outer__%}
+    {%TMPL_VAR NAME=__odd__%}
+    {%TMPL_VAR NAME=__even__%}
+    {%TMPL_VAR NAME=__counter__%}
+    {%TMPL_VAR NAME=__index__%}
+  {%/TMPL_LIST%}</div>
+  <div id="unit105_res">
+    q1a
+    1
+    0
+    0
+    1
+    1
+    0
+    1
+    0
+  
+    qworda
+    0
+    0
+    1
+    0
+    0
+    1
+    2
+    1
+  
+    q3a
+    0
+    1
+    0
+    1
+    1
+    0
+    3
+    2
+  </div>
+
+  <!-- unit 106 -->
+  <div id="unit106">{%TMPL_LIST NAME=list1%}
+    q{%TMPL_LISTITEM%}a{%TMPL_VAR NAME=w%}
+    {%TMPL_VAR NAME=__first__%}
+    {%TMPL_VAR NAME=__last__%}
+    {%TMPL_VAR NAME=__inner__%}
+    {%TMPL_VAR NAME=__outer__%}
+    {%TMPL_VAR NAME=__odd__%}
+    {%TMPL_VAR NAME=__even__%}
+    {%TMPL_VAR NAME=__counter__%}
+    {%TMPL_VAR NAME=__index__%}
+  {%/TMPL_LIST%}</div>
+  <div id="unit106_res">
+    q1a
+    1
+    0
+    0
+    1
+    1
+    0
+    1
+    0
+  
+    qworda
+    0
+    1
+    0
+    1
+    0
+    1
+    2
+    1
+  </div>
+
+  <!-- unit 107 -->
+  <div id="unit107">{%TMPL_LIST NAME=list1%}
+    q{%TMPL_LISTITEM%}a{%TMPL_VAR NAME=w%}
+    {%TMPL_VAR NAME=__first__%}
+    {%TMPL_VAR NAME=__last__%}
+    {%TMPL_VAR NAME=__inner__%}
+    {%TMPL_VAR NAME=__outer__%}
+    {%TMPL_VAR NAME=__odd__%}
+    {%TMPL_VAR NAME=__even__%}
+    {%TMPL_VAR NAME=__counter__%}
+    {%TMPL_VAR NAME=__index__%}
+  {%/TMPL_LIST%}</div>
+  <div id="unit107_res">
+    q1a
+    1
+    1
+    0
+    1
+    1
+    0
+    1
+    0
   </div>
 
   </div>
