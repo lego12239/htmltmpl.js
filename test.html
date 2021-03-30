@@ -6,6 +6,7 @@
   <script type="text/javascript" src="htmltmpl/core.js"></script>
   <script type="text/javascript" src="htmltmpl/ifdef.js"></script>
   <script type="text/javascript" src="htmltmpl/ifeq.js"></script>
+  <script type="text/javascript" src="htmltmpl/list.js"></script>
   <script type="text/javascript">
     var tmpl;  // make tmpl a global var for debug purposes
     var span_ok, span_fail, res_cntr_el;
@@ -579,7 +580,35 @@
                     id_res: "unit93_res",
                     title: "Test tmpl with numbers",
                     data: { var1: 1,
-                            var2: 2}}];
+                            var2: 2}},
+                  { id: "unit94",
+                    id_res: "unit94_res",
+                    title: "Test TMPL_LIST (empty, nodata)",
+                    data: {list1: []}},
+                  { id: "unit95",
+                    id_res: "unit95_res",
+                    title: "Test TMPL_LIST (empty)",
+                    data: {list1: [1, 2, 3]}},
+                  { id: "unit96",
+                    id_res: "unit96_res",
+                    title: "Test TMPL_LIST (nodata)",
+                    data: {list1: []}},
+                  { id: "unit97",
+                    id_res: "unit97_res",
+                    title: "Test TMPL_LIST (numbers, notext)",
+                    data: {list1: [1, 2, 3]}},
+                  { id: "unit98",
+                    id_res: "unit98_res",
+                    title: "Test TMPL_LIST (numbers)",
+                    data: {list1: [1, 2, 3]}},
+                  { id: "unit99",
+                    id_res: "unit99_res",
+                    title: "Test TMPL_LIST (numbers)",
+                    data: {list1: [1, 2, 3]}},
+                  { id: "unit100",
+                    id_res: "unit100_res",
+                    title: "Test TMPL_LIST (number with strings)",
+                    data: {list1: [1, "word", 3, "again"]}}];
     function report_res(test, ret, ex)
     {
         var val;
@@ -2824,6 +2853,60 @@
   <!-- unit 93 -->
   <div id="unit93">{%TMPL_VAR NAME=var1%}{%TMPL_VAR NAME=var2%}</div>
   <div id="unit93_res">12</div>
+
+  <!-- unit 94 -->
+  <div id="unit94">{%TMPL_LIST NAME=list1%}{%/TMPL_LIST%}</div>
+  <div id="unit94_res"></div>
+
+  <!-- unit 95 -->
+  <div id="unit95">{%TMPL_LIST NAME=list1%}{%/TMPL_LIST%}</div>
+  <div id="unit95_res"></div>
+
+  <!-- unit 96 -->
+  <div id="unit96">{%TMPL_LIST NAME=list1%}q{%/TMPL_LIST%}</div>
+  <div id="unit96_res"></div>
+
+  <!-- unit 97 -->
+  <div id="unit97">{%TMPL_LIST NAME=list1%}
+    q
+  {%/TMPL_LIST%}</div>
+  <div id="unit97_res">
+    q
+  
+    q
+  
+    q
+  </div>
+
+  <!-- unit 98 -->
+  <div id="unit98">{%TMPL_LIST NAME=list1%}{%TMPL_LISTITEM%}{%/TMPL_LIST%}</div>
+  <div id="unit98_res">123</div>
+
+  <!-- unit 99 -->
+  <div id="unit99">{%TMPL_LIST NAME=list1%}
+    q{%TMPL_LISTITEM%}a
+  {%/TMPL_LIST%}</div>
+  <div id="unit99_res">
+    q1a
+  
+    q2a
+  
+    q3a
+  </div>
+
+  <!-- unit 100 -->
+  <div id="unit100">{%TMPL_LIST NAME=list1%}
+    q{%TMPL_LISTITEM%}a
+  {%/TMPL_LIST%}</div>
+  <div id="unit100_res">
+    q1a
+  
+    qworda
+  
+    q3a
+  
+    qagaina
+  </div>
 
   </div>
 </body>
