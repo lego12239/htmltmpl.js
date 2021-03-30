@@ -715,6 +715,7 @@
     {
         var i;
         var ret;
+        var etime = Date.now();
 
 
         span_ok = document.getElementById("results_ok");
@@ -756,12 +757,15 @@
             // set counter
             document.getElementById("counter").innerHTML = (i + 1) + "/" + tests.length;
         }
-    }
+        etime = (Date.now() - etime)/1000;
+        document.getElementById("time").innerHTML = etime;
+   }
   </script>
 </head>
 <body onload="do_tests()">
   <div style="margin: 1em">
     run tests: <span id="counter">0/0</span>
+    (<span id="time"></span>s)
   </div>
 
   <div id="results">
