@@ -318,13 +318,13 @@ htmltmpl.prototype.hdlr_loop_apply = function(def, tag)
 	val = this._get_data(tag[0]);
 
 	if ((val != undefined) && (Array.isArray(val)))
-	for(i = 0; i < val.length; i++) {
-		this._s.data.unshift(val[i]);
-		if (this.p.loop_context_vars)
-			this.set_loop_context_vars(i, val.length);
-		this._apply(tag[2]);
-		this._s.data.shift();
-	}
+		for(i = 0; i < val.length; i++) {
+			this._s.data.unshift(val[i]);
+			if (this.p.loop_context_vars)
+				this.set_loop_context_vars(i, val.length);
+			this._apply(tag[2]);
+			this._s.data.shift();
+		}
 	else if (this.p.err_on_no_data)
 		throw("Cann't find loop '" + tag[0] + "'.");
 }
