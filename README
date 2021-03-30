@@ -33,6 +33,11 @@ with ifeq extension:
 with func extension:
 {%TMPL_FUNC NAME=func_name ARG=arg_1 ARG=arg_2%}
 
+with list extension:
+{%TMPL_LIST NAME=list_name%}...{%/TMPL_LIST%}
+{%TMPL_LIST NAME=list_name%}...{%TMPL_LISTITEM%}...{%/TMPL_LIST%}
+
+
 See ex*.html files for examples of use.
 
 You can open test.html in your browser to test that htmltmpl is works right.
@@ -294,6 +299,15 @@ func:
 		data
 		echoing first argument
 	"
+
+list:
+  TMPL_LIST
+	{%TMPL_LIST NAME=list_name%}...{%/TMPL_LIST%}
+	{%TMPL_LIST NAME=list_name%}...{%TMPL_LISTITEM%}...{%/TMPL_LIST%}
+
+	For this construct htmltmpl finds in a data set a property with name
+	list_name which contain an array. Each {%TMPL_LISTITEM%} construct is
+	replaced with a current item from this array.
 
 
 Examples:
