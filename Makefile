@@ -1,4 +1,5 @@
-SRC := htmltmpl/core.js htmltmpl/ifdef.js htmltmpl/func.js htmltmpl/ifeq.js
+SRC := htmltmpl/core.js htmltmpl/ifdef.js htmltmpl/func.js htmltmpl/ifeq.js\
+  htmltmpl/list.js
 SRC_MIN := $(patsubst %.js, %.min.js,$(SRC))
 VERSION := 1.4.0
 
