@@ -216,6 +216,9 @@ htmltmpl.prototype._get_data = function(name)
 	else
 		len = 1;
 
+	if (name == null)
+		return this._s.data[0];
+
 	for(j = 0; j < len; j++) {
 		v = this.__get_data(this._s.data[j], name);
 		if (v != undefined)
