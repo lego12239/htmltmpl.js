@@ -220,6 +220,8 @@ htmltmpl.prototype._get_data = function(name)
 		return this._s.data[0];
 
 	for(j = 0; j < len; j++) {
+		if (typeof(this._s.data[j]) != "object")
+			continue;
 		v = this.__get_data(this._s.data[j], name);
 		if (v != undefined)
 			return v;
