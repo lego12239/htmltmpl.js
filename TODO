@@ -33,8 +33,6 @@
     a single tag, if escaping is turn on by default.
     Don't forget about case_sensitive parameter behaviour towards to ESCAPE attribute
     values.
-16. Use for loop context vars a separate data stack? We must not modify a source data if
-    this possible.
 17. Fix constructor for the case of String object as tmpl parameter. typeof(tmpl) will
     be "object" in this case and instanceof String is true.
 18. Add examples related to tmpl_is_commented option.
