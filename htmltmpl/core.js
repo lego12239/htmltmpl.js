@@ -186,21 +186,21 @@ htmltmpl.prototype._parse_tag_attrs = function(attrs)
 		val = m[2];
 		if ((val.charAt(0) == "'") || (val.charAt(0) == '"'))
 			val = val.substr(1, val.length - 2);
-		if (res[name] == undefined)
+		switch (typeof(res[name])) {
+		case "undefined":
 			res[name] = val;
-		else
-			switch (typeof(res[name])) {
-			case "string":
-				res[name] = [ res[name] ];
-				res[name].push(val);
-				break;
-			case "object":
-				res[name].push(val);
-				break;
-			default:
-				throw("_parse_tag_attrs err: unknown value type: " +
-				  typeof(res[name]));
-			}
+			break;
+		case "string":
+			res[name] = [ res[name] ];
+			res[name].push(val);
+			break;
+		case "object":
+			res[name].push(val);
+			break;
+		default:
+			throw("_parse_tag_attrs err: unknown value type: " +
+			  typeof(res[name]));
+		}
 	}
 
 	return res;
