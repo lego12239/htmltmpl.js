@@ -63,7 +63,8 @@ function htmltmpl(tmpl, prms)
 	this.tmpls = {};
 	this._s = { parse: [[]],
 		priv: [],
-		data: [] };
+		data: [],
+		v: [{data_lookup_depth: 1}] };
 
 	this._set_prms(prms);
 
@@ -214,7 +215,7 @@ htmltmpl.prototype._get_data = function(name)
 	if (this.p.global_vars)
 		len = this._s.data.length;
 	else
-		len = 1;
+		len = this._s.v[0].data_lookup_depth;
 
 	if (name == null)
 		return this._s.data[0];
@@ -318,50 +319,58 @@ htmltmpl.prototype.hdlr_loop_apply = function(def, tag)
 	var i;
 
 	val = this._get_data(tag[0]);
+	this._s.v.unshift(Object.assign({}, this._s.v[0], {data_lookup_depth: 2}));
 
-	if ((val != undefined) && (Array.isArray(val)))
+	if ((val != undefined) && (Array.isArray(val))) {
+		this._s.data.unshift({}, {});
 		for(i = 0; i < val.length; i++) {
-			this._s.data.unshift(val[i]);
+			this._s.data[0] = val[i];
 			if (this.p.loop_context_vars)
-				this.set_loop_context_vars(i, val.length);
+				this._s.data[1] = this.create_loop_context_vars(i, val.length);
 			this._apply(tag[2]);
-			this._s.data.shift();
 		}
-	else if (this.p.err_on_no_data)
+		this._s.data.shift();
+		this._s.data.shift();
+	} else if (this.p.err_on_no_data) {
 		throw("Cann't find loop '" + tag[0] + "'.");
+	}
+	this._s.v.shift();
 }
 
-htmltmpl.prototype.set_loop_context_vars = function (loopidx, looplen)
+htmltmpl.prototype.create_loop_context_vars = function (loopidx, looplen)
 {
 	// Reset the vars
-	this._s.data[0].__first__ = 0;
-	this._s.data[0].__last__ = 0;
-	this._s.data[0].__inner__ = 0;
-	this._s.data[0].__outer__ = 0;
+	var vars = {
+	  __first__: 0,
+	  __last__: 0,
+	  __inner__: 0,
+	  __outer__: 0};
 
 	// Set the vars
 	if (loopidx == 0) {
-		this._s.data[0].__first__ = 1;
-		this._s.data[0].__outer__ = 1;
+		vars.__first__ = 1;
+		vars.__outer__ = 1;
 	}
 	if (loopidx == (looplen - 1)) {
-		this._s.data[0].__last__ = 1;
-		this._s.data[0].__outer__ = 1;
+		vars.__last__ = 1;
+		vars.__outer__ = 1;
 	}
 
-	if (!this._s.data[0].__outer__)
-		this._s.data[0].__inner__ = 1;
+	if (!vars.__outer__)
+		vars.__inner__ = 1;
 
 	if ((loopidx + 1) % 2 == 0) {
-		this._s.data[0].__odd__ = 0;
-		this._s.data[0].__even__ = 1;
+		vars.__odd__ = 0;
+		vars.__even__ = 1;
 	} else {
-		this._s.data[0].__odd__ = 1;
-		this._s.data[0].__even__ = 0;
+		vars.__odd__ = 1;
+		vars.__even__ = 0;
 	}
 
-	this._s.data[0].__index__ = loopidx;
-	this._s.data[0].__counter__ = loopidx + 1;
+	vars.__index__ = loopidx;
+	vars.__counter__ = loopidx + 1;
+
+	return vars;
 }
 
 /**********************************************************************

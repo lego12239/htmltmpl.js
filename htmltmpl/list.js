@@ -52,17 +52,22 @@ htmltmpl.prototype.hdlr_list_apply = function(def, tag)
 	var i;
 
 	val = this._get_data(tag[0]);
+	this._s.v.unshift(Object.assign({}, this._s.v[0], {data_lookup_depth: 2}));
 
-	if ((val != undefined) && (Array.isArray(val)))
+	if ((val != undefined) && (Array.isArray(val))) {
+		this._s.data.unshift({}, {});
 		for(i = 0; i < val.length; i++) {
-			this._s.data.unshift(val[i]);
+			this._s.data[0] = val[i];
 			if (this.p.loop_context_vars)
-				this.set_loop_context_vars(i, val.length);
+				this._s.data[1] = this.create_loop_context_vars(i, val.length);
 			this._apply(tag[2]);
-			this._s.data.shift();
 		}
-	else if (this.p.err_on_no_data)
+		this._s.data.shift();
+		this._s.data.shift();
+	} else if (this.p.err_on_no_data) {
 		throw("Cann't find list '" + tag[0] + "'.");
+	}
+	this._s.v.shift();
 }
 
 /**********************************************************************
