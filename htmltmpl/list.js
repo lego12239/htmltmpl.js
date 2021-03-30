@@ -72,6 +72,8 @@ htmltmpl.prototype.hdlr_listitem_parse = function(def, tag_attrs)
 {
 	var attrs, vname;
 
+	if ((this._s.priv.length == 0) || (this._s.priv[0][0].name != "TMPL_LIST"))
+		throw("parse err: " + def.name + " can be used only inside a TMPL_LIST");
 	attrs = this._parse_tag_attrs(tag_attrs);
 	this._s.parse[0].push([def.name, [ attrs ]]);
 }
