@@ -568,7 +568,18 @@
                   { id: "unit91",
                     id_res: "unit91_res",
                     title: "Test {% in template",
-                    data: { var1: 5 }} ];
+                    data: { var1: 5 }},
+                  { id: "unit92",
+                    id_res: "unit92_res",
+                    as_str: 1,
+                    title: "Test tmpl with numbers",
+                    data: { var1: 1,
+                            var2: 2}},
+                  { id: "unit93",
+                    id_res: "unit93_res",
+                    title: "Test tmpl with numbers",
+                    data: { var1: 1,
+                            var2: 2}}];
     function report_res(test, ret, ex)
     {
         var val;
@@ -2805,6 +2816,14 @@
     {%this {% is{%%}
     correct %} template
   </div>
+
+  <!-- unit 92 -->
+  <div id="unit92">{%TMPL_VAR NAME=var1%}{%TMPL_VAR NAME=var2%}</div>
+  <div id="unit92_res">12</div>
+
+  <!-- unit 93 -->
+  <div id="unit93">{%TMPL_VAR NAME=var1%}{%TMPL_VAR NAME=var2%}</div>
+  <div id="unit93_res">12</div>
 
   </div>
 </body>
