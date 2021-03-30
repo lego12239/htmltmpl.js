@@ -608,7 +608,26 @@
                   { id: "unit100",
                     id_res: "unit100_res",
                     title: "Test TMPL_LIST (number with strings)",
-                    data: {list1: [1, "word", 3, "again"]}}];
+                    data: {list1: [1, "word", 3, "again"]}},
+                  { id: "unit101",
+                    id_res: "unit101_res",
+                    title: "Test TMPL_LIST (TMPL_LISTITEM repeated)",
+                    data: {list1: [1, "word", 3, "again"]}},
+                  { id: "unit102",
+                    id_res: "unit102_res",
+                    is_err: 1,
+                    err_msg: "parse err: TMPL_LISTITEM can be used only inside a TMPL_LIST",
+                    title: "Test TMPL_LISTITEM outside TMPL_LIST(should fail)",
+                    data: {list1: [1, "word", 3, "again"]}},
+                  { id: "unit103",
+                    id_res: "unit103_res",
+                    title: "Test TMPL_LIST(with TMPL_VAR inside)",
+                    data: {list1: [1, "word", 3]}},
+                  { id: "unit104",
+                    id_res: "unit104_res",
+                    prms: { global_vars: 1 },
+                    title: "Test TMPL_LIST(with TMPL_VAR, global_vars)",
+                    data: {w: "T", list1: [1, "word", 3]}}];
     function report_res(test, ret, ex)
     {
         var val;
@@ -2906,6 +2925,58 @@
     q3a
   
     qagaina
+  </div>
+
+  <!-- unit 101 -->
+  <div id="unit101">{%TMPL_LIST NAME=list1%}
+    q{%TMPL_LISTITEM%}a{%TMPL_LISTITEM%}
+  {%/TMPL_LIST%}</div>
+  <div id="unit101_res">
+    q1a1
+  
+    qwordaword
+  
+    q3a3
+  
+    qagainaagain
+  </div>
+
+  <!-- unit 102 -->
+  <div id="unit102">{%TMPL_LISTITEM%}{%TMPL_LIST NAME=list1%}
+    q{%TMPL_LISTITEM%}a{%TMPL_LISTITEM%}
+  {%/TMPL_LIST%}</div>
+  <div id="unit102_res">
+    q1a1
+  
+    qwordaword
+  
+    q3a3
+  
+    qagainaagain
+  </div>
+
+  <!-- unit 103 -->
+  <div id="unit103">{%TMPL_LIST NAME=list1%}
+    q{%TMPL_LISTITEM%}a{%TMPL_VAR NAME=w%}
+  {%/TMPL_LIST%}</div>
+  <div id="unit103_res">
+    q1a
+  
+    qworda
+  
+    q3a
+  </div>
+
+  <!-- unit 104 -->
+  <div id="unit104">{%TMPL_LIST NAME=list1%}
+    q{%TMPL_LISTITEM%}a{%TMPL_VAR NAME=w%}
+  {%/TMPL_LIST%}</div>
+  <div id="unit104_res">
+    q1aT
+  
+    qwordaT
+  
+    q3aT
   </div>
 
   </div>
