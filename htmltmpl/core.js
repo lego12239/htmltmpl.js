@@ -54,6 +54,9 @@
   strip_wrap_spaces
 		Remove white space at start and at end of a template.
 		1 by default.
+  escape_defval
+        Default value for ESCAPE attribute.
+        ETEXT by default.
 */
 function htmltmpl(tmpl, prms)
 {
@@ -90,7 +93,8 @@ htmltmpl.p = {
 	tmpl_is_commented: 1,
 	err_on_no_data: 0,
 	ret_dom: 0,
-	strip_wrap_spaces: 1 };
+	strip_wrap_spaces: 1,
+	escape_defval: "ETEXT" };
 
 htmltmpl.prototype._set_prms = function (prms)
 {
@@ -269,7 +273,7 @@ htmltmpl.prototype.hdlr_var_parse = function(def, tag_attrs)
 	attrs = this._parse_tag_attrs(tag_attrs);
 	vname = attrs.NAME.split(".");
 	if (attrs.ESCAPE == null)
-		attrs.ESCAPE = "ETEXT";
+		attrs.ESCAPE = this.p.escape_defval;
 	if (!this.p.case_sensitive)
 		attrs.ESCAPE = attrs.ESCAPE.toUpperCase();
 	switch (attrs.ESCAPE) {
