@@ -642,7 +642,15 @@
                     id_res: "unit107_res",
                     prms: { loop_context_vars: 1 },
                     title: "Test TMPL_LIST (1 pass) with loop_context_vars option",
-                    data: {list1: [1]}}];
+                    data: {list1: [1]}},
+                  { id: "unit108",
+                    id_res: "unit108_res",
+                    title: "Test single quote in attribute value",
+                    data: {}},
+                  { id: "unit109",
+                    id_res: "unit109_res",
+                    title: "Test double quote in attribute value",
+                    data: {}}];
     function report_res(test, ret, ex)
     {
         var val;
@@ -3099,6 +3107,14 @@
     1
     0
   </div>
+
+  <!-- unit 108 -->
+  <div id="unit108">{%TMPL_VAR NAME=v1 DEFAULT='q \' f'%}</div>
+  <div id="unit108_res">q ' f</div>
+
+  <!-- unit 109 -->
+  <div id="unit109">{%TMPL_VAR NAME=v1 DEFAULT="q \"f \""%}</div>
+  <div id="unit109_res">q "f "</div>
 
   </div>
 </body>

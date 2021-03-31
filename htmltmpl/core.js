@@ -188,7 +188,7 @@ htmltmpl.prototype._parse_tag_attrs = function(attrs)
 
 		val = m[2];
 		if ((val.charAt(0) == "'") || (val.charAt(0) == '"'))
-			val = val.substr(1, val.length - 2);
+			val = val.substr(1, val.length - 2).replaceAll(/\\(.)/g, "$1");
 		switch (typeof(res[name])) {
 		case "undefined":
 			res[name] = val;
@@ -564,7 +564,7 @@ htmltmpl.prototype.cb = {init: []};
 
 htmltmpl.prototype.rex = {
 	tag: /^(\S+)(\s+.+)?$/,
-	tag_attrs: /\s+([^\s=]+)\s*=\s*("[^"]+"|'[^']+'|\S+)/g,
+	tag_attrs: /\s+([^\s=]+)\s*=\s*("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|[^"'\s]+)/g,
 	first_out_el: /^\s*<([^\s>]+)(?:\s|>)/ };
 
 htmltmpl.prototype.tags = {};
