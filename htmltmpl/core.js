@@ -134,6 +134,7 @@ htmltmpl.prototype.tmpl_prepare = function()
 	chunks = this.tmpl.split(/{%/);
 
 	for(i = 0; i < chunks.length; i++) {
+		rex.lastIndex = 0;
 		m = rex.exec(chunks[i]);
 		if (m) {
 			this.parse_tag(m[1]);
@@ -155,6 +156,7 @@ htmltmpl.prototype.parse_tag = function (tag)
 	var tag_name, tag_attrs;
 
 	// Split a tag to a name and a body
+	this.rex.tag.lastIndex = 0;
 	m = this.rex.tag.exec(tag);
 	if (!m)
 		throw("parse_tag err: wrong tag format: " + tag);
