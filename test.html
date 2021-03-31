@@ -651,7 +651,75 @@
                   { id: "unit109",
                     id_res: "unit109_res",
                     title: "Test double quote in attribute value",
-                    data: {}}];
+                    data: {}},
+                  { id: "unit110",
+                    id_res: "unit110_res",
+                    title: "Test TMPL_VAR ESCAPE=ETEXT",
+                    ret: "q&lt;&amp;text &gt; \"with' &amp;&lt;&gt; uns&amp;&lt;&gt;afe &lt;chars&gt;a",
+                    data: {var1: "<&text > \"with' &<> uns&<>afe <chars>"}},
+                  { id: "unit110.1",
+                    id_res: "unit110.1_res",
+                    prms: {case_sensitive: 0},
+                    title: "Test TMPL_VAR ESCAPE=ETEXT, case_sensitive=0",
+                    ret: "q&lt;&amp;text &gt; \"with' &amp;&lt;&gt; uns&amp;&lt;&gt;afe &lt;chars&gt;a",
+                    data: {var1: "<&text > \"with' &<> uns&<>afe <chars>"}},
+                  { id: "unit111",
+                    id_res: "unit111_res",
+                    title: "Test TMPL_VAR ESCAPE=AVAL",
+                    ret: "q<&text > &quot;with&#39; &<> &quot;&quot;&#39;uns&<>afe <chars>a",
+                    data: {var1: "<&text > \"with' &<> \"\"'uns&<>afe <chars>"}},
+                  { id: "unit111.1",
+                    id_res: "unit111.1_res",
+                    prms: {case_sensitive: 0},
+                    title: "Test TMPL_VAR ESCAPE=AVAL, case_sensitive=0",
+                    ret: "q<&text > &quot;with&#39; &<> &quot;&quot;&#39;uns&<>afe <chars>a",
+                    data: {var1: "<&text > \"with' &<> \"\"'uns&<>afe <chars>"}},
+                  { id: "unit112",
+                    id_res: "unit112_res",
+                    title: "Test TMPL_VAR ESCAPE=NO",
+                    ret: "q<&text > \"with' &<> \"\"'uns&<>afe <chars>a",
+                    data: {var1: "<&text > \"with' &<> \"\"'uns&<>afe <chars>"}},
+                  { id: "unit112.1",
+                    id_res: "unit112.1_res",
+                    prms: {case_sensitive: 0},
+                    title: "Test TMPL_VAR ESCAPE=NO, case_sensitive=0",
+                    ret: "q<&text > \"with' &<> \"\"'uns&<>afe <chars>a",
+                    data: {var1: "<&text > \"with' &<> \"\"'uns&<>afe <chars>"}},
+                  { id: "unit113",
+                    id_res: "unit113_res",
+                    is_err: 1,
+                    err_msg: "hdlr_var_parse err: ESCAPE attribute bad value: 'etexT'",
+                    title: "Test TMPL_VAR ESCAPE with wrong value",
+                    ret: "q<&text > \"with' &<> \"\"'uns&<>afe <chars>a",
+                    data: {var1: "<&text > \"with' &<> \"\"'uns&<>afe <chars>"}},
+                  { id: "unit113.1",
+                    id_res: "unit113.1_res",
+                    is_err: 1,
+                    err_msg: "hdlr_var_parse err: ESCAPE attribute bad value: 'aVAL'",
+                    title: "Test TMPL_VAR ESCAPE with wrong value",
+                    ret: "q<&text > \"with' &<> \"\"'uns&<>afe <chars>a",
+                    data: {var1: "<&text > \"with' &<> \"\"'uns&<>afe <chars>"}},
+                  { id: "unit113.2",
+                    id_res: "unit113.2_res",
+                    is_err: 1,
+                    err_msg: "hdlr_var_parse err: ESCAPE attribute bad value: 'no'",
+                    title: "Test TMPL_VAR ESCAPE with wrong value",
+                    ret: "q<&text > \"with' &<> \"\"'uns&<>afe <chars>a",
+                    data: {var1: "<&text > \"with' &<> \"\"'uns&<>afe <chars>"}},
+                  { id: "unit113.3",
+                    id_res: "unit113.3_res",
+                    is_err: 1,
+                    err_msg: "hdlr_var_parse err: ESCAPE attribute bad value: '2'",
+                    title: "Test TMPL_VAR ESCAPE with wrong value",
+                    ret: "q<&text > \"with' &<> \"\"'uns&<>afe <chars>a",
+                    data: {var1: "<&text > \"with' &<> \"\"'uns&<>afe <chars>"}},
+                  { id: "unit113.4",
+                    id_res: "unit113.4_res",
+                    is_err: 1,
+                    err_msg: "hdlr_var_parse err: ESCAPE attribute bad value: '2'",
+                    title: "Test TMPL_VAR ESCAPE with wrong value",
+                    ret: "q<&text > \"with' &<> \"\"'uns&<>afe <chars>a",
+                    data: {var1: "<&text > \"with' &<> \"\"'uns&<>afe <chars>"}}];
     function report_res(test, ret, ex)
     {
         var val, eret;
@@ -3123,6 +3191,50 @@
   <!-- unit 109 -->
   <div id="unit109">{%TMPL_VAR NAME=v1 DEFAULT="q \"f \""%}</div>
   <div id="unit109_res">q "f "</div>
+
+  <!-- unit 110 -->
+  <div id="unit110">q{%TMPL_VAR NAME=var1 ESCAPE=ETEXT%}a</div>
+  <div id="unit110_res"></div>
+
+  <!-- unit 110.1 -->
+  <div id="unit110.1">q{%TMPL_VAR NAME=var1 EsCaPE=eTeXt%}a</div>
+  <div id="unit110.1_res"></div>
+
+  <!-- unit 111 -->
+  <div id="unit111">q{%TMPL_VAR NAME=var1 ESCAPE=AVAL%}a</div>
+  <div id="unit111_res"></div>
+
+  <!-- unit 111.1 -->
+  <div id="unit111.1">q{%TMPL_VAR NAME=var1 eScApE=AvAl%}a</div>
+  <div id="unit111.1_res"></div>
+
+  <!-- unit 112 -->
+  <div id="unit112">q{%TMPL_VAR NAME=var1 ESCAPE=NO%}a</div>
+  <div id="unit112_res"></div>
+
+  <!-- unit 112.1 -->
+  <div id="unit112.1">q{%TMPL_VAR NAME=var1 EscApE=No%}a</div>
+  <div id="unit112.1_res"></div>
+
+  <!-- unit 113 -->
+  <div id="unit113">q{%TMPL_VAR NAME=var1 ESCAPE=etexT%}a</div>
+  <div id="unit113_res"></div>
+
+  <!-- unit 113.1 -->
+  <div id="unit113.1">q{%TMPL_VAR NAME=var1 ESCAPE=aVAL%}a</div>
+  <div id="unit113.1_res"></div>
+
+  <!-- unit 113.2 -->
+  <div id="unit113.2">q{%TMPL_VAR NAME=var1 ESCAPE=no%}a</div>
+  <div id="unit113.2_res"></div>
+
+  <!-- unit 113.3 -->
+  <div id="unit113.3">q{%TMPL_VAR NAME=var1 ESCAPE=2%}a</div>
+  <div id="unit113.3_res"></div>
+
+  <!-- unit 113.4 -->
+  <div id="unit113.4">q{%TMPL_VAR NAME=var1 ESCAPE=2%}a</div>
+  <div id="unit113.4_res"></div>
 
   </div>
 </body>
