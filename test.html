@@ -10,6 +10,7 @@
   <script type="text/javascript">
     var tmpl;  // make tmpl a global var for debug purposes
     var span_ok, span_fail, res_cntr_el;
+    var tests_ok = 0, tests_fail = 0;
     var tests = [ { id: "unit0",
                     id_res: "unit0_res",
                     as_str: 1,
@@ -715,6 +716,8 @@
         el.appendChild(span);
         el.appendChild(span_ok.cloneNode(true));
         res_cntr_el.appendChild(el);
+
+        tests_ok++;
         
         return 1;
     }
@@ -731,6 +734,8 @@
         el.appendChild(span_fail.cloneNode(true));
         res_cntr_el.appendChild(el);
         
+        tests_fail++;
+
         return 0;
     }
 
@@ -778,7 +783,7 @@
 	    }
 
             // set counter
-            document.getElementById("counter").innerHTML = (i + 1) + "/" + tests.length;
+            document.getElementById("counter").innerHTML = tests.length + "/" + (i + 1) + "/" + tests_ok + "/" + tests_fail;
         }
         etime = (Date.now() - etime)/1000;
         document.getElementById("time").innerHTML = etime;
@@ -787,7 +792,7 @@
 </head>
 <body onload="do_tests()">
   <div style="margin: 1em">
-    run tests: <span id="counter">0/0</span>
+    tests(total/run/ok/fail): <span id="counter">0/0</span>
     (<span id="time"></span>s)
   </div>
 
