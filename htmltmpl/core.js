@@ -268,6 +268,23 @@ htmltmpl.prototype.hdlr_var_parse = function(def, tag_attrs)
 
 	attrs = this._parse_tag_attrs(tag_attrs);
 	vname = attrs.NAME.split(".");
+	if (attrs.ESCAPE == null)
+		attrs.ESCAPE = "ETEXT";
+	if (!this.p.case_sensitive)
+		attrs.ESCAPE = attrs.ESCAPE.toUpperCase();
+	switch (attrs.ESCAPE) {
+	case "NO":
+		attrs.ESCAPE = 0;
+		break;
+	case "ETEXT":
+		attrs.ESCAPE = 1;
+		break;
+	case "AVAL":
+		attrs.ESCAPE = 2;
+		break;
+	default:
+		throw("hdlr_var_parse err: ESCAPE attribute bad value: '" + attrs.ESCAPE + "'");
+	}
 	this._s.parse[0].push([def.name, [ vname, attrs ]]);
 }
 
@@ -277,13 +294,31 @@ htmltmpl.prototype.hdlr_var_apply = function(def, tag)
 	var val;
 
 	val = this._get_data(tag[0]);
+	if (val == null)
+		val = tag[1].DEFAULT;
 
-	if (val != undefined)
-		this.out_str += val;
-	else if (tag[1]["DEFAULT"] != undefined)
-		this.out_str += tag[1]["DEFAULT"];
-	else if (this.p.err_on_no_data)
-		throw("Cann't find var '" + tag[0] + "'.");
+	if (val == null)
+		if (this.p.err_on_no_data)
+			throw("Cann't find var '" + tag[0] + "'.");
+		else
+			return;
+
+	switch (tag[1].ESCAPE) {
+	case 0:
+		break;
+	case 1:
+		val = val.toString().replaceAll(/\&/g, "\&amp;");
+		val = val.replaceAll(/</g, "\&lt;");
+		val = val.replaceAll(/>/g, "\&gt;");
+		break;
+	case 2:
+		val = val.toString().replaceAll(/"/g, "\&quot;");
+		val = val.replaceAll(/'/g, "\&#39;");
+		break;
+	default:
+		throw("hdlr_var_apply err: unknown ESCAPE code: " + tag[1].ESCAPE);
+	}
+	this.out_str += val;
 }
 
 /**********************************************************************
