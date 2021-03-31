@@ -163,7 +163,9 @@ core:
 
 	This is simply replaced with value of var_name property. If you use
 	TMPL_VAR tag with DEFAULT attribute, then if var_name property isn't found
-	a tag is replaced with a value of DEFAULT attribute.
+	a tag is replaced with a value of DEFAULT attribute. Attribute value
+	should be enclosed in double or single quotes if it contains spaces or
+	quotes. Quote inside a quoted value should be escaped with a backslash.
 
   TMPL_LOOP
 	{%TMPL_LOOP NAME=loop_name%}...{%/TMPL_LOOP%}
