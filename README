@@ -5,7 +5,7 @@ htmltmpl is the javascript html template library. It must has capabilities
 similar to HTML::Template perl module, but now it support only the next
 constructs:
 
-{%TMPL_VAR NAME=var_name DEFAULT="def value"%}
+{%TMPL_VAR NAME=var_name DEFAULT="def value" ESCAPE=val%}
 {%TMPL_LOOP NAME=loop_name%}...{%/TMPL_LOOP%}
 {%TMPL_IF NAME=bool_var%}...{%TMPL_ELSE%}...{%/TMPL_IF%}
 {%TMPL_UNLESS NAME=bool_var%}...{%TMPL_ELSE%}...{%/TMPL_UNLESS%}
@@ -127,6 +127,9 @@ change it behaviour. Properties names:
 	Remove white space at the start and at the end of a template output
 	string.
 	1 by default.
+  escape_defval
+        Default value for ESCAPE attribute.
+        ETEXT by default.
 
 E.g.:
 
@@ -158,14 +161,20 @@ Template tags
 
 core:
   TMPL_VAR
-	{%TMPL_VAR NAME=var_name%}
-	{%TMPL_VAR DEFAULT=123 NAME=var_name%}
+	{%TMPL_VAR NAME=var_name [DEFAULT=123] [ESCAPE=val]%}
 
 	This is simply replaced with value of var_name property. If you use
 	TMPL_VAR tag with DEFAULT attribute, then if var_name property isn't found
 	a tag is replaced with a value of DEFAULT attribute. Attribute value
 	should be enclosed in double or single quotes if it contains spaces or
 	quotes. Quote inside a quoted value should be escaped with a backslash.
+	ESCAPE attribute contains an escape type for a var value. Possible types:
+	 - NO - no escaping
+	 - ETEXT - element text - escape &, < and > with &amp;, &lt; and &gt;
+	           respectively
+	 - AVAL - attribute value - escape " and ' with &quot; and &#39;
+	          respectively
+	By default ETEXT is used.
 
   TMPL_LOOP
 	{%TMPL_LOOP NAME=loop_name%}...{%/TMPL_LOOP%}
