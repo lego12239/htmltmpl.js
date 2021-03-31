@@ -719,7 +719,30 @@
                     err_msg: "hdlr_var_parse err: ESCAPE attribute bad value: '2'",
                     title: "Test TMPL_VAR ESCAPE with wrong value",
                     ret: "q<&text > \"with' &<> \"\"'uns&<>afe <chars>a",
-                    data: {var1: "<&text > \"with' &<> \"\"'uns&<>afe <chars>"}}];
+                    data: {var1: "<&text > \"with' &<> \"\"'uns&<>afe <chars>"}},
+                  { id: "unit114",
+                    id_res: "unit114_res",
+                    title: "Test TMPL_VAR ESCAPE default value ETEXT",
+                    ret: "q&lt;&amp;text &gt; \"with' &amp;&lt;&gt; uns&amp;&lt;&gt;afe &lt;chars&gt;a",
+                    data: {var1: "<&text > \"with' &<> uns&<>afe <chars>"}},
+                  { id: "unit114.1",
+                    id_res: "unit114.1_res",
+                    prms: {escape_defval: "ETEXT"},
+                    title: "Test TMPL_VAR ESCAPE default value ETEXT",
+                    ret: "q&lt;&amp;text &gt; \"with' &amp;&lt;&gt; uns&amp;&lt;&gt;afe &lt;chars&gt;a",
+                    data: {var1: "<&text > \"with' &<> uns&<>afe <chars>"}},
+                  { id: "unit114.2",
+                    id_res: "unit114.2_res",
+                    prms: {escape_defval: "AVAL"},
+                    title: "Test TMPL_VAR ESCAPE default value AVAL",
+                    ret: "q<&text > &quot;with&#39; &<> uns&<>afe <chars>a",
+                    data: {var1: "<&text > \"with' &<> uns&<>afe <chars>"}},
+                  { id: "unit114.3",
+                    id_res: "unit114.3_res",
+                    prms: {escape_defval: "NO"},
+                    title: "Test TMPL_VAR ESCAPE default value NO",
+                    ret: "q<&text > \"with' &<> uns&<>afe <chars>a",
+                    data: {var1: "<&text > \"with' &<> uns&<>afe <chars>"}}];
     function report_res(test, ret, ex)
     {
         var val, eret;
@@ -3235,6 +3258,22 @@
   <!-- unit 113.4 -->
   <div id="unit113.4">q{%TMPL_VAR NAME=var1 ESCAPE=2%}a</div>
   <div id="unit113.4_res"></div>
+
+  <!-- unit 114 -->
+  <div id="unit114">q{%TMPL_VAR NAME=var1%}a</div>
+  <div id="unit114_res"></div>
+
+  <!-- unit 114.1 -->
+  <div id="unit114.1">q{%TMPL_VAR NAME=var1%}a</div>
+  <div id="unit114.1_res"></div>
+
+  <!-- unit 114.2 -->
+  <div id="unit114.2">q{%TMPL_VAR NAME=var1%}a</div>
+  <div id="unit114.2_res"></div>
+
+  <!-- unit 114.3 -->
+  <div id="unit114.3">q{%TMPL_VAR NAME=var1%}a</div>
+  <div id="unit114.3_res"></div>
 
   </div>
 </body>
