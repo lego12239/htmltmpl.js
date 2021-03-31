@@ -782,17 +782,17 @@
 	        continue;
 	    }
 
-            // set counter
-            document.getElementById("counter").innerHTML = tests.length + "/" + (i + 1) + "/" + tests_ok + "/" + tests_fail;
         }
-        etime = (Date.now() - etime)/1000;
+        // set counter
+        document.getElementById("counter").innerHTML = tests.length + "/" + tests_ok + "/" + tests_fail;
+       etime = (Date.now() - etime)/1000;
         document.getElementById("time").innerHTML = etime;
    }
   </script>
 </head>
 <body onload="do_tests()">
   <div style="margin: 1em">
-    tests(total/run/ok/fail): <span id="counter">0/0</span>
+    tests(total/ok/fail): <span id="counter">0/0</span>
     (<span id="time"></span>s)
   </div>
 
