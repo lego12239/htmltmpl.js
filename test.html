@@ -654,7 +654,7 @@
                     data: {}}];
     function report_res(test, ret, ex)
     {
-        var val;
+        var val, eret;
 
 
         if ( test.is_err )
@@ -672,8 +672,11 @@
 
         if (test.ret_to_str_fun != undefined)
             ret = test.ret_to_str_fun(ret)
-
-        if ( document.getElementById(test.id_res).innerHTML == ret )
+        if (test.ret != null)
+            eret = test.ret;
+        else
+            eret = document.getElementById(test.id_res).innerHTML;
+        if (eret  == ret )
             return report_ok(test);
         
         return report_fail(test);
