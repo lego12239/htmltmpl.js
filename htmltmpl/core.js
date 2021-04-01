@@ -181,7 +181,7 @@ htmltmpl.prototype.parse_tag = function (tag)
 
 htmltmpl.prototype._parse_tag_attrs = function(def, attrs)
 {
-	var m;
+	var m, mmv;
 	var name, val;
 	var res = {};
 
@@ -191,38 +191,40 @@ htmltmpl.prototype._parse_tag_attrs = function(def, attrs)
 		if (!this.p.case_sensitive)
 			name = name.toUpperCase();
 
-		val = m[2];
-		if ((val.charAt(0) == "'") || (val.charAt(0) == '"'))
-			val = val.substr(1, val.length - 2).replaceAll(/\\(.)/g, "$1");
+		if (m[2] != null) {
+			val = this.__parse_tag_attr_val(m[2]);
+		} else {
+			this.rex.tag_attr_mv.lastIndex = 0;
+			val = [];
+			while (mmv = this.rex.tag_attr_mv.exec(m[3]))
+				val.push(this.__parse_tag_attr_val(mmv[1]));
+		}
 		if ((def.pafuncs != null) && (def.pafuncs[name] != null))
 			val = def.pafuncs[name].call(this, val);
-		switch (typeof(res[name])) {
-		case "undefined":
-			res[name] = val;
-			break;
-		case "string":
-			res[name] = [ res[name] ];
-			res[name].push(val);
-			break;
-		case "object":
-			res[name].push(val);
-			break;
-		default:
-			throw("_parse_tag_attrs err: unknown value type: " +
-			  typeof(res[name]));
-		}
+		res[name] = val;
 	}
 
 	return res;
 }
 
+htmltmpl.prototype.__parse_tag_attr_val = function (val)
+{
+	if ((val.charAt(0) == "'") || (val.charAt(0) == '"'))
+		val = val.substr(1, val.length - 2).replaceAll(/\\(.)/g, "$1");
+	return val;
+}
+
 htmltmpl.prototype._parse_tag_attr_NAME = function (val)
 {
+	if (typeof(val) != "string")
+		throw("parse_tag_attr err: attribute NAME must be with single value");
 	return val.split(".");
 }
 
 htmltmpl.prototype._parse_tag_attr_ESCAPE = function (val)
 {
+	if (typeof(val) != "string")
+		throw("parse_tag_attr err: attribute ESCAPE must be with single value");
 	if (!this.p.case_sensitive)
 		val = val.toUpperCase();
 	switch (val) {
@@ -621,7 +623,8 @@ htmltmpl.prototype.cb = {init: []};
 
 htmltmpl.prototype.rex = {
 	tag: /^(\S+)(\s+.+)?$/,
-	tag_attrs: /\s+([^\s=]+)\s*=\s*("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|[^"'\s]+)/g,
+	tag_attrs: /\s+([^\s=]+)\s*=\s*(?:("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|[^"'\s,\[\]]+)|\[((?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|[^"'\s,\[\]]+)(?:\s*,\s*(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|[^"'\s,\[\]]+))*)\])/g,
+	tag_attr_mv: /(?:\s*,\s*)?("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|[^"'\s,\[\]]+)/g,
 	first_out_el: /^\s*<([^\s>]+)(?:\s|>)/ };
 
 htmltmpl.prototype.tags = {};
