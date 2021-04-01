@@ -28,10 +28,10 @@ htmltmpl.prototype.get_data = function(name)
 	return this._get_data(name.split("."));
 }
 
-htmltmpl.prototype._parse_tag_attr_FUNCARG = function(val)
+htmltmpl.prototype._parse_tag_attr_FUNCARGS = function(val)
 {
 	if (!Array.isArray(val))
-		throw("parse_tag_attr err: attribute ARG must be an array ");
+		throw("parse_tag_attr err: attribute ARGS must be an array ");
 	return val;
 }
 
@@ -56,7 +56,7 @@ htmltmpl.prototype.hdlr_func_apply = function(def, tag)
 	var val;
 
 	if (this.funcs[tag[0]["NAME"]] != undefined) {
-		val = this.funcs[tag[0]["NAME"]].apply(this, tag[0]["ARG"]);
+		val = this.funcs[tag[0]["NAME"]].apply(this, tag[0]["ARGS"]);
 		if (val == null)
 			return;
 		val = this._escape_tag_attr_val(tag[0].ESCAPE, val);
@@ -69,7 +69,7 @@ htmltmpl.prototype.hdlr_func_apply = function(def, tag)
 htmltmpl.prototype.tags["TMPL_FUNC"] = {
 	pfunc: htmltmpl.prototype.hdlr_func_parse,
 	afunc: htmltmpl.prototype.hdlr_func_apply,
-	pafuncs: {ARG: htmltmpl.prototype._parse_tag_attr_FUNCARG,
+	pafuncs: {ARGS: htmltmpl.prototype._parse_tag_attr_FUNCARGS,
 	  ESCAPE: htmltmpl.prototype._parse_tag_attr_ESCAPE},
 	name: "TMPL_FUNC" };
 }
