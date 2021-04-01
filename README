@@ -35,7 +35,7 @@ with func extension:
 
 with list extension:
 {%TMPL_LIST NAME=list_name%}...{%/TMPL_LIST%}
-{%TMPL_LIST NAME=list_name%}...{%TMPL_LISTITEM%}...{%/TMPL_LIST%}
+{%TMPL_LIST NAME=list_name%}...{%TMPL_LISTITEM [ESCAPE=type]%}...{%/TMPL_LIST%}
 
 
 See ex*.html files for examples of use.
@@ -286,7 +286,7 @@ func:
   TMPL_FUNC
 	{%TMPL_FUNC NAME=func1%}
 	{%TMPL_FUNC NAME=func2 ARG=arg_1%}
-	{%TMPL_FUNC NAME=func2 ARG=arg_1 ARG=arg_2%}
+	{%TMPL_FUNC NAME=func2 ARG=arg_1 ARG=arg_2 ...%}
 
 	Call a js function with a name pointed in NAME attribute value and use
 	it return value as a replacement text. Optional arguments can be given to
@@ -314,11 +314,13 @@ func:
 list:
   TMPL_LIST
 	{%TMPL_LIST NAME=list_name%}...{%/TMPL_LIST%}
-	{%TMPL_LIST NAME=list_name%}...{%TMPL_LISTITEM%}...{%/TMPL_LIST%}
+	{%TMPL_LIST NAME=list_name%}...{%TMPL_LISTITEM [ESCAPE=type]%}...{%/TMPL_LIST%}
 
 	For this construct htmltmpl finds in a data set a property with name
 	list_name which contain an array. Each {%TMPL_LISTITEM%} construct is
 	replaced with a current item from this array.
+	ESCAPE attribute contains an escape type for a var value. See TMPL_VAR
+	description for info about it.
 
 
 Examples:
