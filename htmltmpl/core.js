@@ -185,6 +185,7 @@ htmltmpl.prototype._parse_tag_attrs = function(def, attrs)
 	var name, val;
 	var res = {};
 
+	this.rex.tag_attrs.lastIndex = 0;
 	while ( m = this.rex.tag_attrs.exec(attrs) ) {
 		name = m[1];
 		if (!this.p.case_sensitive)
@@ -218,6 +219,27 @@ htmltmpl.prototype._parse_tag_attrs = function(def, attrs)
 htmltmpl.prototype._parse_tag_attr_NAME = function (val)
 {
 	return val.split(".");
+}
+
+htmltmpl.prototype._parse_tag_attr_ESCAPE = function (val)
+{
+	if (!this.p.case_sensitive)
+		val = val.toUpperCase();
+	switch (val) {
+	case "NO":
+		val = 0;
+		break;
+	case "ETEXT":
+		val = 1;
+		break;
+	case "AVAL":
+		val = 2;
+		break;
+	default:
+		throw("hdlr_var_parse err: ESCAPE attribute bad value: '" + val + "'");
+	}
+
+	return val;
 }
 
 htmltmpl.prototype._get_data = function(name)
@@ -278,23 +300,10 @@ htmltmpl.prototype.hdlr_var_parse = function(def, tag_attrs)
 	var attrs;
 
 	attrs = this._parse_tag_attrs(def, tag_attrs);
+	/* Optional attribute, but must be set for an apply fun. Thus,
+	   set it with default value in any case. */
 	if (attrs.ESCAPE == null)
-		attrs.ESCAPE = this.p.escape_defval;
-	if (!this.p.case_sensitive)
-		attrs.ESCAPE = attrs.ESCAPE.toUpperCase();
-	switch (attrs.ESCAPE) {
-	case "NO":
-		attrs.ESCAPE = 0;
-		break;
-	case "ETEXT":
-		attrs.ESCAPE = 1;
-		break;
-	case "AVAL":
-		attrs.ESCAPE = 2;
-		break;
-	default:
-		throw("hdlr_var_parse err: ESCAPE attribute bad value: '" + attrs.ESCAPE + "'");
-	}
+		attrs.ESCAPE = def.pafuncs.ESCAPE.call(this, this.p.escape_defval);
 	this._s.parse[0].push([def.name, [ attrs.NAME, attrs ]]);
 }
 
@@ -613,7 +622,8 @@ htmltmpl.prototype.tags = {};
 htmltmpl.prototype.tags["TMPL_VAR"] = {
 	pfunc: htmltmpl.prototype.hdlr_var_parse,
 	afunc: htmltmpl.prototype.hdlr_var_apply,
-	pafuncs: {NAME: htmltmpl.prototype._parse_tag_attr_NAME},
+	pafuncs: {NAME: htmltmpl.prototype._parse_tag_attr_NAME,
+	  ESCAPE: htmltmpl.prototype._parse_tag_attr_ESCAPE},
 	name: "TMPL_VAR" };
 htmltmpl.prototype.tags["TMPL_LOOP"] = {
 	pfunc: htmltmpl.prototype.hdlr_loop_parse,
