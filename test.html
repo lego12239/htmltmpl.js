@@ -7,6 +7,7 @@
   <script type="text/javascript" src="htmltmpl/ifdef.js"></script>
   <script type="text/javascript" src="htmltmpl/ifeq.js"></script>
   <script type="text/javascript" src="htmltmpl/list.js"></script>
+  <script type="text/javascript" src="htmltmpl/func.js"></script>
   <script type="text/javascript">
     var tmpl;  // make tmpl a global var for debug purposes
     var span_ok, span_fail, res_cntr_el;
@@ -769,17 +770,17 @@
                     data: {list1: [1, "A<&text > \"with'", 3]}},
                   { id: "unit115.1",
                     id_res: "unit115.1_res",
-                    title: "Test TMPL_LISTITEM without ESCAPE=NO",
+                    title: "Test TMPL_LISTITEM with ESCAPE=NO",
                     ret: "\n    q1a\n  \n    qA<&text > \"with'a\n  \n    q3a\n  ",
                     data: {list1: [1, "A<&text > \"with'", 3]}},
                   { id: "unit115.2",
                     id_res: "unit115.2_res",
-                    title: "Test TMPL_LISTITEM without ESCAPE=ETEXT",
+                    title: "Test TMPL_LISTITEM with ESCAPE=ETEXT",
                     ret: "\n    q1a\n  \n    qA&lt;&amp;text &gt; \"with'a\n  \n    q3a\n  ",
                     data: {list1: [1, "A<&text > \"with'", 3]}},
                   { id: "unit115.3",
                     id_res: "unit115.3_res",
-                    title: "Test TMPL_LISTITEM without ESCAPE=AVAL",
+                    title: "Test TMPL_LISTITEM with ESCAPE=AVAL",
                     ret: "\n    q1a\n  \n    qA<&text > &quot;with&#39;a\n  \n    q3a\n  ",
                     data: {list1: [1, "A<&text > \"with'", 3]}},
                   { id: "unit115.4",
@@ -793,7 +794,65 @@
                     prms: {escape_defval: "AVAL"},
                     title: "Test TMPL_LISTITEM ESCAPE defval is AVAL",
                     ret: "\n    q1a\n  \n    qA<&text > &quot;with&#39;a\n  \n    q3a\n  ",
-                    data: {list1: [1, "A<&text > \"with'", 3]}}];
+                    data: {list1: [1, "A<&text > \"with'", 3]}},
+                  { id: "unit116",
+                    id_res: "unit116_res",
+                    title: "Test TMPL_FUNC without args",
+                    funcs: {fun1: t_func_fun},
+                    data: {var1: "texT"}},
+                  { id: "unit116.1",
+                    id_res: "unit116.1_res",
+                    title: "Test TMPL_FUNC with 1 arg",
+                    funcs: {fun1: t_func_fun},
+                    data: {var1: "texT"}},
+                  { id: "unit116.2",
+                    id_res: "unit116.2_res",
+                    title: "Test TMPL_FUNC with 2 args",
+                    funcs: {fun1: t_func_fun},
+                    data: {var1: "texT"}},
+                  { id: "unit117",
+                    id_res: "unit117_res",
+                    title: "Test TMPL_FUNC get_data()",
+                    funcs: {fun1: t_func_fun2},
+                    data: {var1: "texT"}},
+                  { id: "unit118",
+                    id_res: "unit118_res",
+                    title: "Test TMPL_FUNC without ESCAPE",
+                    funcs: {fun1: t_func_fun_escape},
+                    ret: "qA&lt;&amp;text &gt; \"with'a",
+                    data: {}},
+                  { id: "unit118.1",
+                    id_res: "unit118.1_res",
+                    title: "Test TMPL_FUNC with ESCAPE=NO",
+                    funcs: {fun1: t_func_fun_escape},
+                    ret: "qA<&text > \"with'a",
+                    data: {}},
+                  { id: "unit118.2",
+                    id_res: "unit118.2_res",
+                    title: "Test TMPL_FUNC with ESCAPE=ETEXT",
+                    funcs: {fun1: t_func_fun_escape},
+                    ret: "qA&lt;&amp;text &gt; \"with'a",
+                    data: {}},
+                  { id: "unit118.3",
+                    id_res: "unit118.3_res",
+                    title: "Test TMPL_FUNC with ESCAPE=AVAL",
+                    funcs: {fun1: t_func_fun_escape},
+                    ret: "qA<&text > &quot;with&#39;a",
+                    data: {}},
+                  { id: "unit118.4",
+                    id_res: "unit118.4_res",
+                    title: "Test TMPL_FUNC with ESCAPE defval is NO",
+                    prms: {escape_defval: "NO"},
+                    funcs: {fun1: t_func_fun_escape},
+                    ret: "qA<&text > \"with'a",
+                    data: {}},
+                  { id: "unit118.5",
+                    id_res: "unit118.5_res",
+                    title: "Test TMPL_FUNC with ESCAPE defval is AVAL",
+                    prms: {escape_defval: "AVAL"},
+                    funcs: {fun1: t_func_fun_escape},
+                    ret: "qA<&text > &quot;with&#39;a",
+                    data: {}}];
     function report_res(test, ret, ex)
     {
         var val, eret;
@@ -907,6 +966,8 @@
                        tests[i].prms);
 		else
                     tmpl = new htmltmpl(document.getElementById(tests[i].id), tests[i].prms);
+          if (tests[i].funcs != null)
+            tmpl.funcs = tests[i].funcs;
 	    } catch (ex) {
 		report_res(tests[i], undefined, ex);
                 continue;
@@ -932,6 +993,25 @@
         document.getElementById("counter").innerHTML = tests.length + "/" + tests_ok + "/" + tests_fail;
        etime = (Date.now() - etime)/1000;
         document.getElementById("time").innerHTML = etime;
+   }
+   function t_func_fun(a1, a2)
+   {
+     var res = "A";
+
+     if (a1 != null)
+       res += a1;
+     if (a2 != null)
+       res += a2;
+
+     return res + "B";
+   }
+   function t_func_fun2()
+   {
+     return "A" + this.get_data("var1") + "B";
+   }
+   function t_func_fun_escape()
+   {
+     return "A<&text > \"with'";
    }
   </script>
 </head>
@@ -3422,6 +3502,46 @@
   {%/TMPL_LIST%}</div>
   <div id="unit115.5_res">
   </div>
+
+  <!-- unit 116 -->
+  <div id="unit116">q{%TMPL_FUNC NAME=fun1%}a</div>
+  <div id="unit116_res">qABa</div>
+
+  <!-- unit 116.1 -->
+  <div id="unit116.1">q{%TMPL_FUNC NAME=fun1 ARG="some text"%}a</div>
+  <div id="unit116.1_res">qAsome textBa</div>
+
+  <!-- unit 116.2 -->
+  <div id="unit116.2">q{%TMPL_FUNC NAME=fun1 ARG="some text" ARG=" K  "%}a</div>
+  <div id="unit116.2_res">qAsome text K  Ba</div>
+
+  <!-- unit 117 -->
+  <div id="unit117">q{%TMPL_FUNC NAME=fun1%}a</div>
+  <div id="unit117_res">qAtexTBa</div>
+
+  <!-- unit 118 -->
+  <div id="unit118">q{%TMPL_FUNC NAME=fun1%}a</div>
+  <div id="unit118_res"></div>
+
+  <!-- unit 118.1 -->
+  <div id="unit118.1">q{%TMPL_FUNC NAME=fun1 ESCAPE=NO%}a</div>
+  <div id="unit118.1_res"></div>
+
+  <!-- unit 118.2 -->
+  <div id="unit118.2">q{%TMPL_FUNC NAME=fun1 ESCAPE=ETEXT%}a</div>
+  <div id="unit118.2_res"></div>
+
+  <!-- unit 118.3 -->
+  <div id="unit118.3">q{%TMPL_FUNC NAME=fun1 ESCAPE=AVAL%}a</div>
+  <div id="unit118.3_res"></div>
+
+  <!-- unit 118.4 -->
+  <div id="unit118.4">q{%TMPL_FUNC NAME=fun1%}a</div>
+  <div id="unit118.4_res"></div>
+
+  <!-- unit 118.5 -->
+  <div id="unit118.5">q{%TMPL_FUNC NAME=fun1%}a</div>
+  <div id="unit118.5_res"></div>
 
   </div>
 </body>
