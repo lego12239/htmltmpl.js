@@ -25,7 +25,7 @@ htmltmpl.prototype.hdlr_list_parse = function(def, tag_attrs)
 {
 	var attrs;
 
-	attrs = this._parse_tag_attrs(tag_attrs);
+	attrs = this._parse_tag_attrs(def, tag_attrs);
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs ]);
 }
@@ -33,16 +33,15 @@ htmltmpl.prototype.hdlr_list_parse = function(def, tag_attrs)
 htmltmpl.prototype.hdlr_list_end_parse = function(def)
 {
 	var priv;
-	var vname, list;
+	var list;
 
 	priv = this._s.priv.shift();
 	if (!this.is_tag_match(priv[0], def.start_tag))
 		throw("parse err: " + priv[0].name + " was opened, but " +
 		  def.name + " is being closed");
 
-	vname = priv[1].NAME.split(".");
 	list = this._s.parse.shift();
-	this._s.parse[0].push([priv[0].name, [ vname, priv[1], list ]]);
+	this._s.parse[0].push([priv[0].name, [ priv[1].NAME, priv[1], list ]]);
 }
 
 htmltmpl.prototype.hdlr_list_apply = function(def, tag)
@@ -79,7 +78,7 @@ htmltmpl.prototype.hdlr_listitem_parse = function(def, tag_attrs)
 
 	if ((this._s.priv.length == 0) || (this._s.priv[0][0].name != "TMPL_LIST"))
 		throw("parse err: " + def.name + " can be used only inside a TMPL_LIST");
-	attrs = this._parse_tag_attrs(tag_attrs);
+	attrs = this._parse_tag_attrs(def, tag_attrs);
 	this._s.parse[0].push([def.name, [ attrs ]]);
 }
 
@@ -102,6 +101,7 @@ htmltmpl.prototype.hdlr_listitem_apply = function(def, tag)
 htmltmpl.prototype.tags["TMPL_LIST"] = {
 	pfunc: htmltmpl.prototype.hdlr_list_parse,
 	afunc: htmltmpl.prototype.hdlr_list_apply,
+	pafuncs: {NAME: htmltmpl.prototype._parse_tag_attr_NAME},
 	name: "TMPL_LIST" };
 htmltmpl.prototype.tags["/TMPL_LIST"] = {
 	pfunc: htmltmpl.prototype.hdlr_list_end_parse,

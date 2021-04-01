@@ -25,7 +25,7 @@ htmltmpl.prototype.hdlr_ifeq_parse = function(def, tag_attrs)
 {
 	var attrs;
 
-	attrs = this._parse_tag_attrs(tag_attrs);
+	attrs = this._parse_tag_attrs(def, tag_attrs);
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs ]);
 }
@@ -33,7 +33,7 @@ htmltmpl.prototype.hdlr_ifeq_parse = function(def, tag_attrs)
 htmltmpl.prototype.hdlr_ifeq_end_parse = function(def)
 {
 	var priv;
-	var vname, if_, else_;
+	var if_, else_;
 
 	priv = this._s.priv.shift();
 	if (!this.is_tag_match(priv[0], def.start_tag))
@@ -44,9 +44,8 @@ htmltmpl.prototype.hdlr_ifeq_end_parse = function(def)
 		priv = this._s.priv.shift();
 	}
 
-	vname = priv[1].NAME.split(".");
 	if_ = this._s.parse.shift();
-	this._s.parse[0].push([priv[0].name, [ vname, priv[1], if_, else_ ]]);
+	this._s.parse[0].push([priv[0].name, [ priv[1].NAME, priv[1], if_, else_ ]]);
 }
 
 htmltmpl.prototype.hdlr_ifeq_apply = function(def, tag)
@@ -57,7 +56,7 @@ htmltmpl.prototype.hdlr_ifeq_apply = function(def, tag)
 
 	val = this._get_data(tag[0]);
 	if (tag[1].WITH != null)
-		val2 = this._get_data(tag[1].WITH.split("."));
+		val2 = this._get_data(tag[1].WITH);
 	else
 		val2 = tag[1].VALUE;
 
@@ -83,7 +82,7 @@ htmltmpl.prototype.hdlr_ifneq_apply = function(def, tag)
 
 	val = this._get_data(tag[0]);
 	if (tag[1].WITH != null)
-		val2 = this._get_data(tag[1].WITH.split("."));
+		val2 = this._get_data(tag[1].WITH);
 	else
 		val2 = tag[1].VALUE;
 
@@ -109,7 +108,7 @@ htmltmpl.prototype.hdlr_ifgt_apply = function(def, tag)
 
 	val = this._get_data(tag[0]);
 	if (tag[1].WITH != null)
-		val2 = this._get_data(tag[1].WITH.split("."));
+		val2 = this._get_data(tag[1].WITH);
 	else
 		val2 = tag[1].VALUE;
 
@@ -135,7 +134,7 @@ htmltmpl.prototype.hdlr_ifge_apply = function(def, tag)
 
 	val = this._get_data(tag[0]);
 	if (tag[1].WITH != null)
-		val2 = this._get_data(tag[1].WITH.split("."));
+		val2 = this._get_data(tag[1].WITH);
 	else
 		val2 = tag[1].VALUE;
 
@@ -161,7 +160,7 @@ htmltmpl.prototype.hdlr_iflt_apply = function(def, tag)
 
 	val = this._get_data(tag[0]);
 	if (tag[1].WITH != null)
-		val2 = this._get_data(tag[1].WITH.split("."));
+		val2 = this._get_data(tag[1].WITH);
 	else
 		val2 = tag[1].VALUE;
 
@@ -187,7 +186,7 @@ htmltmpl.prototype.hdlr_ifle_apply = function(def, tag)
 
 	val = this._get_data(tag[0]);
 	if (tag[1].WITH != null)
-		val2 = this._get_data(tag[1].WITH.split("."));
+		val2 = this._get_data(tag[1].WITH);
 	else
 		val2 = tag[1].VALUE;
 
@@ -205,26 +204,38 @@ htmltmpl.prototype.hdlr_ifle_apply = function(def, tag)
 htmltmpl.prototype.tags["TMPL_IFEQ"] = {
 	pfunc: htmltmpl.prototype.hdlr_ifeq_parse,
 	afunc: htmltmpl.prototype.hdlr_ifeq_apply,
+	pafuncs: {NAME: htmltmpl.prototype._parse_tag_attr_NAME,
+	  WITH: htmltmpl.prototype._parse_tag_attr_NAME},
 	name: "TMPL_IFEQ" };
 htmltmpl.prototype.tags["TMPL_IFNEQ"] = {
 	pfunc: htmltmpl.prototype.hdlr_ifeq_parse,
 	afunc: htmltmpl.prototype.hdlr_ifneq_apply,
+	pafuncs: {NAME: htmltmpl.prototype._parse_tag_attr_NAME,
+	  WITH: htmltmpl.prototype._parse_tag_attr_NAME},
 	name: "TMPL_IFNEQ" };
 htmltmpl.prototype.tags["TMPL_IFGT"] = {
 	pfunc: htmltmpl.prototype.hdlr_ifeq_parse,
 	afunc: htmltmpl.prototype.hdlr_ifgt_apply,
+	pafuncs: {NAME: htmltmpl.prototype._parse_tag_attr_NAME,
+	  WITH: htmltmpl.prototype._parse_tag_attr_NAME},
 	name: "TMPL_IFGT" };
 htmltmpl.prototype.tags["TMPL_IFGE"] = {
 	pfunc: htmltmpl.prototype.hdlr_ifeq_parse,
 	afunc: htmltmpl.prototype.hdlr_ifge_apply,
+	pafuncs: {NAME: htmltmpl.prototype._parse_tag_attr_NAME,
+	  WITH: htmltmpl.prototype._parse_tag_attr_NAME},
 	name: "TMPL_IFGE" };
 htmltmpl.prototype.tags["TMPL_IFLT"] = {
 	pfunc: htmltmpl.prototype.hdlr_ifeq_parse,
 	afunc: htmltmpl.prototype.hdlr_iflt_apply,
+	pafuncs: {NAME: htmltmpl.prototype._parse_tag_attr_NAME,
+	  WITH: htmltmpl.prototype._parse_tag_attr_NAME},
 	name: "TMPL_IFLT" };
 htmltmpl.prototype.tags["TMPL_IFLE"] = {
 	pfunc: htmltmpl.prototype.hdlr_ifeq_parse,
 	afunc: htmltmpl.prototype.hdlr_ifle_apply,
+	pafuncs: {NAME: htmltmpl.prototype._parse_tag_attr_NAME,
+	  WITH: htmltmpl.prototype._parse_tag_attr_NAME},
 	name: "TMPL_IFLE" };
 htmltmpl.prototype.tags["/TMPL_IFEQ"] = {
 	pfunc: htmltmpl.prototype.hdlr_ifeq_end_parse,

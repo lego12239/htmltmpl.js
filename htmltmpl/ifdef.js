@@ -25,7 +25,7 @@ htmltmpl.prototype.hdlr_ifdef_parse = function(def, tag_attrs)
 {
 	var attrs;
 
-	attrs = this._parse_tag_attrs(tag_attrs);
+	attrs = this._parse_tag_attrs(def, tag_attrs);
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs ]);
 }
@@ -33,7 +33,7 @@ htmltmpl.prototype.hdlr_ifdef_parse = function(def, tag_attrs)
 htmltmpl.prototype.hdlr_ifdef_end_parse = function(def)
 {
 	var priv;
-	var vname, if_, else_;
+	var if_, else_;
 
 	priv = this._s.priv.shift();
 	if (!this.is_tag_match(priv[0], def.start_tag))
@@ -44,9 +44,8 @@ htmltmpl.prototype.hdlr_ifdef_end_parse = function(def)
 		priv = this._s.priv.shift();
 	}
 
-	vname = priv[1].NAME.split(".");
 	if_ = this._s.parse.shift();
-	this._s.parse[0].push([priv[0].name, [ vname, priv[1], if_, else_ ]]);
+	this._s.parse[0].push([priv[0].name, [ priv[1].NAME, priv[1], if_, else_ ]]);
 }
 
 htmltmpl.prototype.hdlr_ifdef_apply = function(def, tag)
@@ -87,10 +86,12 @@ htmltmpl.prototype.hdlr_ifndef_apply = function(def, tag)
 htmltmpl.prototype.tags["TMPL_IFDEF"] = {
 	pfunc: htmltmpl.prototype.hdlr_ifdef_parse,
 	afunc: htmltmpl.prototype.hdlr_ifdef_apply,
+	pafuncs: {NAME: htmltmpl.prototype._parse_tag_attr_NAME},
 	name: "TMPL_IFDEF" };
 htmltmpl.prototype.tags["TMPL_IFNDEF"] = {
 	pfunc: htmltmpl.prototype.hdlr_ifdef_parse,
 	afunc: htmltmpl.prototype.hdlr_ifndef_apply,
+	pafuncs: {NAME: htmltmpl.prototype._parse_tag_attr_NAME},
 	name: "TMPL_IFNDEF" };
 htmltmpl.prototype.tags["/TMPL_IFDEF"] = {
 	pfunc: htmltmpl.prototype.hdlr_ifdef_end_parse,

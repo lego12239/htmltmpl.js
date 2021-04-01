@@ -179,7 +179,7 @@ htmltmpl.prototype.parse_tag = function (tag)
 	throw("parse_tag err: unknown tag: " + tag_name);
 }
 
-htmltmpl.prototype._parse_tag_attrs = function(attrs)
+htmltmpl.prototype._parse_tag_attrs = function(def, attrs)
 {
 	var m;
 	var name, val;
@@ -193,6 +193,8 @@ htmltmpl.prototype._parse_tag_attrs = function(attrs)
 		val = m[2];
 		if ((val.charAt(0) == "'") || (val.charAt(0) == '"'))
 			val = val.substr(1, val.length - 2).replaceAll(/\\(.)/g, "$1");
+		if ((def.pafuncs != null) && (def.pafuncs[name] != null))
+			val = def.pafuncs[name].call(this, val);
 		switch (typeof(res[name])) {
 		case "undefined":
 			res[name] = val;
@@ -211,6 +213,11 @@ htmltmpl.prototype._parse_tag_attrs = function(attrs)
 	}
 
 	return res;
+}
+
+htmltmpl.prototype._parse_tag_attr_NAME = function (val)
+{
+	return val.split(".");
 }
 
 htmltmpl.prototype._get_data = function(name)
@@ -268,10 +275,9 @@ htmltmpl.prototype.is_tag_match = function(tag, tags)
  **********************************************************************/
 htmltmpl.prototype.hdlr_var_parse = function(def, tag_attrs)
 {
-	var attrs, vname;
+	var attrs;
 
-	attrs = this._parse_tag_attrs(tag_attrs);
-	vname = attrs.NAME.split(".");
+	attrs = this._parse_tag_attrs(def, tag_attrs);
 	if (attrs.ESCAPE == null)
 		attrs.ESCAPE = this.p.escape_defval;
 	if (!this.p.case_sensitive)
@@ -289,7 +295,7 @@ htmltmpl.prototype.hdlr_var_parse = function(def, tag_attrs)
 	default:
 		throw("hdlr_var_parse err: ESCAPE attribute bad value: '" + attrs.ESCAPE + "'");
 	}
-	this._s.parse[0].push([def.name, [ vname, attrs ]]);
+	this._s.parse[0].push([def.name, [ attrs.NAME, attrs ]]);
 }
 
 htmltmpl.prototype.hdlr_var_apply = function(def, tag)
@@ -332,7 +338,7 @@ htmltmpl.prototype.hdlr_loop_parse = function(def, tag_attrs)
 {
 	var attrs;
 
-	attrs = this._parse_tag_attrs(tag_attrs);
+	attrs = this._parse_tag_attrs(def, tag_attrs);
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs ]);
 }
@@ -340,16 +346,15 @@ htmltmpl.prototype.hdlr_loop_parse = function(def, tag_attrs)
 htmltmpl.prototype.hdlr_loop_end_parse = function(def)
 {
 	var priv;
-	var vname, loop;
+	var loop;
 
 	priv = this._s.priv[0];
 	if (!this.is_tag_match(priv[0], def.start_tag))
 		throw("parse err: " + priv[0].name + " was opened, but " +
 		  def.name + " is being closed");
 
-	vname = priv[1].NAME.split(".");
 	loop = this._s.parse.shift();
-	this._s.parse[0].push([priv[0].name, [ vname, priv[1], loop ]]);
+	this._s.parse[0].push([priv[0].name, [ priv[1].NAME, priv[1], loop ]]);
 	this._s.priv.shift();
 }
 
@@ -421,7 +426,7 @@ htmltmpl.prototype.hdlr_if_parse = function(def, tag_attrs)
 {
 	var attrs;
 
-	attrs = this._parse_tag_attrs(tag_attrs);
+	attrs = this._parse_tag_attrs(def, tag_attrs);
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs ]);
 }
@@ -441,7 +446,7 @@ htmltmpl.prototype.hdlr_else_parse = function(def)
 htmltmpl.prototype.hdlr_if_end_parse = function(def)
 {
 	var priv;
-	var vname, if_, else_;
+	var if_, else_;
 
 	priv = this._s.priv.shift();
 	if (!this.is_tag_match(priv[0], def.start_tag))
@@ -452,9 +457,8 @@ htmltmpl.prototype.hdlr_if_end_parse = function(def)
 		priv = this._s.priv.shift();
 	}
 
-	vname = priv[1].NAME.split(".");
 	if_ = this._s.parse.shift();
-	this._s.parse[0].push([priv[0].name, [ vname, priv[1], if_, else_ ]]);
+	this._s.parse[0].push([priv[0].name, [ priv[1].NAME, priv[1], if_, else_ ]]);
 }
 
 htmltmpl.prototype.hdlr_if_apply = function(def, tag)
@@ -497,12 +501,10 @@ htmltmpl.prototype.hdlr_unless_apply = function(def, tag)
  **********************************************************************/
 htmltmpl.prototype.hdlr_include_parse = function(def, tag_attrs)
 {
-	var attrs, vname;
+	var attrs;
 
-	attrs = this._parse_tag_attrs(tag_attrs);
-	if (attrs.VAR != null)
-		vname = attrs.VAR.split(".");
-	this._s.parse[0].push([def.name, [ vname, attrs ]]);
+	attrs = this._parse_tag_attrs(def, tag_attrs);
+	this._s.parse[0].push([def.name, [ attrs.VAR, attrs ]]);
 }
 
 htmltmpl.prototype.hdlr_include_apply = function(def, tag)
@@ -611,10 +613,12 @@ htmltmpl.prototype.tags = {};
 htmltmpl.prototype.tags["TMPL_VAR"] = {
 	pfunc: htmltmpl.prototype.hdlr_var_parse,
 	afunc: htmltmpl.prototype.hdlr_var_apply,
+	pafuncs: {NAME: htmltmpl.prototype._parse_tag_attr_NAME},
 	name: "TMPL_VAR" };
 htmltmpl.prototype.tags["TMPL_LOOP"] = {
 	pfunc: htmltmpl.prototype.hdlr_loop_parse,
 	afunc: htmltmpl.prototype.hdlr_loop_apply,
+	pafuncs: {NAME: htmltmpl.prototype._parse_tag_attr_NAME},
 	name: "TMPL_LOOP" };
 htmltmpl.prototype.tags["/TMPL_LOOP"] = {
 	pfunc: htmltmpl.prototype.hdlr_loop_end_parse,
@@ -623,10 +627,12 @@ htmltmpl.prototype.tags["/TMPL_LOOP"] = {
 htmltmpl.prototype.tags["TMPL_IF"] = {
 	pfunc: htmltmpl.prototype.hdlr_if_parse,
 	afunc: htmltmpl.prototype.hdlr_if_apply,
+	pafuncs: {NAME: htmltmpl.prototype._parse_tag_attr_NAME},
 	name: "TMPL_IF" };
 htmltmpl.prototype.tags["TMPL_UNLESS"] = {
 	pfunc: htmltmpl.prototype.hdlr_if_parse,
 	afunc: htmltmpl.prototype.hdlr_unless_apply,
+	pafuncs: {NAME: htmltmpl.prototype._parse_tag_attr_NAME},
 	name: "TMPL_UNLESS" };
 htmltmpl.prototype.tags["TMPL_ELSE"] = {
 	pfunc: htmltmpl.prototype.hdlr_else_parse,
@@ -646,6 +652,7 @@ htmltmpl.prototype.tags["/TMPL_UNLESS"] = {
 htmltmpl.prototype.tags["TMPL_INCLUDE"] = {
 	pfunc: htmltmpl.prototype.hdlr_include_parse,
 	afunc: htmltmpl.prototype.hdlr_include_apply,
+	pafuncs: {VAR: htmltmpl.prototype._parse_tag_attr_NAME},
 	name: "TMPL_INCLUDE" };
 
 }

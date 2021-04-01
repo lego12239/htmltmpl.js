@@ -35,7 +35,7 @@ htmltmpl.prototype.hdlr_func_parse = function(def, tag_attrs)
 {
 	var attrs;
 
-	attrs = this._parse_tag_attrs(tag_attrs);
+	attrs = this._parse_tag_attrs(def, tag_attrs);
 	if ((attrs.ARG != undefined) && (typeof(attrs.ARG) === "string"))
 		attrs.ARG = [ attrs.ARG ];
 	this._s.parse[0].push([def.name, [ attrs ]]);
@@ -46,7 +46,7 @@ htmltmpl.prototype.hdlr_func_apply = function(def, tag)
 	var attrs;
 	var val;
 
-	if (this.funcs[tag[0]["NAME"]] != undefined) {	
+	if (this.funcs[tag[0]["NAME"]] != undefined) {
 		val = this.funcs[tag[0]["NAME"]].apply(this, tag[0]["ARG"]);
 		if (val != undefined)
 			this.out_str += val;
