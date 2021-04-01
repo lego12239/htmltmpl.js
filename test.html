@@ -471,6 +471,10 @@
                     id_res: "unit67_res",
                     title: "Test TMPL_IFNEQ",
                     data: { var1: 1 }},
+                  { id: "unit67.1",
+                    id_res: "unit67.1_res",
+                    title: "Test TMPL_IFNEQ",
+                    data: { var1: 1, var3: 1 }},
                   { id: "unit68",
                     id_res: "unit68_res",
                     title: "Test TMPL_IFNEQ (not matched)",
@@ -507,6 +511,10 @@
                     id_res: "unit75_res",
                     title: "Test TMPL_IFGT",
                     data: { var1: 5 }},
+                  { id: "unit75.1",
+                    id_res: "unit75.1_res",
+                    title: "Test TMPL_IFGT",
+                    data: { var1: 5, var3: 4 }},
                   { id: "unit76",
                     id_res: "unit76_res",
                     title: "Test TMPL_IFGT (not matched)",
@@ -523,6 +531,10 @@
                     id_res: "unit79_res",
                     title: "Test TMPL_IFGE",
                     data: { var1: 5 }},
+                  { id: "unit79.1",
+                    id_res: "unit79.1_res",
+                    title: "Test TMPL_IFGE",
+                    data: { var1: 5, var3: 5}},
                   { id: "unit80",
                     id_res: "unit80_res",
                     title: "Test TMPL_IFGE (not matched)",
@@ -539,6 +551,10 @@
                     id_res: "unit83_res",
                     title: "Test TMPL_IFLT",
                     data: { var1: 5 }},
+                  { id: "unit83.1",
+                    id_res: "unit83.1_res",
+                    title: "Test TMPL_IFLT",
+                    data: { var1: 5, var3: 6 }},
                   { id: "unit84",
                     id_res: "unit84_res",
                     title: "Test TMPL_IFLT (not matched)",
@@ -559,6 +575,10 @@
                     id_res: "unit88_res",
                     title: "Test TMPL_IFLE (not matched)",
                     data: { var1: 5 }},
+                  { id: "unit88.1",
+                    id_res: "unit88.1_res",
+                    title: "Test TMPL_IFLE (not matched)",
+                    data: { var1: 5, var3: 4}},
                   { id: "unit89",
                     id_res: "unit89_res",
                     title: "Test TMPL_IFLE with TMPL_ELSE",
@@ -2751,6 +2771,16 @@
     test
   </div>
 
+  <!-- unit 67.1 -->
+  <div id="unit67.1">
+    {%TMPL_IFNEQ NAME=var1 WITH=var3%}test{%/TMPL_IFNEQ%}
+    {%TMPL_IFNEQ NAME=var2 VALUE=2%}test{%/TMPL_IFNEQ%}
+  </div>
+  <div id="unit67.1_res">
+    
+    test
+  </div>
+
   <!-- unit 68 -->
   <div id="unit68">
     {%TMPL_IFNEQ NAME=var1 VALUE=1%}test{%/TMPL_IFNEQ%}
@@ -2831,6 +2861,16 @@
     
   </div>
 
+  <!-- unit 75.1 -->
+  <div id="unit75.1">
+    {%TMPL_IFGT NAME=var1 WITH=var3%}test{%/TMPL_IFGT%}
+    {%TMPL_IFGT NAME=var2 VALUE=2%}test{%/TMPL_IFGT%}
+  </div>
+  <div id="unit75.1_res">
+    test
+    
+  </div>
+
   <!-- unit 76 -->
   <div id="unit76">
     {%TMPL_IFGT NAME=var1 VALUE=5%}test{%/TMPL_IFGT%}
@@ -2871,6 +2911,16 @@
     
   </div>
 
+  <!-- unit 79.1 -->
+  <div id="unit79.1">
+    {%TMPL_IFGE NAME=var1 WITH=var3%}test{%/TMPL_IFGE%}
+    {%TMPL_IFGE NAME=var2 VALUE=2%}test{%/TMPL_IFGE%}
+  </div>
+  <div id="unit79.1_res">
+    test
+    
+  </div>
+
   <!-- unit 80 -->
   <div id="unit80">
     {%TMPL_IFGE NAME=var1 VALUE=6%}test{%/TMPL_IFGE%}
@@ -2907,6 +2957,16 @@
     {%TMPL_IFLT NAME=var2 VALUE=2%}test{%/TMPL_IFLT%}
   </div>
   <div id="unit83_res">
+    test
+    
+  </div>
+
+  <!-- unit 83. -->
+  <div id="unit83.1">
+    {%TMPL_IFLT NAME=var1 WITH=var3%}test{%/TMPL_IFLT%}
+    {%TMPL_IFLT NAME=var2 VALUE=2%}test{%/TMPL_IFLT%}
+  </div>
+  <div id="unit83.1_res">
     test
     
   </div>
@@ -2957,6 +3017,16 @@
     {%TMPL_IFLE NAME=var2 VALUE=2%}test{%/TMPL_IFLE%}
   </div>
   <div id="unit88_res">
+    
+    
+  </div>
+
+  <!-- unit 88.1 -->
+  <div id="unit88.1">
+    {%TMPL_IFLE NAME=var1 WITH=var3%}test{%/TMPL_IFLE%}
+    {%TMPL_IFLE NAME=var2 VALUE=2%}test{%/TMPL_IFLE%}
+  </div>
+  <div id="unit88.1_res">
     
     
   </div>
