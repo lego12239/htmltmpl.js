@@ -79,6 +79,10 @@ htmltmpl.prototype.hdlr_listitem_parse = function(def, tag_attrs)
 	if ((this._s.priv.length == 0) || (this._s.priv[0][0].name != "TMPL_LIST"))
 		throw("parse err: " + def.name + " can be used only inside a TMPL_LIST");
 	attrs = this._parse_tag_attrs(def, tag_attrs);
+	/* Optional attribute, but must be set for an apply fun. Thus,
+	   set it with default value in any case. */
+	if (attrs.ESCAPE == null)
+		attrs.ESCAPE = def.pafuncs.ESCAPE.call(this, this.p.escape_defval);
 	this._s.parse[0].push([def.name, [ attrs ]]);
 }
 
@@ -88,13 +92,17 @@ htmltmpl.prototype.hdlr_listitem_apply = function(def, tag)
 	var val;
 
 	val = this._get_data();
+	if (val == null)
+		val = tag[0]["DEFAULT"];
 
-	if (val != undefined)
-		this.out_str += val;
-	else if (tag[1]["DEFAULT"] != undefined)
-		this.out_str += tag[0]["DEFAULT"];
-	else if (this.p.err_on_no_data)
-		throw("List item is null.");
+	if (val == null)
+		if (this.p.err_on_no_data)
+			throw("List item is null.");
+		else
+			return;
+
+	val = this._escape_tag_attr_val(tag[0].ESCAPE, val);
+	this.out_str += val;
 }
 
 
@@ -110,5 +118,6 @@ htmltmpl.prototype.tags["/TMPL_LIST"] = {
 htmltmpl.prototype.tags["TMPL_LISTITEM"] = {
 	pfunc: htmltmpl.prototype.hdlr_listitem_parse,
 	afunc: htmltmpl.prototype.hdlr_listitem_apply,
+	pafuncs: {ESCAPE: htmltmpl.prototype._parse_tag_attr_ESCAPE},
 	name: "TMPL_LISTITEM" };
 }
