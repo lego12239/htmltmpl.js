@@ -762,7 +762,38 @@
                     prms: {escape_defval: "NO"},
                     title: "Test TMPL_VAR ESCAPE default value NO",
                     ret: "q<&text > \"with' &<> uns&<>afe <chars>a",
-                    data: {var1: "<&text > \"with' &<> uns&<>afe <chars>"}}];
+                    data: {var1: "<&text > \"with' &<> uns&<>afe <chars>"}},
+                  { id: "unit115",
+                    id_res: "unit115_res",
+                    title: "Test TMPL_LISTITEM without ESCAPE",
+                    data: {list1: [1, "A<&text > \"with'", 3]}},
+                  { id: "unit115.1",
+                    id_res: "unit115.1_res",
+                    title: "Test TMPL_LISTITEM without ESCAPE=NO",
+                    ret: "\n    q1a\n  \n    qA<&text > \"with'a\n  \n    q3a\n  ",
+                    data: {list1: [1, "A<&text > \"with'", 3]}},
+                  { id: "unit115.2",
+                    id_res: "unit115.2_res",
+                    title: "Test TMPL_LISTITEM without ESCAPE=ETEXT",
+                    ret: "\n    q1a\n  \n    qA&lt;&amp;text &gt; \"with'a\n  \n    q3a\n  ",
+                    data: {list1: [1, "A<&text > \"with'", 3]}},
+                  { id: "unit115.3",
+                    id_res: "unit115.3_res",
+                    title: "Test TMPL_LISTITEM without ESCAPE=AVAL",
+                    ret: "\n    q1a\n  \n    qA<&text > &quot;with&#39;a\n  \n    q3a\n  ",
+                    data: {list1: [1, "A<&text > \"with'", 3]}},
+                  { id: "unit115.4",
+                    id_res: "unit115.4_res",
+                    prms: {escape_defval: "NO"},
+                    title: "Test TMPL_LISTITEM ESCAPE defval is NO",
+                    ret: "\n    q1a\n  \n    qA<&text > \"with'a\n  \n    q3a\n  ",
+                    data: {list1: [1, "A<&text > \"with'", 3]}},
+                  { id: "unit115.5",
+                    id_res: "unit115.5_res",
+                    prms: {escape_defval: "AVAL"},
+                    title: "Test TMPL_LISTITEM ESCAPE defval is AVAL",
+                    ret: "\n    q1a\n  \n    qA<&text > &quot;with&#39;a\n  \n    q3a\n  ",
+                    data: {list1: [1, "A<&text > \"with'", 3]}}];
     function report_res(test, ret, ex)
     {
         var val, eret;
@@ -3344,6 +3375,53 @@
   <!-- unit 114.3 -->
   <div id="unit114.3">q{%TMPL_VAR NAME=var1%}a</div>
   <div id="unit114.3_res"></div>
+
+  <!-- unit 115 -->
+  <div id="unit115">{%TMPL_LIST NAME=list1%}
+    q{%TMPL_LISTITEM%}a
+  {%/TMPL_LIST%}</div>
+  <div id="unit115_res">
+    q1a
+  
+    qA&lt;&amp;text &gt; "with'a
+  
+    q3a
+  </div>
+
+  <!-- unit 115.1 -->
+  <div id="unit115.1">{%TMPL_LIST NAME=list1%}
+    q{%TMPL_LISTITEM ESCAPE=NO%}a
+  {%/TMPL_LIST%}</div>
+  <div id="unit115.1_res">
+  </div>
+
+  <!-- unit 115.2 -->
+  <div id="unit115.2">{%TMPL_LIST NAME=list1%}
+    q{%TMPL_LISTITEM ESCAPE=ETEXT%}a
+  {%/TMPL_LIST%}</div>
+  <div id="unit115.2_res">
+  </div>
+
+  <!-- unit 115.3 -->
+  <div id="unit115.3">{%TMPL_LIST NAME=list1%}
+    q{%TMPL_LISTITEM ESCAPE=AVAL%}a
+  {%/TMPL_LIST%}</div>
+  <div id="unit115.3_res">
+  </div>
+
+  <!-- unit 115.4 -->
+  <div id="unit115.4">{%TMPL_LIST NAME=list1%}
+    q{%TMPL_LISTITEM%}a
+  {%/TMPL_LIST%}</div>
+  <div id="unit115.4_res">
+  </div>
+
+  <!-- unit 115.5 -->
+  <div id="unit115.5">{%TMPL_LIST NAME=list1%}
+    q{%TMPL_LISTITEM%}a
+  {%/TMPL_LIST%}</div>
+  <div id="unit115.5_res">
+  </div>
 
   </div>
 </body>
