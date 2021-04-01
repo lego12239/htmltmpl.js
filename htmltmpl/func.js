@@ -28,6 +28,13 @@ htmltmpl.prototype.get_data = function(name)
 	return this._get_data(name.split("."));
 }
 
+htmltmpl.prototype._parse_tag_attr_FUNCARG = function(val)
+{
+	if (!Array.isArray(val))
+		throw("parse_tag_attr err: attribute ARG must be an array ");
+	return val;
+}
+
 /**********************************************************************
  * TMPL_FUNC HANDLERS
  **********************************************************************/
@@ -36,8 +43,6 @@ htmltmpl.prototype.hdlr_func_parse = function(def, tag_attrs)
 	var attrs;
 
 	attrs = this._parse_tag_attrs(def, tag_attrs);
-	if ((attrs.ARG != undefined) && (typeof(attrs.ARG) === "string"))
-		attrs.ARG = [ attrs.ARG ];
 	/* Optional attribute, but must be set for an apply fun. Thus,
 	   set it with default value in any case. */
 	if (attrs.ESCAPE == null)
@@ -64,6 +69,7 @@ htmltmpl.prototype.hdlr_func_apply = function(def, tag)
 htmltmpl.prototype.tags["TMPL_FUNC"] = {
 	pfunc: htmltmpl.prototype.hdlr_func_parse,
 	afunc: htmltmpl.prototype.hdlr_func_apply,
-	pafuncs: {ESCAPE: htmltmpl.prototype._parse_tag_attr_ESCAPE},
+	pafuncs: {ARG: htmltmpl.prototype._parse_tag_attr_FUNCARG,
+	  ESCAPE: htmltmpl.prototype._parse_tag_attr_ESCAPE},
 	name: "TMPL_FUNC" };
 }
