@@ -242,6 +242,27 @@ htmltmpl.prototype._parse_tag_attr_ESCAPE = function (val)
 	return val;
 }
 
+htmltmpl.prototype._escape_tag_attr_val = function (escape_type, val)
+{
+	switch (escape_type) {
+	case 0:
+		break;
+	case 1:
+		val = val.toString().replaceAll(/\&/g, "\&amp;");
+		val = val.replaceAll(/</g, "\&lt;");
+		val = val.replaceAll(/>/g, "\&gt;");
+		break;
+	case 2:
+		val = val.toString().replaceAll(/"/g, "\&quot;");
+		val = val.replaceAll(/'/g, "\&#39;");
+		break;
+	default:
+		throw("hdlr_var_apply err: unknown ESCAPE code: " + escape_type);
+	}
+
+	return val;
+}
+
 htmltmpl.prototype._get_data = function(name)
 {
 	var len, v;
@@ -322,21 +343,7 @@ htmltmpl.prototype.hdlr_var_apply = function(def, tag)
 		else
 			return;
 
-	switch (tag[1].ESCAPE) {
-	case 0:
-		break;
-	case 1:
-		val = val.toString().replaceAll(/\&/g, "\&amp;");
-		val = val.replaceAll(/</g, "\&lt;");
-		val = val.replaceAll(/>/g, "\&gt;");
-		break;
-	case 2:
-		val = val.toString().replaceAll(/"/g, "\&quot;");
-		val = val.replaceAll(/'/g, "\&#39;");
-		break;
-	default:
-		throw("hdlr_var_apply err: unknown ESCAPE code: " + tag[1].ESCAPE);
-	}
+	val = this._escape_tag_attr_val(tag[1].ESCAPE, val);
 	this.out_str += val;
 }
 
