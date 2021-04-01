@@ -31,7 +31,7 @@ with ifeq extension:
 {%TMPL_IFLE NAME=var WITH=another_var%}...{%TMPL_ELSE%}...{%/TMPL_IFLE%}
 
 with func extension:
-{%TMPL_FUNC NAME=func_name ARG=arg_1 ARG=arg_2%}
+{%TMPL_FUNC NAME=func_name ARGS=[arg_1, ...]%}
 
 with list extension:
 {%TMPL_LIST NAME=list_name%}...{%/TMPL_LIST%}
@@ -285,12 +285,11 @@ ifeq:
 func:
   TMPL_FUNC
 	{%TMPL_FUNC NAME=func1%}
-	{%TMPL_FUNC NAME=func2 ARG=arg_1%}
-	{%TMPL_FUNC NAME=func2 ARG=arg_1 ARG=arg_2 ...%}
+	{%TMPL_FUNC NAME=func2 ARGS=[arg_1,...]%}
 
 	Call a js function with a name pointed in NAME attribute value and use
 	it return value as a replacement text. Optional arguments can be given to
-	function using ARG attributes. Before apply() method is called, all needed
+	function using ARGS attributes. Before apply() method is called, all needed
 	functions must be placed in funcs property of an htmltmpl object:
 
 	var tmpl = new htmltmpl(document.getElementById("tmpl_data"));
@@ -301,7 +300,7 @@ func:
 
 	<div id="tmpl_data" style="display: none">
 		{%TMPL_VAR NAME=var%}
-		{%TMPL_FUNC NAME=echo ARG="first argument"%}
+		{%TMPL_FUNC NAME=echo ARGS=["first argument"]%}
 	</div>
 
 	and result is:
