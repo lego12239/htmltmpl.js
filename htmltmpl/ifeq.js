@@ -21,11 +21,8 @@
 /**********************************************************************
  * TMPL_IFEQ HANDLERS
  **********************************************************************/
-htmltmpl.prototype.hdlr_ifeq_parse = function(def, tag_attrs)
+htmltmpl.prototype.hdlr_ifeq_parse = function(def, attrs)
 {
-	var attrs;
-
-	attrs = this._parse_tag_attrs(def, tag_attrs);
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs ]);
 }

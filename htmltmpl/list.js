@@ -21,11 +21,8 @@
 /**********************************************************************
  * TMPL_LIST HANDLERS
  **********************************************************************/
-htmltmpl.prototype.hdlr_list_parse = function(def, tag_attrs)
+htmltmpl.prototype.hdlr_list_parse = function(def, attrs)
 {
-	var attrs;
-
-	attrs = this._parse_tag_attrs(def, tag_attrs);
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs ]);
 }
@@ -72,13 +69,12 @@ htmltmpl.prototype.hdlr_list_apply = function(def, tag)
 /**********************************************************************
  * TMPL_LISTITEM HANDLERS
  **********************************************************************/
-htmltmpl.prototype.hdlr_listitem_parse = function(def, tag_attrs)
+htmltmpl.prototype.hdlr_listitem_parse = function(def, attrs)
 {
-	var attrs, vname;
+	var vname;
 
 	if ((this._s.priv.length == 0) || (this._s.priv[0][0].name != "TMPL_LIST"))
 		throw("parse err: " + def.name + " can be used only inside a TMPL_LIST");
-	attrs = this._parse_tag_attrs(def, tag_attrs);
 	/* Optional attribute, but must be set for an apply fun. Thus,
 	   set it with default value in any case. */
 	if (attrs.ESCAPE == null)

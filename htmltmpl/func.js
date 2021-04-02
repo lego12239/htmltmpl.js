@@ -38,11 +38,8 @@ htmltmpl.prototype._parse_tag_attr_FUNCARGS = function(val)
 /**********************************************************************
  * TMPL_FUNC HANDLERS
  **********************************************************************/
-htmltmpl.prototype.hdlr_func_parse = function(def, tag_attrs)
+htmltmpl.prototype.hdlr_func_parse = function(def, attrs)
 {
-	var attrs;
-
-	attrs = this._parse_tag_attrs(def, tag_attrs);
 	/* Optional attribute, but must be set for an apply fun. Thus,
 	   set it with default value in any case. */
 	if (attrs.ESCAPE == null)

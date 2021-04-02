@@ -169,7 +169,7 @@ htmltmpl.prototype.parse_tag = function (tag)
 		tag_name = m[1].toUpperCase();
 	else
 		tag_name = m[1];
-	tag_attrs = m[2];
+	tag_attrs = this._parse_tag_attrs(this.tags[tag_name], m[2]);
 
 	// Call a tag handler
 	if (this.tags[tag_name] != undefined)
@@ -318,11 +318,8 @@ htmltmpl.prototype.is_tag_match = function(tag, tags)
 /**********************************************************************
  * TMPL_VAR HANDLERS
  **********************************************************************/
-htmltmpl.prototype.hdlr_var_parse = function(def, tag_attrs)
+htmltmpl.prototype.hdlr_var_parse = function(def, attrs)
 {
-	var attrs;
-
-	attrs = this._parse_tag_attrs(def, tag_attrs);
 	/* Optional attribute, but must be set for an apply fun. Thus,
 	   set it with default value in any case. */
 	if (attrs.ESCAPE == null)
@@ -352,11 +349,8 @@ htmltmpl.prototype.hdlr_var_apply = function(def, tag)
 /**********************************************************************
  * TMPL_LOOP HANDLERS
  **********************************************************************/
-htmltmpl.prototype.hdlr_loop_parse = function(def, tag_attrs)
+htmltmpl.prototype.hdlr_loop_parse = function(def, attrs)
 {
-	var attrs;
-
-	attrs = this._parse_tag_attrs(def, tag_attrs);
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs ]);
 }
@@ -440,11 +434,8 @@ htmltmpl.prototype.create_loop_context_vars = function (loopidx, looplen)
 /**********************************************************************
  * TMPL_IF HANDLERS
  **********************************************************************/
-htmltmpl.prototype.hdlr_if_parse = function(def, tag_attrs)
+htmltmpl.prototype.hdlr_if_parse = function(def, attrs)
 {
-	var attrs;
-
-	attrs = this._parse_tag_attrs(def, tag_attrs);
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs ]);
 }
@@ -517,11 +508,8 @@ htmltmpl.prototype.hdlr_unless_apply = function(def, tag)
 /**********************************************************************
  * TMPL_INCLUDE HANDLERS
  **********************************************************************/
-htmltmpl.prototype.hdlr_include_parse = function(def, tag_attrs)
+htmltmpl.prototype.hdlr_include_parse = function(def, attrs)
 {
-	var attrs;
-
-	attrs = this._parse_tag_attrs(def, tag_attrs);
 	this._s.parse[0].push([def.name, [ attrs.VAR, attrs ]]);
 }
 
