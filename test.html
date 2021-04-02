@@ -852,7 +852,42 @@
                     prms: {escape_defval: "AVAL"},
                     funcs: {fun1: t_func_fun_escape},
                     ret: "qA<&text > &quot;with&#39;a",
-                    data: {}}];
+                    data: {}},
+                  { id: "unit119",
+                    id_res: "unit119_res",
+                    title: "Test TMPL_IFRET ret {}",
+                    funcs: {fun1: t_ifret_fun_empty},
+                    data: {}},
+                  { id: "unit120",
+                    id_res: "unit120_res",
+                    title: "Test TMPL_IFRET with TMPL_ELSE ret {}",
+                    funcs: {fun1: t_ifret_fun_empty},
+                    data: {}},
+                  { id: "unit121",
+                    id_res: "unit121_res",
+                    title: "Test TMPL_IFRET ret null",
+                    funcs: {fun1: t_ifret_fun_null},
+                    data: {}},
+                  { id: "unit122",
+                    id_res: "unit122_res",
+                    title: "Test TMPL_IFRET with TMPL_ELSE ret null",
+                    funcs: {fun1: t_ifret_fun_null},
+                    data: {}},
+                  { id: "unit123",
+                    id_res: "unit123_res",
+                    title: "Test TMPL_IFRET with TMPL_ELSE ret data",
+                    funcs: {fun1: t_ifret_fun_data},
+                    data: {var1: 3, var2: 4}},
+                  { id: "unit123.1",
+                    id_res: "unit123.1_res",
+                    title: "Test TMPL_IFRET with TMPL_ELSE ret null",
+                    funcs: {fun1: t_ifret_fun_null},
+                    data: {var1: 3, var2: 4}},
+                  { id: "unit124",
+                    id_res: "unit124_res",
+                    title: "Test TMPL_IFRET with ARGS and TMPL_ELSE ret data",
+                    funcs: {fun1: t_ifret_fun_data_args},
+                    data: {var1: 3, var2: 4}}];
     function report_res(test, ret, ex)
     {
         var val, eret;
@@ -1012,6 +1047,27 @@
    function t_func_fun_escape()
    {
      return "A<&text > \"with'";
+   }
+   function t_ifret_fun_empty()
+   {
+     return {};
+   }
+   function t_ifret_fun_null()
+   {
+     return null;
+   }
+   function t_ifret_fun_data()
+   {
+     return {var1: 77, var3: 44};
+   }
+   function t_ifret_fun_data_args(_var1, _var2, _var3)
+   {
+     var res = {};
+
+     var1 = this.get_data(_var1);
+     var2 = this.get_data(_var2);
+     res[_var3] = var1 + var2;
+     return res;
    }
   </script>
 </head>
@@ -3542,6 +3598,34 @@
   <!-- unit 118.5 -->
   <div id="unit118.5">q{%TMPL_FUNC NAME=fun1%}a</div>
   <div id="unit118.5_res"></div>
+
+  <!-- unit 119 -->
+  <div id="unit119">q{%TMPL_IFRET NAME=fun1%}a{%/TMPL_IFRET%}w</div>
+  <div id="unit119_res">qaw</div>
+
+  <!-- unit 120 -->
+  <div id="unit120">q{%TMPL_IFRET NAME=fun1%}a{%TMPL_ELSE%}b{%/TMPL_IFRET%}w</div>
+  <div id="unit120_res">qaw</div>
+
+  <!-- unit 121 -->
+  <div id="unit121">q{%TMPL_IFRET NAME=fun1%}a{%/TMPL_IFRET%}w</div>
+  <div id="unit121_res">qw</div>
+
+  <!-- unit 122 -->
+  <div id="unit122">q{%TMPL_IFRET NAME=fun1%}a{%TMPL_ELSE%}b{%/TMPL_IFRET%}w</div>
+  <div id="unit122_res">qbw</div>
+
+  <!-- unit 123 -->
+  <div id="unit123">q{%TMPL_VAR NAME=var1%}{%TMPL_IFRET NAME=fun1%}a{%TMPL_VAR NAME=var1%}i{%TMPL_VAR NAME=var2%}k{%TMPL_VAR NAME=var3%}l{%TMPL_ELSE%}b{%/TMPL_IFRET%}w{%TMPL_VAR NAME=var1%}z</div>
+  <div id="unit123_res">q3a77i4k44lw3z</div>
+
+  <!-- unit 123.1 -->
+  <div id="unit123.1">q{%TMPL_VAR NAME=var1%}{%TMPL_IFRET NAME=fun1%}a{%TMPL_ELSE%}b{%TMPL_VAR NAME=var1%}i{%TMPL_VAR NAME=var2%}k{%TMPL_VAR NAME=var3%}l{%/TMPL_IFRET%}w{%TMPL_VAR NAME=var1%}z</div>
+  <div id="unit123.1_res">q3b3i4klw3z</div>
+
+  <!-- unit 124 -->
+  <div id="unit124">q{%TMPL_VAR NAME=var1%}{%TMPL_IFRET NAME=fun1 ARGS=[var1,var2,var3]%}a{%TMPL_VAR NAME=var1%}i{%TMPL_VAR NAME=var2%}k{%TMPL_VAR NAME=var3%}l{%TMPL_ELSE%}b{%/TMPL_IFRET%}w{%TMPL_VAR NAME=var1%}z</div>
+  <div id="unit124_res">q3a3i4k7lw3z</div>
 
   </div>
 </body>
