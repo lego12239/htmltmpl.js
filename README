@@ -32,6 +32,8 @@ with ifeq extension:
 
 with func extension:
 {%TMPL_FUNC NAME=func_name ARGS=[arg_1, ...]%}
+{%TMPL_IFRET NAME=func_name ARGS=[arg_1, ...]%}...{%/TMPL_IFRET%}
+{%TMPL_IFRET NAME=func_name ARGS=[arg_1, ...]%}...{%TMPL_ELSE%}...{%/TMPL_IFRET%}
 
 with list extension:
 {%TMPL_LIST NAME=list_name%}...{%/TMPL_LIST%}
@@ -309,6 +311,20 @@ func:
 		data
 		echoing first argument
 	"
+
+  TMPL_IFRET
+	{%TMPL_IFRET NAME=func1%}...{%/TMPL_IFRET%}
+	{%TMPL_IFRET NAME=func1%}...{%TMPL_ELSE%}...{%/TMPL_IFRET%}
+	{%TMPL_IFRET NAME=func2 ARGS=[arg_1,...]%}
+	{%TMPL_IFRET NAME=func2 ARGS=[arg_1,...]%}...{%TMPL_ELSE%}...{%/TMPL_IFRET%}
+
+    On apply stage a function with name specified in NAME attribute value
+    is called(with specified arguments in ARGS attribute value - like for
+    TMPL_FUNC) and if it return value is an object, then it is inserted
+    in the data stack and a content between {%TMPL_IFRET%} and {%/TMPL_IFRET%}
+    or between {%TMPL_IFRET%} and {%TMPL_ELSE%} is included in a result.
+    If a return value is null, then a content between {%TMPL_ELSE%} and
+    {%/TMPL_IFRET%} is included instead(or nothing if there is no TMPL_ELSE).
 
 list:
   TMPL_LIST
