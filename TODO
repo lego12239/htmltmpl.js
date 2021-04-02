@@ -20,19 +20,6 @@
     this.funcs(htmltmpl.funcs); htmltmpl.prototype.e.funcs.get_data instead of
     htmltmpl.prototype.get_data; htmltmpl.prototype.e.funcs.hdlr_funcs_parse instead of
     htmltmpl.prototype.hdlr_funcs_parse.
-14. Add characters escaping for a tag value. Something like a ESCAPE attribute with
-    values HTML_TEXT and HTML_ATTR. For HTML_TEXT do:
-      & -> &amp;
-      < -> &lt;
-      > -> &gt;
-    for HTML_ATTR do:
-      " -> &quot;
-      ' -> &#39;
-    May be conveniently would be to add a global parameter to switch on/off escaping
-    by default. In such a case we need a third value - NO. To disable escaping for
-    a single tag, if escaping is turn on by default.
-    Don't forget about case_sensitive parameter behaviour towards to ESCAPE attribute
-    values.
 17. Fix constructor for the case of String object as tmpl parameter. typeof(tmpl) will
     be "object" in this case and instanceof String is true.
 18. Add examples related to tmpl_is_commented option.
@@ -44,3 +31,7 @@
 23. Check throw constructs. May be a bug with variable name reporting. Because
     it can be an array, not only a string.
 24. Add tests for TMPL_INCLUDE
+25. Add TMPL_SWITCH/TMPL_CASE.
+26. Remove support for single quotes for attribute values?
+27. Add support for multiline tags? Can be done simply by adding s to rex: tag,
+    tag_attrs, rex at tmpl_prepare().
