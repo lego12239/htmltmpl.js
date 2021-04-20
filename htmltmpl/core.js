@@ -315,6 +315,32 @@ htmltmpl.prototype.is_tag_match = function(tag, tags)
 	return false;
 }
 
+htmltmpl.prototype._fmt = function (fstr)
+{
+	var args = arguments;
+	var i = 0;
+
+	return fstr.replace(/%([%sd])/g, function (m, conv) {
+		var ret;
+
+		switch (conv) {
+		case '%':
+			ret = '%';
+			break;
+		case 's':
+			ret = String(args[++i]);
+			break;
+		case 'd':
+			ret = Number(args[++i]).toString();
+			break;
+		default:
+			throw("_fmt: unknown conversion specifier: " + conv);
+		}
+		return ret;
+	});
+}
+
+
 /**********************************************************************
  * TMPL_VAR HANDLERS
  **********************************************************************/
