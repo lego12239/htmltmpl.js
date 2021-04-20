@@ -23,6 +23,8 @@
  **********************************************************************/
 htmltmpl.prototype.hdlr_list_parse = function(def, attrs)
 {
+	if (attrs.NAME == null)
+		this._throw("%s must have NAME attribute", def.name);
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs ]);
 }

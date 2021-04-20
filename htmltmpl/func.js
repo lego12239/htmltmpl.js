@@ -44,6 +44,8 @@ htmltmpl.prototype.hdlr_func_parse = function(def, attrs)
 	   set it with default value in any case. */
 	if (attrs.ESCAPE == null)
 		attrs.ESCAPE = def.pafuncs.ESCAPE.call(this, this.p.escape_defval);
+	if (attrs.NAME == null)
+		this._throw("%s must have NAME attribute", def.name);
 	this._s.parse[0].push([def.name, [ attrs ]]);
 }
 
@@ -68,6 +70,8 @@ htmltmpl.prototype.hdlr_func_apply = function(def, tag)
  **********************************************************************/
 htmltmpl.prototype.hdlr_ifret_parse = function(def, attrs)
 {
+	if (attrs.NAME == null)
+		this._throw("%s must have NAME attribute", def.name);
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs]);
 }

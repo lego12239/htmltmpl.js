@@ -359,6 +359,8 @@ htmltmpl.prototype.hdlr_var_parse = function(def, attrs)
 	   set it with default value in any case. */
 	if (attrs.ESCAPE == null)
 		attrs.ESCAPE = def.pafuncs.ESCAPE.call(this, this.p.escape_defval);
+	if (attrs.NAME == null)
+		this._throw("%s must have NAME attribute", def.name);
 	this._s.parse[0].push([def.name, [ attrs.NAME, attrs ]]);
 }
 
@@ -386,6 +388,8 @@ htmltmpl.prototype.hdlr_var_apply = function(def, tag)
  **********************************************************************/
 htmltmpl.prototype.hdlr_loop_parse = function(def, attrs)
 {
+	if (attrs.NAME == null)
+		this._throw("%s must have NAME attribute", def.name);
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs ]);
 }
@@ -471,6 +475,8 @@ htmltmpl.prototype.create_loop_context_vars = function (loopidx, looplen)
  **********************************************************************/
 htmltmpl.prototype.hdlr_if_parse = function(def, attrs)
 {
+	if (attrs.NAME == null)
+		this._throw("%s must have NAME attribute", def.name);
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs ]);
 }
@@ -545,6 +551,8 @@ htmltmpl.prototype.hdlr_unless_apply = function(def, tag)
  **********************************************************************/
 htmltmpl.prototype.hdlr_include_parse = function(def, attrs)
 {
+	if (attrs.NAME == null)
+		this._throw("%s must have NAME attribute", def.name);
 	this._s.parse[0].push([def.name, [ attrs.VAR, attrs ]]);
 }
 

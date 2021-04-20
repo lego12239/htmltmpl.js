@@ -32,6 +32,8 @@ htmltmpl.prototype.hdlr_ifin_parse = function(def, attrs)
 {
 	if (attrs.VALUES == null)
 		this._throw("parse err: %s must have VALUES attribute", def.name);
+	if (attrs.NAME == null)
+		this._throw("%s must have NAME attribute", def.name);
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs ]);
 }

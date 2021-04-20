@@ -23,6 +23,10 @@
  **********************************************************************/
 htmltmpl.prototype.hdlr_ifeq_parse = function(def, attrs)
 {
+	if (attrs.NAME == null)
+		this._throw("%s must have NAME attribute", def.name);
+	if ((attrs.VALUE == null) && (attrs.WITH == null))
+		this._throw("%s must have VALUE or WITH attribute", def.name);
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs ]);
 }
