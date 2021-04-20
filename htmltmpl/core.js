@@ -163,7 +163,7 @@ htmltmpl.prototype.parse_tag = function (tag)
 	this.rex.tag.lastIndex = 0;
 	m = this.rex.tag.exec(tag);
 	if (!m)
-		throw("parse_tag err: wrong tag format: " + tag);
+		this._throw("parse_tag err: wrong tag format: %s", tag);
 
 	if (!this.p.case_sensitive)
 		tag_name = m[1].toUpperCase();
@@ -176,7 +176,7 @@ htmltmpl.prototype.parse_tag = function (tag)
 		return this.tags[tag_name].pfunc.call(this,
 		  this.tags[tag_name], tag_attrs);
 
-	throw("parse_tag err: unknown tag: " + tag_name);
+	this._throw("parse_tag err: unknown tag: %s", tag_name);
 }
 
 htmltmpl.prototype._parse_tag_attrs = function(def, attrs)
@@ -217,14 +217,16 @@ htmltmpl.prototype.__parse_tag_attr_val = function (val)
 htmltmpl.prototype._parse_tag_attr_NAME = function (val)
 {
 	if (typeof(val) != "string")
-		throw("parse_tag_attr err: attribute NAME must be with single value");
+		this._throw("parse_tag_attr err: attribute NAME must be with " +
+		  "single value");
 	return val.split(".");
 }
 
 htmltmpl.prototype._parse_tag_attr_ESCAPE = function (val)
 {
 	if (typeof(val) != "string")
-		throw("parse_tag_attr err: attribute ESCAPE must be with single value");
+		this._throw("parse_tag_attr err: attribute ESCAPE must be with " +
+		"single value");
 	if (!this.p.case_sensitive)
 		val = val.toUpperCase();
 	switch (val) {
@@ -238,7 +240,8 @@ htmltmpl.prototype._parse_tag_attr_ESCAPE = function (val)
 		val = 2;
 		break;
 	default:
-		throw("hdlr_var_parse err: ESCAPE attribute bad value: '" + val + "'");
+		this._throw("hdlr_var_parse err: ESCAPE attribute bad value: '%s'",
+		  val);
 	}
 
 	return val;
@@ -259,7 +262,8 @@ htmltmpl.prototype._escape_tag_attr_val = function (escape_type, val)
 		val = val.replaceAll(/'/g, "\&#39;");
 		break;
 	default:
-		throw("hdlr_var_apply err: unknown ESCAPE code: " + escape_type);
+		this._throw("hdlr_var_apply err: unknown ESCAPE code: %s",
+		  escape_type);
 	}
 
 	return val;
@@ -369,7 +373,7 @@ htmltmpl.prototype.hdlr_var_apply = function(def, tag)
 
 	if (val == null)
 		if (this.p.err_on_no_data)
-			throw("Cann't find var '" + tag[0] + "'.");
+			this._throw("Cann't find var '%s'.", tag[0]);
 		else
 			return;
 
@@ -393,8 +397,8 @@ htmltmpl.prototype.hdlr_loop_end_parse = function(def)
 
 	priv = this._s.priv[0];
 	if (!this.is_tag_match(priv[0], def.start_tag))
-		throw("parse err: " + priv[0].name + " was opened, but " +
-		  def.name + " is being closed");
+		this._throw("parse err: %s was opened, but %s is being closed",
+		  priv[0].name, def.name);
 
 	loop = this._s.parse.shift();
 	this._s.parse[0].push([priv[0].name, [ priv[1].NAME, priv[1], loop ]]);
@@ -421,7 +425,7 @@ htmltmpl.prototype.hdlr_loop_apply = function(def, tag)
 		this._s.data.shift();
 		this._s.data.shift();
 	} else if (this.p.err_on_no_data) {
-		throw("Cann't find loop '" + tag[0] + "'.");
+		this._throw("Cann't find loop '%s'.", tag[0]);
 	}
 	this._s.v.shift();
 }
@@ -477,8 +481,8 @@ htmltmpl.prototype.hdlr_else_parse = function(def)
 
 	priv = this._s.priv[0];
 	if (!this.is_tag_match(priv[0], def.start_tag))
-		throw("parse err: " + priv[0].name + " was opened, but " +
-		  def.name + " is being closed");
+		this._throw("parse err: %s was opened, but %s is being closed",
+		  priv[0].name, def.name);
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def]);
 }
@@ -490,8 +494,8 @@ htmltmpl.prototype.hdlr_if_end_parse = function(def)
 
 	priv = this._s.priv.shift();
 	if (!this.is_tag_match(priv[0], def.start_tag))
-		throw("parse err: " + priv[0].name + " was opened, but " +
-		  def.name + " is being closed");
+		this._throw("parse err: %s was opened, but %s is being closed",
+		  priv[0].name, def.name);
 	if (priv[0].name == "TMPL_ELSE") {
 		else_ = this._s.parse.shift();
 		priv = this._s.priv.shift();
@@ -514,7 +518,7 @@ htmltmpl.prototype.hdlr_if_apply = function(def, tag)
 	else if (tag[3] != undefined)
 		this._apply(tag[3]);
 	else if (this.p.err_on_no_data)
-		throw("Cann't find var '" + tag[0] + "'.");
+		this._throw("Cann't find var '%s'.", tag[0]);
 }
 
 /**********************************************************************
@@ -533,7 +537,7 @@ htmltmpl.prototype.hdlr_unless_apply = function(def, tag)
 	else if (tag[3] != undefined)
 		this._apply(tag[3]);
 	else if (this.p.err_on_no_data)
-		throw("Cann't find var '" + tag[0] + "'.");
+		this._throw("Cann't find var '%s'.", tag[0]);
 }
 
 /**********************************************************************
@@ -553,7 +557,7 @@ htmltmpl.prototype.hdlr_include_apply = function(def, tag)
 		val = this._get_data(tag[0]);
 		if (val == null) {
 			if (this.p.err_on_no_data)
-				throw("Cann't find var '" + tag[0] + "'.");
+				this._throw("Cann't find var '%s'.", tag[0]);
 			return;
 		}
 	}
@@ -565,7 +569,7 @@ htmltmpl.prototype.hdlr_include_apply = function(def, tag)
 		if (val != null)
 			this._s.data.shift();
 	} else if (this.p.err_on_no_data)
-		throw("Cann't find template '" + tag[1].NAME + "'.");
+		this._throw("Cann't find template '%s'.", tag[1].NAME);
 }
 
 /**********************************************************************
@@ -583,7 +587,7 @@ htmltmpl.prototype._apply = function(tmpl)
 			this.tags[tmpl[i][0]].afunc.call(this,
 			  this.tags[tmpl[i][0]], tmpl[i][1]);
 		else
-			throw("_apply err: unknown tag: " + tmpl[i][0]);
+			this._throw("_apply err: unknown tag: %s", tmpl[i][0]);
 	}
 
 	return 1;

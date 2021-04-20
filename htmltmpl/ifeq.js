@@ -34,8 +34,8 @@ htmltmpl.prototype.hdlr_ifeq_end_parse = function(def)
 
 	priv = this._s.priv.shift();
 	if (!this.is_tag_match(priv[0], def.start_tag))
-		throw("parse err: " + priv[0].name + " was opened, but " +
-		  def.name + " is being closed");
+		this._throw("parse err: %s was opened, but %s is being closed",
+		  priv[0].name, def.name);
 	if (priv[0].name == "TMPL_ELSE") {
 		else_ = this._s.parse.shift();
 		priv = this._s.priv.shift();
@@ -58,9 +58,9 @@ htmltmpl.prototype.hdlr_ifeq_apply = function(def, tag)
 		val2 = tag[1].VALUE;
 
 	if ((this.p.err_on_no_data) && (val == null))
-		throw("Cann't find var '" + tag[0] + "'.");
+		this._throw("Cann't find var '%s'.", tag[0]);
 	if ((this.p.err_on_no_data) && (val2 == null))
-		throw("Cann't find var '" + tag[1].WITH + "'.");
+		this._throw("Cann't find var '%s'.", tag[1].WITH);
 
 	if (val == val2)
 		this._apply(tag[2]);
@@ -84,9 +84,9 @@ htmltmpl.prototype.hdlr_ifneq_apply = function(def, tag)
 		val2 = tag[1].VALUE;
 
 	if ((this.p.err_on_no_data) && (val == null))
-		throw("Cann't find var '" + tag[0] + "'.");
+		this._throw("Cann't find var '%s'.", tag[0]);
 	if ((this.p.err_on_no_data) && (val2 == null))
-		throw("Cann't find var '" + tag[1].WITH + "'.");
+		this._throw("Cann't find var '%s'.", tag[1].WITH);
 
 	if (val != val2)
 		this._apply(tag[2]);
@@ -110,9 +110,9 @@ htmltmpl.prototype.hdlr_ifgt_apply = function(def, tag)
 		val2 = tag[1].VALUE;
 
 	if ((this.p.err_on_no_data) && (val == null))
-		throw("Cann't find var '" + tag[0] + "'.");
+		this._throw("Cann't find var '%s'.", tag[0]);
 	if ((this.p.err_on_no_data) && (val2 == null))
-		throw("Cann't find var '" + tag[1].WITH + "'.");
+		this._throw("Cann't find var '%s'.", tag[1].WITH);
 
 	if (val > val2)
 		this._apply(tag[2]);
@@ -136,9 +136,9 @@ htmltmpl.prototype.hdlr_ifge_apply = function(def, tag)
 		val2 = tag[1].VALUE;
 
 	if ((this.p.err_on_no_data) && (val == null))
-		throw("Cann't find var '" + tag[0] + "'.");
+		this._throw("Cann't find var '%s'.", tag[0]);
 	if ((this.p.err_on_no_data) && (val2 == null))
-		throw("Cann't find var '" + tag[1].WITH + "'.");
+		this._throw("Cann't find var '%s'.", tag[1].WITH);
 
 	if (val >= val2)
 		this._apply(tag[2]);
@@ -162,9 +162,9 @@ htmltmpl.prototype.hdlr_iflt_apply = function(def, tag)
 		val2 = tag[1].VALUE;
 
 	if ((this.p.err_on_no_data) && (val == null))
-		throw("Cann't find var '" + tag[0] + "'.");
+		this._throw("Cann't find var '%s'.", tag[0]);
 	if ((this.p.err_on_no_data) && (val2 == null))
-		throw("Cann't find var '" + tag[1].WITH + "'.");
+		this._throw("Cann't find var '%s'.", tag[1].WITH);
 
 	if (val < val2)
 		this._apply(tag[2]);
@@ -188,9 +188,9 @@ htmltmpl.prototype.hdlr_ifle_apply = function(def, tag)
 		val2 = tag[1].VALUE;
 
 	if ((this.p.err_on_no_data) && (val == null))
-		throw("Cann't find var '" + tag[0] + "'.");
+		this._throw("Cann't find var '%s'.", tag[0]);
 	if ((this.p.err_on_no_data) && (val2 == null))
-		throw("Cann't find var '" + tag[1].WITH + "'.");
+		this._throw("Cann't find var '%s'.", tag[1].WITH);
 
 	if (val <= val2)
 		this._apply(tag[2]);

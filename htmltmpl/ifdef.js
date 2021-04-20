@@ -34,8 +34,8 @@ htmltmpl.prototype.hdlr_ifdef_end_parse = function(def)
 
 	priv = this._s.priv.shift();
 	if (!this.is_tag_match(priv[0], def.start_tag))
-		throw("parse err: " + priv[0].name + " was opened, but " +
-		  def.name + " is being closed");
+		this._throw("parse err: %s was opened, but %s is being closed",
+		  priv[0].name, def.name);
 	if (priv[0].name == "TMPL_ELSE") {
 		else_ = this._s.parse.shift();
 		priv = this._s.priv.shift();
@@ -58,7 +58,7 @@ htmltmpl.prototype.hdlr_ifdef_apply = function(def, tag)
 	else if (tag[3] != undefined)
 		this._apply(tag[3]);
 	else if (this.p.err_on_no_data)
-		throw("Cann't find var '" + tag[0] + "'.");
+		this._throw("Cann't find var '%s'.", tag[0]);
 }
 
 /**********************************************************************
@@ -77,7 +77,7 @@ htmltmpl.prototype.hdlr_ifndef_apply = function(def, tag)
 	else if (tag[3] != undefined)
 		this._apply(tag[3]);
 	else if (this.p.err_on_no_data)
-		throw("Cann't find var '" + tag[0] + "'.");
+		this._throw("Cann't find var '%s'.", tag[0]);
 }
 
 htmltmpl.prototype.tags["TMPL_IFDEF"] = {

@@ -21,7 +21,7 @@
 htmltmpl.prototype._parse_tag_attr_VALUES = function(val)
 {
 	if (!Array.isArray(val))
-		throw("parse_tag_attr err: attribute VALUES must be an array ");
+		this._throw("parse_tag_attr err: attribute VALUES must be an array ");
 	return val;
 }
 
@@ -31,7 +31,7 @@ htmltmpl.prototype._parse_tag_attr_VALUES = function(val)
 htmltmpl.prototype.hdlr_ifin_parse = function(def, attrs)
 {
 	if (attrs.VALUES == null)
-		throw(this._fmt("parse err: %s must have VALUES attribute", def.name));
+		this._throw("parse err: %s must have VALUES attribute", def.name);
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs ]);
 }
@@ -43,8 +43,8 @@ htmltmpl.prototype.hdlr_ifin_end_parse = function(def)
 
 	priv = this._s.priv.shift();
 	if (!this.is_tag_match(priv[0], def.start_tag))
-		throw(this._fmt("parse err: %s was opened, but %s is being closed",
-		  priv[0].name, def.name));
+		this._throw("parse err: %s was opened, but %s is being closed",
+		  priv[0].name, def.name);
 	if (priv[0].name == "TMPL_ELSE") {
 		else_ = this._s.parse.shift();
 		priv = this._s.priv.shift();
@@ -63,7 +63,7 @@ htmltmpl.prototype.hdlr_ifin_apply = function(def, tag)
 	vals = tag[1].VALUES;
 
 	if ((this.p.err_on_no_data) && (val == null))
-		throw(this._fmt("Cann't find var '%s'.", tag[0]));
+		this._throw("Cann't find var '%s'.", tag[0]);
 
 	for(i = 0; i < vals.length; i++)
 		if (val == vals[i]) {

@@ -34,8 +34,8 @@ htmltmpl.prototype.hdlr_list_end_parse = function(def)
 
 	priv = this._s.priv.shift();
 	if (!this.is_tag_match(priv[0], def.start_tag))
-		throw("parse err: " + priv[0].name + " was opened, but " +
-		  def.name + " is being closed");
+		this._throw("parse err: %s was opened, but %s is being closed",
+		  priv[0].name, def.name);
 
 	list = this._s.parse.shift();
 	this._s.parse[0].push([priv[0].name, [ priv[1].NAME, priv[1], list ]]);
@@ -61,7 +61,7 @@ htmltmpl.prototype.hdlr_list_apply = function(def, tag)
 		this._s.data.shift();
 		this._s.data.shift();
 	} else if (this.p.err_on_no_data) {
-		throw("Cann't find list '" + tag[0] + "'.");
+		this._throw("Cann't find list '%s'.", tag[0]);
 	}
 	this._s.v.shift();
 }
@@ -74,7 +74,8 @@ htmltmpl.prototype.hdlr_listitem_parse = function(def, attrs)
 	var vname;
 
 	if ((this._s.priv.length == 0) || (this._s.priv[0][0].name != "TMPL_LIST"))
-		throw("parse err: " + def.name + " can be used only inside a TMPL_LIST");
+		this._throw("parse err: %s can be used only inside a TMPL_LIST",
+		  def.name);
 	/* Optional attribute, but must be set for an apply fun. Thus,
 	   set it with default value in any case. */
 	if (attrs.ESCAPE == null)
@@ -93,7 +94,7 @@ htmltmpl.prototype.hdlr_listitem_apply = function(def, tag)
 
 	if (val == null)
 		if (this.p.err_on_no_data)
-			throw("List item is null.");
+			this._throw("List item is null.");
 		else
 			return;
 
