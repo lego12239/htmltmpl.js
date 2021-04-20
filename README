@@ -30,6 +30,9 @@ with ifeq extension:
 {%TMPL_IFLE NAME=var VALUE=VAL%}...{%TMPL_ELSE%}...{%/TMPL_IFLE%}
 {%TMPL_IFLE NAME=var WITH=another_var%}...{%TMPL_ELSE%}...{%/TMPL_IFLE%}
 
+with ifin extension:
+{%TMPL_IFIN NAME=var VALUES=[VAL1, ...]%}...{%TMPL_ELSE%}...{%/TMPL_IFIN%}
+
 with func extension:
 {%TMPL_FUNC NAME=func_name ARGS=[arg_1, ...]%}
 {%TMPL_IFRET NAME=func_name ARGS=[arg_1, ...]%}...{%/TMPL_IFRET%}
@@ -283,6 +286,16 @@ ifeq:
 
 	The same as TMPL_IFEQ, but var property must be less or equal to specified
 	VAL or another_var property value.
+
+ifin:
+  TMPL_IFIN
+	{%TMPL_IFIN NAME=var VALUES=[VAL1, ...]%}...{%/TMPL_IFIN%}
+	{%TMPL_IFIN NAME=var VALUES=[VAL1, ...]%}...{%TMPL_ELSE%}...{%/TMPL_IFIN%}
+
+	This tag allows a conditional including of a html part in a result.
+	If var value is equal to any of specified values in VALUES attribute,
+	then a content between {%TMPL_IFIN%} and {%/TMPL_IFIN%} or between
+	{%TMPL_IFIN%} and {%TMPL_ELSE%} is included in a result.
 
 func:
   TMPL_FUNC
