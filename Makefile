@@ -16,7 +16,10 @@ upd_version: $(SRC)
 
 minify: $(SRC_MIN)
 
-solid: $(SRC_MIN)
+solid: $(SRC)
+	cat $^ > htmltmpl.solid.js
+
+solid-min: $(SRC_MIN)
 	cat $^ > htmltmpl.solid.min.js
 
 %.min.js: %.js
