@@ -6,6 +6,7 @@
   <script type="text/javascript" src="htmltmpl/core.js"></script>
   <script type="text/javascript" src="htmltmpl/ifdef.js"></script>
   <script type="text/javascript" src="htmltmpl/ifeq.js"></script>
+  <script type="text/javascript" src="htmltmpl/ifin.js"></script>
   <script type="text/javascript" src="htmltmpl/list.js"></script>
   <script type="text/javascript" src="htmltmpl/func.js"></script>
   <script type="text/javascript">
@@ -887,7 +888,39 @@
                     id_res: "unit124_res",
                     title: "Test TMPL_IFRET with ARGS and TMPL_ELSE ret data",
                     funcs: {fun1: t_ifret_fun_data_args},
-                    data: {var1: 3, var2: 4}}];
+                    data: {var1: 3, var2: 4}},
+                  { id: "unit125",
+                    id_res: "unit125_res",
+                    is_err: 1,
+                    err_msg: "parse err: TMPL_IFIN must have VALUES attribute",
+                    title: "Test TMPL_IFIN without VALUES(should fail)",
+                    data: {var1: 3, var2: 4}},
+                  { id: "unit125.1",
+                    id_res: "unit125.1_res",
+                    is_err: 1,
+                    err_msg: "parse err: TMPL_IFIN must have VALUES attribute",
+                    title: "Test TMPL_IFIN with empty VALUES(should fail)",
+                    data: {var1: 3, var2: 4}},
+                  { id: "unit125.2",
+                    id_res: "unit125.2_res",
+                    title: "Test TMPL_IFIN, match",
+                    data: {var1: 3, var2: 4}},
+                  { id: "unit125.3",
+                    id_res: "unit125.3_res",
+                    title: "Test TMPL_IFIN, not match",
+                    data: {var1: 3, var2: 4}},
+                  { id: "unit125.4",
+                    id_res: "unit125.4_res",
+                    title: "Test TMPL_IFIN with TMPL_ELSE, match",
+                    data: {var1: 3, var2: 4}},
+                  { id: "unit125.5",
+                    id_res: "unit125.5_res",
+                    title: "Test TMPL_IFIN with TMPL_ELSE, not match",
+                    data: {var1: 3, var2: 4}},
+                  { id: "unit125.6",
+                    id_res: "unit125.6_res",
+                    title: "Test TMPL_IFIN with strings with TMPL_ELSE, match",
+                    data: {var1: "one", var2: "two"}}];
     function report_res(test, ret, ex)
     {
         var val, eret;
@@ -3626,6 +3659,34 @@
   <!-- unit 124 -->
   <div id="unit124">q{%TMPL_VAR NAME=var1%}{%TMPL_IFRET NAME=fun1 ARGS=[var1,var2,var3]%}a{%TMPL_VAR NAME=var1%}i{%TMPL_VAR NAME=var2%}k{%TMPL_VAR NAME=var3%}l{%TMPL_ELSE%}b{%/TMPL_IFRET%}w{%TMPL_VAR NAME=var1%}z</div>
   <div id="unit124_res">q3a3i4k7lw3z</div>
+
+  <!-- unit 125 -->
+  <div id="unit125">q{%TMPL_IFIN NAME=var1%}i{%TMPL_VAR NAME=var2%}k{%TMPL_ELSE%}b{%/TMPL_IFIN%}w{%TMPL_VAR NAME=var1%}z</div>
+  <div id="unit125_res"></div>
+
+  <!-- unit 125.1 -->
+  <div id="unit125.1">q{%TMPL_IFIN NAME=var1 VALUES=[]%}i{%TMPL_VAR NAME=var2%}k{%TMPL_ELSE%}b{%/TMPL_IFIN%}w{%TMPL_VAR NAME=var1%}z</div>
+  <div id="unit125.1_res"></div>
+
+  <!-- unit 125.2 -->
+  <div id="unit125.2">q{%TMPL_IFIN NAME=var1 VALUES=[1,2,3,5]%}i{%TMPL_VAR NAME=var2%}k{%/TMPL_IFIN%}w{%TMPL_VAR NAME=var1%}z</div>
+  <div id="unit125.2_res">qi4kw3z</div>
+
+  <!-- unit 125.3 -->
+  <div id="unit125.3">q{%TMPL_IFIN NAME=var1 VALUES=[1,2,5]%}i{%TMPL_VAR NAME=var2%}k{%/TMPL_IFIN%}w{%TMPL_VAR NAME=var1%}z</div>
+  <div id="unit125.3_res">qw3z</div>
+
+  <!-- unit 125.4 -->
+  <div id="unit125.4">q{%TMPL_IFIN NAME=var1 VALUES=[1,2,3,5]%}i{%TMPL_VAR NAME=var2%}k{%TMPL_ELSE%}b{%TMPL_VAR NAME=var2%}a{%/TMPL_IFIN%}w{%TMPL_VAR NAME=var1%}z</div>
+  <div id="unit125.4_res">qi4kw3z</div>
+
+  <!-- unit 125.5 -->
+  <div id="unit125.5">q{%TMPL_IFIN NAME=var1 VALUES=[1,2,5]%}i{%TMPL_VAR NAME=var2%}k{%TMPL_ELSE%}b{%TMPL_VAR NAME=var2%}a{%/TMPL_IFIN%}w{%TMPL_VAR NAME=var1%}z</div>
+  <div id="unit125.5_res">qb4aw3z</div>
+
+  <!-- unit 125.6 -->
+  <div id="unit125.6">q{%TMPL_IFIN NAME=var1 VALUES=["some", "one", "word"]%}i{%TMPL_VAR NAME=var2%}k{%TMPL_ELSE%}b{%TMPL_VAR NAME=var2%}a{%/TMPL_IFIN%}w{%TMPL_VAR NAME=var1%}z</div>
+  <div id="unit125.6_res">qitwokwonez</div>
 
   </div>
 </body>
