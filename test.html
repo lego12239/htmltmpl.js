@@ -920,6 +920,72 @@
                   { id: "unit125.6",
                     id_res: "unit125.6_res",
                     title: "Test TMPL_IFIN with strings with TMPL_ELSE, match",
+                    data: {var1: "one", var2: "two"}},
+                  { id: "unit126",
+                    id_res: "unit126_res",
+                    is_err: 1,
+                    err_msg: "TMPL_VAR must have NAME attribute",
+                    title: "Test TMPL_VAR without NAME",
+                    data: {var1: "one", var2: "two"}},
+                  { id: "unit127",
+                    id_res: "unit127_res",
+                    is_err: 1,
+                    err_msg: "TMPL_LOOP must have NAME attribute",
+                    title: "Test TMPL_LOOP without NAME",
+                    data: {var1: "one", var2: "two"}},
+                  { id: "unit128",
+                    id_res: "unit128_res",
+                    is_err: 1,
+                    err_msg: "TMPL_IF must have NAME attribute",
+                    title: "Test TMPL_IF without NAME",
+                    data: {var1: "one", var2: "two"}},
+                  { id: "unit129",
+                    id_res: "unit129_res",
+                    is_err: 1,
+                    err_msg: "TMPL_FUNC must have NAME attribute",
+                    title: "Test TMPL_FUNC without NAME",
+                    data: {var1: "one", var2: "two"}},
+                  { id: "unit130",
+                    id_res: "unit130_res",
+                    is_err: 1,
+                    err_msg: "TMPL_IFRET must have NAME attribute",
+                    title: "Test TMPL_IFRET without NAME",
+                    data: {var1: "one", var2: "two"}},
+                  { id: "unit131",
+                    id_res: "unit131_res",
+                    is_err: 1,
+                    err_msg: "TMPL_IFDEF must have NAME attribute",
+                    title: "Test TMPL_IFDEF without NAME",
+                    data: {var1: "one", var2: "two"}},
+                  { id: "unit131.1",
+                    id_res: "unit131.1_res",
+                    is_err: 1,
+                    err_msg: "TMPL_IFNDEF must have NAME attribute",
+                    title: "Test TMPL_IFNDEF without NAME",
+                    data: {var1: "one", var2: "two"}},
+                  { id: "unit132",
+                    id_res: "unit132_res",
+                    is_err: 1,
+                    err_msg: "TMPL_IFEQ must have NAME attribute",
+                    title: "Test TMPL_IFEQ without NAME",
+                    data: {var1: "one", var2: "two"}},
+                  { id: "unit132.1",
+                    id_res: "unit132.1_res",
+                    is_err: 1,
+                    err_msg: "TMPL_IFEQ must have VALUE or WITH attribute",
+                    title: "Test TMPL_IFEQ without VALUE/WITH",
+                    data: {var1: "one", var2: "two"}},
+                  { id: "unit133",
+                    id_res: "unit133_res",
+                    is_err: 1,
+                    err_msg: "TMPL_IFIN must have NAME attribute",
+                    title: "Test TMPL_IFIN without NAME",
+                    data: {var1: "one", var2: "two"}},
+                  { id: "unit134",
+                    id_res: "unit134_res",
+                    is_err: 1,
+                    err_msg: "TMPL_LIST must have NAME attribute",
+                    title: "Test TMPL_LIST without NAME",
                     data: {var1: "one", var2: "two"}}];
     function report_res(test, ret, ex)
     {
@@ -3687,6 +3753,50 @@
   <!-- unit 125.6 -->
   <div id="unit125.6">q{%TMPL_IFIN NAME=var1 VALUES=["some", "one", "word"]%}i{%TMPL_VAR NAME=var2%}k{%TMPL_ELSE%}b{%TMPL_VAR NAME=var2%}a{%/TMPL_IFIN%}w{%TMPL_VAR NAME=var1%}z</div>
   <div id="unit125.6_res">qitwokwonez</div>
+
+  <!-- unit 126 -->
+  <div id="unit126">q{%TMPL_VAR%}z</div>
+  <div id="unit126_res"></div>
+
+  <!-- unit 127 -->
+  <div id="unit127">q{%TMPL_LOOP%}z{%/TMPL_LOOP%}</div>
+  <div id="unit127_res"></div>
+
+  <!-- unit 128 -->
+  <div id="unit128">q{%TMPL_IF%}z{%/TMPL_IF%}</div>
+  <div id="unit128_res"></div>
+
+  <!-- unit 129 -->
+  <div id="unit129">q{%TMPL_FUNC%}z</div>
+  <div id="unit129_res"></div>
+
+  <!-- unit 130 -->
+  <div id="unit130">q{%TMPL_IFRET%}z{%/TMPL_IFRET%}</div>
+  <div id="unit130_res"></div>
+
+  <!-- unit 131 -->
+  <div id="unit131">q{%TMPL_IFDEF%}z{%/TMPL_IFDEF%}</div>
+  <div id="unit131_res"></div>
+
+  <!-- unit 131.1 -->
+  <div id="unit131.1">q{%TMPL_IFNDEF%}z{%/TMPL_IFNDEF%}</div>
+  <div id="unit131.1_res"></div>
+
+  <!-- unit 132 -->
+  <div id="unit132">q{%TMPL_IFEQ%}z{%/TMPL_IFEQ%}</div>
+  <div id="unit132_res"></div>
+
+  <!-- unit 132.1 -->
+  <div id="unit132.1">q{%TMPL_IFEQ NAME=var1%}z{%/TMPL_IFEQ%}</div>
+  <div id="unit132.1_res"></div>
+
+  <!-- unit 133 -->
+  <div id="unit133">q{%TMPL_IFIN VALUES=[1]%}z{%/TMPL_IFIN%}</div>
+  <div id="unit133_res"></div>
+
+  <!-- unit 134 -->
+  <div id="unit134">q{%TMPL_LIST%}z{%/TMPL_LIST%}</div>
+  <div id="unit134_res"></div>
 
   </div>
 </body>
