@@ -340,6 +340,11 @@ htmltmpl.prototype._fmt = function (fstr)
 	});
 }
 
+htmltmpl.prototype._throw = function ()
+{
+	throw(this._fmt.apply(null, arguments));
+}
+
 
 /**********************************************************************
  * TMPL_VAR HANDLERS
