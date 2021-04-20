@@ -64,6 +64,7 @@ function htmltmpl(tmpl, prms)
 	this.tmpl = "";
 	this.tmpl_parsed = [];
 	this.tmpls = {};
+	this.lineno = 1;
 	this._s = { parse: [[]],
 		priv: [],
 		data: [],
@@ -84,6 +85,8 @@ function htmltmpl(tmpl, prms)
 	this._cb_run(this.cb.init);
 
 	this.tmpl_prepare();
+	/* An indicator of a preparation finish (for _throw())*/
+	this.lineno = -1;
 }
 
 htmltmpl.p = {
@@ -125,8 +128,8 @@ htmltmpl.prototype._cb_run = function (cb)
 
 htmltmpl.prototype.tmpl_prepare = function()
 {
-	var chunks;
-	var i;
+	var chunks, txt;
+	var i, pos;
 	var rex;
 	var m;
 
@@ -138,15 +141,22 @@ htmltmpl.prototype.tmpl_prepare = function()
 	chunks = this.tmpl.split(/{%/);
 
 	for(i = 0; i < chunks.length; i++) {
+		txt = null;
 		rex.lastIndex = 0;
 		m = rex.exec(chunks[i]);
 		if (m) {
 			this.parse_tag(m[1]);
 			if (m[2] != "")
-				this._s.parse[0].push(["TEXT", m[2] ]);
+				txt = m[2];
 		} else {
 			this._s.parse[0].push(["TEXT", "{%"]);
-			this._s.parse[0].push(["TEXT", chunks[i] ]);
+			txt = chunks[i];
+		}
+		if (txt != null) {
+			this._s.parse[0].push(["TEXT", txt]);
+			pos = -1;
+			while ((pos = txt.indexOf("\n", pos + 1)) >= 0)
+				this.lineno++;
 		}
 	}
 
@@ -346,6 +356,8 @@ htmltmpl.prototype._fmt = function (fstr)
 
 htmltmpl.prototype._throw = function ()
 {
+	if (this.lineno > 0)
+		arguments[0] = this._fmt("line %d: ", this.lineno) + arguments[0];
 	throw(this._fmt.apply(null, arguments));
 }
 
