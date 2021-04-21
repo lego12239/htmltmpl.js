@@ -187,8 +187,8 @@ htmltmpl.prototype.tmpl_prepare = function()
 
 htmltmpl.prototype.parse_tag = function (tag)
 {
-	var m;
-	var tag_attrs;
+	var m, ret;
+	var def, tag_attrs;
 
 	// Split a tag to a name and a body
 	this.rex.tag.lastIndex = 0;
@@ -200,14 +200,14 @@ htmltmpl.prototype.parse_tag = function (tag)
 		this.ctx.tag_name = m[1].toUpperCase();
 	else
 		this.ctx.tag_name = m[1];
-	tag_attrs = this._parse_tag_attrs(this.tags[this.ctx.tag_name], m[2]);
+	def = this.tags[this.ctx.tag_name];
+	if (def == null)
+		this._throw("unknown tag");
 
-	if (this.tags[this.ctx.tag_name] == null)
-		this._throw("parse_tag err: unknown tag");
+	tag_attrs = this._parse_tag_attrs(def, m[2]);
 
 	// Call a tag handler
-	this.tags[this.ctx.tag_name].pfunc.call(this,
-	  this.tags[this.ctx.tag_name], tag_attrs);
+	def.pfunc.call(this, def, tag_attrs);
 }
 
 htmltmpl.prototype._parse_tag_attrs = function(def, attrs)
