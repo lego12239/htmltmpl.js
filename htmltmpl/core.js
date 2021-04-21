@@ -65,6 +65,7 @@ function htmltmpl(tmpl, prms)
 	this.tmpl_parsed = [];
 	this.tmpls = {};
 	this.lineno = 1;
+	this.name = ""; /* used in _throw() */
 	this._s = { parse: [[]],
 		priv: [],
 		data: [],
@@ -74,10 +75,13 @@ function htmltmpl(tmpl, prms)
 
 	if (typeof(tmpl) === "undefined")
 		this.tmpl = "";
-	else if (typeof(tmpl) === "string")
+	else if (typeof(tmpl) === "string") {
 		this.tmpl = tmpl;
-	else if (typeof(tmpl) === "object")
+		this.name = tmpl.substring(0, 10);
+	} else if (typeof(tmpl) === "object") {
 		this.tmpl = tmpl.innerHTML;
+		this.name = this._fmt("%s#%s", tmpl.nodeName, tmpl.id);
+	}
 
 	if (this.p.tmpl_is_commented)
 		this.tmpl = this.tmpl.replace(/^\s*<!--([^]+)-->\s*$/, "$1");
@@ -357,7 +361,8 @@ htmltmpl.prototype._fmt = function (fstr)
 htmltmpl.prototype._throw = function ()
 {
 	if (this.lineno > 0)
-		arguments[0] = this._fmt("line %d: ", this.lineno) + arguments[0];
+		arguments[0] = this._fmt("%s: line %d: ", this.name, this.lineno) +
+		  arguments[0];
 	throw(this._fmt.apply(null, arguments));
 }
 
