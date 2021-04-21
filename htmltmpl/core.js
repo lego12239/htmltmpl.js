@@ -372,9 +372,11 @@ htmltmpl.prototype._fmt = function (fstr)
 
 htmltmpl.prototype._throw = function ()
 {
+	var prefix = this.name + ": ";
+
 	if (this.lineno > 0)
-		arguments[0] = this._fmt("%s: line %d: ", this.name, this.lineno) +
-		  arguments[0];
+		prefix = this._fmt("%sline %d: ", prefix, this.lineno)
+	arguments[0] = prefix + arguments[0];
 	throw(this._fmt.apply(null, arguments));
 }
 
