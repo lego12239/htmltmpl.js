@@ -57,6 +57,12 @@
   escape_defval
         Default value for ESCAPE attribute.
         ETEXT by default.
+  name
+        a template name for using in an error message. If null, then
+        use container element name and its id or the first 10 characters
+        of the template string(if a template is a string instead of
+        some element node).
+        null by default.
 */
 function htmltmpl(tmpl, prms)
 {
@@ -82,6 +88,8 @@ function htmltmpl(tmpl, prms)
 		this.tmpl = tmpl.innerHTML;
 		this.name = this._fmt("%s#%s", tmpl.nodeName, tmpl.id);
 	}
+	if (this.p.name != null)
+		this.name = this.p.name;
 
 	if (this.p.tmpl_is_commented)
 		this.tmpl = this.tmpl.replace(/^\s*<!--([^]+)-->\s*$/, "$1");
@@ -101,7 +109,8 @@ htmltmpl.p = {
 	err_on_no_data: 0,
 	ret_dom: 0,
 	strip_wrap_spaces: 1,
-	escape_defval: "ETEXT" };
+	escape_defval: "ETEXT",
+	name: null };
 
 htmltmpl.prototype._set_prms = function (prms)
 {
