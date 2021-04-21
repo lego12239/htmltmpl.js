@@ -31,7 +31,7 @@ htmltmpl.prototype.get_data = function(name)
 htmltmpl.prototype._parse_tag_attr_FUNCARGS = function(val)
 {
 	if (!Array.isArray(val))
-		this._throw("parse_tag_attr err: attribute ARGS must be an array");
+		this._throw("attribute ARGS must be an array");
 	return val;
 }
 
@@ -45,7 +45,7 @@ htmltmpl.prototype.hdlr_func_parse = function(def, attrs)
 	if (attrs.ESCAPE == null)
 		attrs.ESCAPE = def.pafuncs.ESCAPE.call(this, this.p.escape_defval);
 	if (attrs.NAME == null)
-		this._throw("%s must have NAME attribute", def.name);
+		this._throw("NAME is a mandatory attribute");
 	this._s.parse[0].push([def.name, [ attrs ]]);
 }
 
@@ -71,7 +71,7 @@ htmltmpl.prototype.hdlr_func_apply = function(def, tag)
 htmltmpl.prototype.hdlr_ifret_parse = function(def, attrs)
 {
 	if (attrs.NAME == null)
-		this._throw("%s must have NAME attribute", def.name);
+		this._throw("NAME is a mandatory attribute");
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs]);
 }
@@ -83,7 +83,7 @@ htmltmpl.prototype.hdlr_ifret_end_parse = function(def)
 
 	priv = this._s.priv.shift();
 	if (!this.is_tag_match(priv[0], def.start_tag))
-		this._throw("parse err: %s was opened, but %s is being closed",
+		this._throw("%s was opened, but %s is being closed",
 		  priv[0].name, def.name);
 	if (priv[0].name == "TMPL_ELSE") {
 		else_ = this._s.parse.shift();
@@ -114,8 +114,7 @@ htmltmpl.prototype.hdlr_ifret_apply = function(def, tag)
 		return;
 	}
 	if (Array.isArray(val))
-		this._throw("hdlr_ifret_apply err: returned value should " +
-		  "be an object");
+		this._throw("returned value should be an object");
 	this._s.v.unshift(Object.assign({}, this._s.v[0], {data_lookup_depth: 2}));
 	this._s.data.unshift(val);
 	this._apply(tag[1]);

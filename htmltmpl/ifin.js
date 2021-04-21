@@ -21,7 +21,7 @@
 htmltmpl.prototype._parse_tag_attr_VALUES = function(val)
 {
 	if (!Array.isArray(val))
-		this._throw("parse_tag_attr err: attribute VALUES must be an array ");
+		this._throw("attribute VALUES must be an array ");
 	return val;
 }
 
@@ -31,9 +31,9 @@ htmltmpl.prototype._parse_tag_attr_VALUES = function(val)
 htmltmpl.prototype.hdlr_ifin_parse = function(def, attrs)
 {
 	if (attrs.VALUES == null)
-		this._throw("parse err: %s must have VALUES attribute", def.name);
+		this._throw("VALUES is a mandatory attribute");
 	if (attrs.NAME == null)
-		this._throw("%s must have NAME attribute", def.name);
+		this._throw("NAME is a mandatory attribute");
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs ]);
 }
@@ -45,7 +45,7 @@ htmltmpl.prototype.hdlr_ifin_end_parse = function(def)
 
 	priv = this._s.priv.shift();
 	if (!this.is_tag_match(priv[0], def.start_tag))
-		this._throw("parse err: %s was opened, but %s is being closed",
+		this._throw("%s was opened, but %s is being closed",
 		  priv[0].name, def.name);
 	if (priv[0].name == "TMPL_ELSE") {
 		else_ = this._s.parse.shift();

@@ -24,7 +24,7 @@
 htmltmpl.prototype.hdlr_ifdef_parse = function(def, attrs)
 {
 	if (attrs.NAME == null)
-		this._throw("%s must have NAME attribute", def.name);
+		this._throw("NAME is a mandatory attribute");
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs ]);
 }
@@ -36,7 +36,7 @@ htmltmpl.prototype.hdlr_ifdef_end_parse = function(def)
 
 	priv = this._s.priv.shift();
 	if (!this.is_tag_match(priv[0], def.start_tag))
-		this._throw("parse err: %s was opened, but %s is being closed",
+		this._throw("%s was opened, but %s is being closed",
 		  priv[0].name, def.name);
 	if (priv[0].name == "TMPL_ELSE") {
 		else_ = this._s.parse.shift();

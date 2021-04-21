@@ -24,7 +24,7 @@
 htmltmpl.prototype.hdlr_list_parse = function(def, attrs)
 {
 	if (attrs.NAME == null)
-		this._throw("%s must have NAME attribute", def.name);
+		this._throw("NAME is a mandatory attribute");
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs ]);
 }
@@ -36,7 +36,7 @@ htmltmpl.prototype.hdlr_list_end_parse = function(def)
 
 	priv = this._s.priv.shift();
 	if (!this.is_tag_match(priv[0], def.start_tag))
-		this._throw("parse err: %s was opened, but %s is being closed",
+		this._throw("%s was opened, but %s is being closed",
 		  priv[0].name, def.name);
 
 	list = this._s.parse.shift();
@@ -76,7 +76,7 @@ htmltmpl.prototype.hdlr_listitem_parse = function(def, attrs)
 	var vname;
 
 	if ((this._s.priv.length == 0) || (this._s.priv[0][0].name != "TMPL_LIST"))
-		this._throw("parse err: %s can be used only inside a TMPL_LIST",
+		this._throw("%s can be used only inside a TMPL_LIST",
 		  def.name);
 	/* Optional attribute, but must be set for an apply fun. Thus,
 	   set it with default value in any case. */

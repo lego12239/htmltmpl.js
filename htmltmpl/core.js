@@ -73,7 +73,10 @@ function htmltmpl(tmpl, prms)
 	this.tmpl = "";
 	this.tmpl_parsed = [];
 	this.tmpls = {};
-	this.lineno = 1;
+	/* used in _throw() */
+	this.ctx = {
+		tag_name: null,
+		lineno: 1};
 	this.name = ""; /* used in _throw() */
 	this._s = { parse: [[]],
 		priv: [],
@@ -101,7 +104,8 @@ function htmltmpl(tmpl, prms)
 
 	this.tmpl_prepare();
 	/* An indicator of a preparation finish (for _throw())*/
-	this.lineno = -1;
+	this.ctx.lineno = -1;
+	this.ctx.tag_name = null;
 }
 
 htmltmpl.p = {
@@ -157,6 +161,7 @@ htmltmpl.prototype.tmpl_prepare = function()
 	chunks = this.tmpl.split(/{%/);
 
 	for(i = 0; i < chunks.length; i++) {
+		this.ctx.tag_name = null;
 		txt = null;
 		rex.lastIndex = 0;
 		m = rex.exec(chunks[i]);
@@ -172,7 +177,7 @@ htmltmpl.prototype.tmpl_prepare = function()
 			this._s.parse[0].push(["TEXT", txt]);
 			pos = -1;
 			while ((pos = txt.indexOf("\n", pos + 1)) >= 0)
-				this.lineno++;
+				this.ctx.lineno++;
 		}
 	}
 
@@ -183,7 +188,7 @@ htmltmpl.prototype.tmpl_prepare = function()
 htmltmpl.prototype.parse_tag = function (tag)
 {
 	var m;
-	var tag_name, tag_attrs;
+	var tag_attrs;
 
 	// Split a tag to a name and a body
 	this.rex.tag.lastIndex = 0;
@@ -192,16 +197,17 @@ htmltmpl.prototype.parse_tag = function (tag)
 		this._throw("parse_tag err: wrong tag format: %s", tag);
 
 	if (!this.p.case_sensitive)
-		tag_name = m[1].toUpperCase();
+		this.ctx.tag_name = m[1].toUpperCase();
 	else
-		tag_name = m[1];
-	tag_attrs = this._parse_tag_attrs(this.tags[tag_name], m[2]);
+		this.ctx.tag_name = m[1];
+	tag_attrs = this._parse_tag_attrs(this.tags[this.ctx.tag_name], m[2]);
 
-	if (this.tags[tag_name] == null)
-		this._throw("parse_tag err: unknown tag: %s", tag_name);
+	if (this.tags[this.ctx.tag_name] == null)
+		this._throw("parse_tag err: unknown tag");
 
 	// Call a tag handler
-	this.tags[tag_name].pfunc.call(this, this.tags[tag_name], tag_attrs);
+	this.tags[this.ctx.tag_name].pfunc.call(this,
+	  this.tags[this.ctx.tag_name], tag_attrs);
 }
 
 htmltmpl.prototype._parse_tag_attrs = function(def, attrs)
@@ -242,16 +248,14 @@ htmltmpl.prototype.__parse_tag_attr_val = function (val)
 htmltmpl.prototype._parse_tag_attr_NAME = function (val)
 {
 	if (typeof(val) != "string")
-		this._throw("parse_tag_attr err: attribute NAME must be with " +
-		  "single value");
+		this._throw("attribute NAME must be with single value");
 	return val.split(".");
 }
 
 htmltmpl.prototype._parse_tag_attr_ESCAPE = function (val)
 {
 	if (typeof(val) != "string")
-		this._throw("parse_tag_attr err: attribute ESCAPE must be with " +
-		"single value");
+		this._throw("attribute ESCAPE must be with single value");
 	if (!this.p.case_sensitive)
 		val = val.toUpperCase();
 	switch (val) {
@@ -265,8 +269,7 @@ htmltmpl.prototype._parse_tag_attr_ESCAPE = function (val)
 		val = 2;
 		break;
 	default:
-		this._throw("hdlr_var_parse err: ESCAPE attribute bad value: '%s'",
-		  val);
+		this._throw("ESCAPE attribute bad value: '%s'", val);
 	}
 
 	return val;
@@ -287,8 +290,7 @@ htmltmpl.prototype._escape_tag_attr_val = function (escape_type, val)
 		val = val.replaceAll(/'/g, "\&#39;");
 		break;
 	default:
-		this._throw("hdlr_var_apply err: unknown ESCAPE code: %s",
-		  escape_type);
+		this._throw("unknown ESCAPE code: %s", escape_type);
 	}
 
 	return val;
@@ -373,8 +375,10 @@ htmltmpl.prototype._throw = function ()
 {
 	var prefix = this.name + ": ";
 
-	if (this.lineno > 0)
-		prefix = this._fmt("%sline %d: ", prefix, this.lineno)
+	if (this.ctx.lineno > 0)
+		prefix = this._fmt("%sline %d: ", prefix, this.ctx.lineno);
+	if (this.ctx.tag_name != null)
+		prefix = this._fmt("%s%s: ", prefix, this.ctx.tag_name);
 	arguments[0] = prefix + arguments[0];
 	throw(this._fmt.apply(null, arguments));
 }
@@ -390,7 +394,7 @@ htmltmpl.prototype.hdlr_var_parse = function(def, attrs)
 	if (attrs.ESCAPE == null)
 		attrs.ESCAPE = def.pafuncs.ESCAPE.call(this, this.p.escape_defval);
 	if (attrs.NAME == null)
-		this._throw("%s must have NAME attribute", def.name);
+		this._throw("NAME is a mandatory attribute");
 	this._s.parse[0].push([def.name, [ attrs.NAME, attrs ]]);
 }
 
@@ -419,7 +423,7 @@ htmltmpl.prototype.hdlr_var_apply = function(def, tag)
 htmltmpl.prototype.hdlr_loop_parse = function(def, attrs)
 {
 	if (attrs.NAME == null)
-		this._throw("%s must have NAME attribute", def.name);
+		this._throw("NAME is a mandatory attribute");
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs ]);
 }
@@ -431,7 +435,7 @@ htmltmpl.prototype.hdlr_loop_end_parse = function(def)
 
 	priv = this._s.priv[0];
 	if (!this.is_tag_match(priv[0], def.start_tag))
-		this._throw("parse err: %s was opened, but %s is being closed",
+		this._throw("%s was opened, but %s is being closed",
 		  priv[0].name, def.name);
 
 	loop = this._s.parse.shift();
@@ -506,7 +510,7 @@ htmltmpl.prototype.create_loop_context_vars = function (loopidx, looplen)
 htmltmpl.prototype.hdlr_if_parse = function(def, attrs)
 {
 	if (attrs.NAME == null)
-		this._throw("%s must have NAME attribute", def.name);
+		this._throw("NAME is a mandatory attribute");
 	this._s.parse.unshift([]);
 	this._s.priv.unshift([def, attrs ]);
 }
@@ -530,7 +534,7 @@ htmltmpl.prototype.hdlr_if_end_parse = function(def)
 
 	priv = this._s.priv.shift();
 	if (!this.is_tag_match(priv[0], def.start_tag))
-		this._throw("parse err: %s was opened, but %s is being closed",
+		this._throw("%s was opened, but %s is being closed",
 		  priv[0].name, def.name);
 	if (priv[0].name == "TMPL_ELSE") {
 		else_ = this._s.parse.shift();
@@ -582,7 +586,7 @@ htmltmpl.prototype.hdlr_unless_apply = function(def, tag)
 htmltmpl.prototype.hdlr_include_parse = function(def, attrs)
 {
 	if (attrs.NAME == null)
-		this._throw("%s must have NAME attribute", def.name);
+		this._throw("NAME is a mandatory attribute");
 	this._s.parse[0].push([def.name, [ attrs.VAR, attrs ]]);
 }
 
