@@ -197,12 +197,11 @@ htmltmpl.prototype.parse_tag = function (tag)
 		tag_name = m[1];
 	tag_attrs = this._parse_tag_attrs(this.tags[tag_name], m[2]);
 
-	// Call a tag handler
-	if (this.tags[tag_name] != undefined)
-		return this.tags[tag_name].pfunc.call(this,
-		  this.tags[tag_name], tag_attrs);
+	if (this.tags[tag_name] == null)
+		this._throw("parse_tag err: unknown tag: %s", tag_name);
 
-	this._throw("parse_tag err: unknown tag: %s", tag_name);
+	// Call a tag handler
+	this.tags[tag_name].pfunc.call(this, this.tags[tag_name], tag_attrs);
 }
 
 htmltmpl.prototype._parse_tag_attrs = function(def, attrs)
