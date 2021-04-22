@@ -212,7 +212,7 @@
                     id_res: "unit23_res",
                     title: "Test the err_on_no_data option & TMPL_VAR",
                     is_err: 1,
-                    err_msg: "DIV#unit23: Cann't find var 'var3'.",
+                    err_msg: "DIV#unit23: line 4: TMPL_VAR: Cann't find var 'var3'.",
                     prms: { err_on_no_data: 1 },
                     data: { loop1: [ { var1: 123,
                                        var2: "pooiu " } ] } },
@@ -220,7 +220,7 @@
                     id_res: "unit24_res",
                     title: "Test the err_on_no_data option & TMPL_LOOP",
                     is_err: 1,
-                    err_msg: "DIV#unit24: Cann't find loop 'loop2'.",
+                    err_msg: "DIV#unit24: line 2: TMPL_LOOP: Cann't find loop 'loop2'.",
                     prms: { err_on_no_data: 1 },
                     data: { loop1: [ { var1: 123,
                                        var2: "pooiu " } ] } },
@@ -228,7 +228,7 @@
                     id_res: "unit25_res",
                     title: "Test the err_on_no_data option & TMPL_IF",
                     is_err: 1,
-                    err_msg: "DIV#unit25: Cann't find var 'var3'.",
+                    err_msg: "DIV#unit25: line 3: TMPL_IF: Cann't find var 'var3'.",
                     prms: { err_on_no_data: 1 },
                     data: { loop1: [ { var1: 123,
                                        var2: "pooiu " } ] } },
@@ -1003,7 +1003,133 @@
                     id_res: "unit137_res",
                     tmpls: {tmpl1: "unit137_t"},
                     title: "Test TMPL_INCLUDE with VAR",
-                    data: {var1: "one", var2: {var1: "17", var2: 18}}}];
+                    data: {var1: "one", var2: {var1: "17", var2: 18}}},
+                  { id: "unit138",
+                    id_res: "unit138_res",
+                    prms: {err_on_no_data: 1},
+                    is_err: 1,
+                    err_msg: "DIV#unit138: line 3: TMPL_INCLUDE: Cann't find template 'tt'.",
+                    title: "Test TMPL_INCLUDE, err_on_no_data=1",
+                    data: {var1: "one", var2: {var1: "17", var2: 18}}},
+                  { id: "unit139",
+                    id_res: "unit139_res",
+                    prms: {err_on_no_data: 1},
+                    is_err: 1,
+                    err_msg: "DIV#unit139: line 3: TMPL_INCLUDE: Cann't find var 'v'.",
+                    title: "Test TMPL_INCLUDE, err_on_no_data=1",
+                    data: {var1: "one", var2: {var1: "17", var2: 18}}},
+                  { id: "unit140",
+                    id_res: "unit140_res",
+                    prms: {err_on_no_data: 1},
+                    is_err: 1,
+                    err_msg: "DIV#unit140: line 3: TMPL_FUNC: Cann't find func 'func1'.",
+                    title: "Test TMPL_FUNC, err_on_no_data=1",
+                    data: {var1: "one", var2: {var1: "17", var2: 18}}},
+                  { id: "unit141",
+                    id_res: "unit141_res",
+                    prms: {err_on_no_data: 1},
+                    is_err: 1,
+                    err_msg: "DIV#unit141: line 3: TMPL_IFRET: Cann't find func 'func1'.",
+                    title: "Test TMPL_IFRET, err_on_no_data=1",
+                    data: {var1: "one", var2: {var1: "17", var2: 18}}},
+                  { id: "unit142",
+                    id_res: "unit142_res",
+                    prms: {err_on_no_data: 1},
+                    is_err: 1,
+                    err_msg: "DIV#unit142: line 3: TMPL_IFEQ: Cann't find var 'v'.",
+                    title: "Test TMPL_IFEQ, err_on_no_data=1",
+                    data: {var1: "one"}},
+                  { id: "unit142.1",
+                    id_res: "unit142.1_res",
+                    prms: {err_on_no_data: 1},
+                    is_err: 1,
+                    err_msg: "DIV#unit142.1: line 3: TMPL_IFEQ: Cann't find var 'v'.",
+                    title: "Test TMPL_IFEQ, err_on_no_data=1",
+                    data: {var1: "one"}},
+                  { id: "unit143",
+                    id_res: "unit143_res",
+                    prms: {err_on_no_data: 1},
+                    is_err: 1,
+                    err_msg: "DIV#unit143: line 3: TMPL_IFNEQ: Cann't find var 'v'.",
+                    title: "Test TMPL_IFNEQ, err_on_no_data=1",
+                    data: {var1: "one"}},
+                  { id: "unit143.1",
+                    id_res: "unit143.1_res",
+                    prms: {err_on_no_data: 1},
+                    is_err: 1,
+                    err_msg: "DIV#unit143.1: line 3: TMPL_IFNEQ: Cann't find var 'v'.",
+                    title: "Test TMPL_IFNEQ, err_on_no_data=1",
+                    data: {var1: "one"}},
+                  { id: "unit144",
+                    id_res: "unit144_res",
+                    prms: {err_on_no_data: 1},
+                    is_err: 1,
+                    err_msg: "DIV#unit144: line 3: TMPL_IFGT: Cann't find var 'v'.",
+                    title: "Test TMPL_IFGT, err_on_no_data=1",
+                    data: {var1: "one"}},
+                  { id: "unit144.1",
+                    id_res: "unit144.1_res",
+                    prms: {err_on_no_data: 1},
+                    is_err: 1,
+                    err_msg: "DIV#unit144.1: line 3: TMPL_IFGT: Cann't find var 'v'.",
+                    title: "Test TMPL_IFGT, err_on_no_data=1",
+                    data: {var1: "one"}},
+                  { id: "unit145",
+                    id_res: "unit145_res",
+                    prms: {err_on_no_data: 1},
+                    is_err: 1,
+                    err_msg: "DIV#unit145: line 3: TMPL_IFGE: Cann't find var 'v'.",
+                    title: "Test TMPL_IFGE, err_on_no_data=1",
+                    data: {var1: "one"}},
+                  { id: "unit145.1",
+                    id_res: "unit145.1_res",
+                    prms: {err_on_no_data: 1},
+                    is_err: 1,
+                    err_msg: "DIV#unit145.1: line 3: TMPL_IFGE: Cann't find var 'v'.",
+                    title: "Test TMPL_IFGE, err_on_no_data=1",
+                    data: {var1: "one"}},
+                  { id: "unit146",
+                    id_res: "unit146_res",
+                    prms: {err_on_no_data: 1},
+                    is_err: 1,
+                    err_msg: "DIV#unit146: line 3: TMPL_IFLT: Cann't find var 'v'.",
+                    title: "Test TMPL_IFLT, err_on_no_data=1",
+                    data: {var1: "one"}},
+                  { id: "unit146.1",
+                    id_res: "unit146.1_res",
+                    prms: {err_on_no_data: 1},
+                    is_err: 1,
+                    err_msg: "DIV#unit146.1: line 3: TMPL_IFLT: Cann't find var 'v'.",
+                    title: "Test TMPL_IFLT, err_on_no_data=1",
+                    data: {var1: "one"}},
+                  { id: "unit147",
+                    id_res: "unit147_res",
+                    prms: {err_on_no_data: 1},
+                    is_err: 1,
+                    err_msg: "DIV#unit147: line 3: TMPL_IFLE: Cann't find var 'v'.",
+                    title: "Test TMPL_IFLE, err_on_no_data=1",
+                    data: {var1: "one"}},
+                  { id: "unit147.1",
+                    id_res: "unit147.1_res",
+                    prms: {err_on_no_data: 1},
+                    is_err: 1,
+                    err_msg: "DIV#unit147.1: line 3: TMPL_IFLE: Cann't find var 'v'.",
+                    title: "Test TMPL_IFLE, err_on_no_data=1",
+                    data: {var1: "one"}},
+                  { id: "unit148",
+                    id_res: "unit148_res",
+                    prms: {err_on_no_data: 1},
+                    is_err: 1,
+                    err_msg: "DIV#unit148: line 3: TMPL_IFIN: VALUES is a mandatory attribute",
+                    title: "Test TMPL_IFIN, err_on_no_data=1",
+                    data: {var1: "one"}},
+                  { id: "unit149",
+                    id_res: "unit149_res",
+                    prms: {err_on_no_data: 1},
+                    is_err: 1,
+                    err_msg: "DIV#unit149: line 3: TMPL_LIST: Cann't find list 'v'.",
+                    title: "Test TMPL_LIST, err_on_no_data=1",
+                    data: {var1: "one"}}];
     function report_res(test, ret, ex)
     {
         var val, eret;
@@ -3860,6 +3986,148 @@
     {%TMPL_VAR NAME=var1%}
     {%TMPL_VAR NAME=var2%}
     z</div>
+
+  <!-- unit 138 -->
+  <div id="unit138">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_INCLUDE NAME=tt VAR=var2%}
+    z</div>
+  <div id="unit138_res"></div>
+
+  <!-- unit 139 -->
+  <div id="unit139">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_INCLUDE NAME=tmpl VAR=v%}
+    z</div>
+  <div id="unit139_res"></div>
+
+  <!-- unit 140 -->
+  <div id="unit140">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_FUNC NAME=func1%}
+    z</div>
+  <div id="unit140_res"></div>
+
+  <!-- unit 141 -->
+  <div id="unit141">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_IFRET NAME=func1%}
+    {%/TMPL_IFRET%}
+    z</div>
+  <div id="unit141_res"></div>
+
+  <!-- unit 142 -->
+  <div id="unit142">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_IFEQ NAME=v WITH=vv%}
+    {%/TMPL_IFEQ%}
+    z</div>
+  <div id="unit142_res"></div>
+
+  <!-- unit 142.1 -->
+  <div id="unit142.1">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_IFEQ NAME=var1 WITH=v%}
+    {%/TMPL_IFEQ%}
+    z</div>
+  <div id="unit142.1_res"></div>
+
+  <!-- unit 143 -->
+  <div id="unit143">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_IFNEQ NAME=v WITH=vv%}
+    {%/TMPL_IFNEQ%}
+    z</div>
+  <div id="unit143_res"></div>
+
+  <!-- unit 143.1 -->
+  <div id="unit143.1">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_IFNEQ NAME=var1 WITH=v%}
+    {%/TMPL_IFNEQ%}
+    z</div>
+  <div id="unit143.1_res"></div>
+
+  <!-- unit 144 -->
+  <div id="unit144">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_IFGT NAME=v WITH=vv%}
+    {%/TMPL_IFGT%}
+    z</div>
+  <div id="unit144_res"></div>
+
+  <!-- unit 144.1 -->
+  <div id="unit144.1">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_IFGT NAME=var1 WITH=v%}
+    {%/TMPL_IFGT%}
+    z</div>
+  <div id="unit144.1_res"></div>
+
+  <!-- unit 145 -->
+  <div id="unit145">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_IFGE NAME=v WITH=vv%}
+    {%/TMPL_IFGE%}
+    z</div>
+  <div id="unit145_res"></div>
+
+  <!-- unit 145.1 -->
+  <div id="unit145.1">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_IFGE NAME=var1 WITH=v%}
+    {%/TMPL_IFGE%}
+    z</div>
+  <div id="unit145.1_res"></div>
+
+  <!-- unit 146 -->
+  <div id="unit146">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_IFLT NAME=v WITH=vv%}
+    {%/TMPL_IFLT%}
+    z</div>
+  <div id="unit146_res"></div>
+
+  <!-- unit 146.1 -->
+  <div id="unit146.1">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_IFLT NAME=var1 WITH=v%}
+    {%/TMPL_IFLT%}
+    z</div>
+  <div id="unit146.1_res"></div>
+
+  <!-- unit 147 -->
+  <div id="unit147">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_IFLE NAME=v WITH=vv%}
+    {%/TMPL_IFLE%}
+    z</div>
+  <div id="unit147_res"></div>
+
+  <!-- unit 147.1 -->
+  <div id="unit147.1">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_IFLE NAME=var1 WITH=v%}
+    {%/TMPL_IFLE%}
+    z</div>
+  <div id="unit147.1_res"></div>
+
+  <!-- unit 148 -->
+  <div id="unit148">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_IFIN NAME=v VALUES=[]%}
+    {%/TMPL_IFIN%}
+    z</div>
+  <div id="unit148_res"></div>
+
+  <!-- unit 149 -->
+  <div id="unit149">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_LIST NAME=v%}
+    {%/TMPL_LIST%}
+    z</div>
+  <div id="unit149_res"></div>
+
 
   </div>
 </body>
