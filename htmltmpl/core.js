@@ -194,6 +194,9 @@ htmltmpl.prototype.tmpl_prepare = function()
 		}
 		this._throw("%s", txt);
 	}
+
+	if (this._s.priv.length > 0)
+		this._throw("priv stack isn't empty at finish");
 }
 
 htmltmpl.prototype._count_lines = function (str)
