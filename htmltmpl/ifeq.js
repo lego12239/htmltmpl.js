@@ -28,7 +28,7 @@ htmltmpl.prototype.hdlr_ifeq_parse = function(def, attrs)
 	if ((attrs.VALUE == null) && (attrs.WITH == null))
 		this._throw("one of VALUE or WITH attribute must be specified");
 	this._s.parse.unshift([]);
-	this._s.priv.unshift([def, attrs ]);
+	this._s.priv.unshift({def: def, attrs: attrs});
 }
 
 htmltmpl.prototype.hdlr_ifeq_end_parse = function(def)
@@ -37,169 +37,174 @@ htmltmpl.prototype.hdlr_ifeq_end_parse = function(def)
 	var if_, else_;
 
 	priv = this._s.priv.shift();
-	if (!this.is_tag_match(priv[0], def.start_tag))
+	if (!this.is_tag_match(priv.def, def.start_tag))
 		this._throw("%s was opened, but %s is being closed",
-		  priv[0].name, def.name);
-	if (priv[0].name == "TMPL_ELSE") {
+		  priv.def.name, def.name);
+	if (priv.def.name == "TMPL_ELSE") {
 		else_ = this._s.parse.shift();
 		priv = this._s.priv.shift();
 	}
 
 	if_ = this._s.parse.shift();
-	this._s.parse[0].push([priv[0].name, [ priv[1].NAME, priv[1], if_, else_ ]]);
+	this._s.parse[0].push({
+	  name: priv.def.name,
+	  data: {
+	    attrs: priv.attrs,
+	    ifbody: if_,
+	    elsebody: else_}});
 }
 
-htmltmpl.prototype.hdlr_ifeq_apply = function(def, tag)
+htmltmpl.prototype.hdlr_ifeq_apply = function(def, data)
 {
 	var attrs;
 	var val, val2;
 	var i;
 
-	val = this._get_data(tag[0]);
-	if (tag[1].WITH != null)
-		val2 = this._get_data(tag[1].WITH);
+	val = this._get_data(data.attrs.NAME);
+	if (data.attrs.WITH != null)
+		val2 = this._get_data(data.attrs.WITH);
 	else
-		val2 = tag[1].VALUE;
+		val2 = data.attrs.VALUE;
 
 	if ((this.p.err_on_no_data) && (val == null))
-		this._throw("Cann't find var '%s'.", tag[0]);
+		this._throw("Cann't find var '%s'.", data.attrs.NAME);
 	if ((this.p.err_on_no_data) && (val2 == null))
-		this._throw("Cann't find var '%s'.", tag[1].WITH);
+		this._throw("Cann't find var '%s'.", data.attrs.WITH);
 
 	if (val == val2)
-		this._apply(tag[2]);
-	else if (tag[3] != undefined)
-		this._apply(tag[3]);
+		this._apply(data.ifbody);
+	else if (data.elsebody != undefined)
+		this._apply(data.elsebody);
 }
 
 /**********************************************************************
  * TMPL_IFNEQ HANDLERS
  **********************************************************************/
-htmltmpl.prototype.hdlr_ifneq_apply = function(def, tag)
+htmltmpl.prototype.hdlr_ifneq_apply = function(def, data)
 {
 	var attrs;
 	var val, val2;
 	var i;
 
-	val = this._get_data(tag[0]);
-	if (tag[1].WITH != null)
-		val2 = this._get_data(tag[1].WITH);
+	val = this._get_data(data.attrs.NAME);
+	if (data.attrs.WITH != null)
+		val2 = this._get_data(data.attrs.WITH);
 	else
-		val2 = tag[1].VALUE;
+		val2 = data.attrs.VALUE;
 
 	if ((this.p.err_on_no_data) && (val == null))
-		this._throw("Cann't find var '%s'.", tag[0]);
+		this._throw("Cann't find var '%s'.", data.attrs.NAME);
 	if ((this.p.err_on_no_data) && (val2 == null))
-		this._throw("Cann't find var '%s'.", tag[1].WITH);
+		this._throw("Cann't find var '%s'.", data.attrs.WITH);
 
 	if (val != val2)
-		this._apply(tag[2]);
-	else if (tag[3] != undefined)
-		this._apply(tag[3]);
+		this._apply(data.ifbody);
+	else if (data.elsebody != undefined)
+		this._apply(data.elsebody);
 }
 
 /**********************************************************************
  * TMPL_IFGT HANDLERS
  **********************************************************************/
-htmltmpl.prototype.hdlr_ifgt_apply = function(def, tag)
+htmltmpl.prototype.hdlr_ifgt_apply = function(def, data)
 {
 	var attrs;
 	var val, val2;
 	var i;
 
-	val = this._get_data(tag[0]);
-	if (tag[1].WITH != null)
-		val2 = this._get_data(tag[1].WITH);
+	val = this._get_data(data.attrs.NAME);
+	if (data.attrs.WITH != null)
+		val2 = this._get_data(data.attrs.WITH);
 	else
-		val2 = tag[1].VALUE;
+		val2 = data.attrs.VALUE;
 
 	if ((this.p.err_on_no_data) && (val == null))
-		this._throw("Cann't find var '%s'.", tag[0]);
+		this._throw("Cann't find var '%s'.", data.attrs.NAME);
 	if ((this.p.err_on_no_data) && (val2 == null))
-		this._throw("Cann't find var '%s'.", tag[1].WITH);
+		this._throw("Cann't find var '%s'.", data.attrs.WITH);
 
 	if (val > val2)
-		this._apply(tag[2]);
-	else if (tag[3] != undefined)
-		this._apply(tag[3]);
+		this._apply(data.ifbody);
+	else if (data.elsebody != undefined)
+		this._apply(data.elsebody);
 }
 
 /**********************************************************************
  * TMPL_IFGE HANDLERS
  **********************************************************************/
-htmltmpl.prototype.hdlr_ifge_apply = function(def, tag)
+htmltmpl.prototype.hdlr_ifge_apply = function(def, data)
 {
 	var attrs;
 	var val, val2;
 	var i;
 
-	val = this._get_data(tag[0]);
-	if (tag[1].WITH != null)
-		val2 = this._get_data(tag[1].WITH);
+	val = this._get_data(data.attrs.NAME);
+	if (data.attrs.WITH != null)
+		val2 = this._get_data(data.attrs.WITH);
 	else
-		val2 = tag[1].VALUE;
+		val2 = data.attrs.VALUE;
 
 	if ((this.p.err_on_no_data) && (val == null))
-		this._throw("Cann't find var '%s'.", tag[0]);
+		this._throw("Cann't find var '%s'.", data.attrs.NAME);
 	if ((this.p.err_on_no_data) && (val2 == null))
-		this._throw("Cann't find var '%s'.", tag[1].WITH);
+		this._throw("Cann't find var '%s'.", data.attrs.WITH);
 
 	if (val >= val2)
-		this._apply(tag[2]);
-	else if (tag[3] != undefined)
-		this._apply(tag[3]);
+		this._apply(data.ifbody);
+	else if (data.elsebody != undefined)
+		this._apply(data.elsebody);
 }
 
 /**********************************************************************
  * TMPL_IFLT HANDLERS
  **********************************************************************/
-htmltmpl.prototype.hdlr_iflt_apply = function(def, tag)
+htmltmpl.prototype.hdlr_iflt_apply = function(def, data)
 {
 	var attrs;
 	var val, val2;
 	var i;
 
-	val = this._get_data(tag[0]);
-	if (tag[1].WITH != null)
-		val2 = this._get_data(tag[1].WITH);
+	val = this._get_data(data.attrs.NAME);
+	if (data.attrs.WITH != null)
+		val2 = this._get_data(data.attrs.WITH);
 	else
-		val2 = tag[1].VALUE;
+		val2 = data.attrs.VALUE;
 
 	if ((this.p.err_on_no_data) && (val == null))
-		this._throw("Cann't find var '%s'.", tag[0]);
+		this._throw("Cann't find var '%s'.", data.attrs.NAME);
 	if ((this.p.err_on_no_data) && (val2 == null))
-		this._throw("Cann't find var '%s'.", tag[1].WITH);
+		this._throw("Cann't find var '%s'.", data.attrs.WITH);
 
 	if (val < val2)
-		this._apply(tag[2]);
-	else if (tag[3] != undefined)
-		this._apply(tag[3]);
+		this._apply(data.ifbody);
+	else if (data.elsebody != undefined)
+		this._apply(data.elsebody);
 }
 
 /**********************************************************************
  * TMPL_IFLE HANDLERS
  **********************************************************************/
-htmltmpl.prototype.hdlr_ifle_apply = function(def, tag)
+htmltmpl.prototype.hdlr_ifle_apply = function(def, data)
 {
 	var attrs;
 	var val, val2;
 	var i;
 
-	val = this._get_data(tag[0]);
-	if (tag[1].WITH != null)
-		val2 = this._get_data(tag[1].WITH);
+	val = this._get_data(data.attrs.NAME);
+	if (data.attrs.WITH != null)
+		val2 = this._get_data(data.attrs.WITH);
 	else
-		val2 = tag[1].VALUE;
+		val2 = data.attrs.VALUE;
 
 	if ((this.p.err_on_no_data) && (val == null))
-		this._throw("Cann't find var '%s'.", tag[0]);
+		this._throw("Cann't find var '%s'.", data.attrs.NAME);
 	if ((this.p.err_on_no_data) && (val2 == null))
-		this._throw("Cann't find var '%s'.", tag[1].WITH);
+		this._throw("Cann't find var '%s'.", data.attrs.WITH);
 
 	if (val <= val2)
-		this._apply(tag[2]);
-	else if (tag[3] != undefined)
-		this._apply(tag[3]);
+		this._apply(data.ifbody);
+	else if (data.elsebody != undefined)
+		this._apply(data.elsebody);
 }
 
 htmltmpl.prototype.tags["TMPL_IFEQ"] = {

@@ -26,7 +26,7 @@ htmltmpl.prototype.hdlr_list_parse = function(def, attrs)
 	if (attrs.NAME == null)
 		this._throw("NAME is a mandatory attribute");
 	this._s.parse.unshift([]);
-	this._s.priv.unshift([def, attrs ]);
+	this._s.priv.unshift({def: def, attrs: attrs});
 }
 
 htmltmpl.prototype.hdlr_list_end_parse = function(def)
@@ -35,21 +35,25 @@ htmltmpl.prototype.hdlr_list_end_parse = function(def)
 	var list;
 
 	priv = this._s.priv.shift();
-	if (!this.is_tag_match(priv[0], def.start_tag))
+	if (!this.is_tag_match(priv.def, def.start_tag))
 		this._throw("%s was opened, but %s is being closed",
-		  priv[0].name, def.name);
+		  priv.def.name, def.name);
 
 	list = this._s.parse.shift();
-	this._s.parse[0].push([priv[0].name, [ priv[1].NAME, priv[1], list ]]);
+	this._s.parse[0].push({
+	  name: priv.def.name,
+	  data: {
+	    attrs: priv.attrs,
+	    body: list}});
 }
 
-htmltmpl.prototype.hdlr_list_apply = function(def, tag)
+htmltmpl.prototype.hdlr_list_apply = function(def, data)
 {
 	var attrs;
 	var val;
 	var i;
 
-	val = this._get_data(tag[0]);
+	val = this._get_data(data.attrs.NAME);
 	this._s.v.unshift(Object.assign({}, this._s.v[0], {data_lookup_depth: 2}));
 
 	if ((val != undefined) && (Array.isArray(val))) {
@@ -58,12 +62,12 @@ htmltmpl.prototype.hdlr_list_apply = function(def, tag)
 			this._s.data[0] = val[i];
 			if (this.p.loop_context_vars)
 				this._s.data[1] = this.create_loop_context_vars(i, val.length);
-			this._apply(tag[2]);
+			this._apply(data.body);
 		}
 		this._s.data.shift();
 		this._s.data.shift();
 	} else if (this.p.err_on_no_data) {
-		this._throw("Cann't find list '%s'.", tag[0]);
+		this._throw("Cann't find list '%s'.", data.attrs.NAME);
 	}
 	this._s.v.shift();
 }
@@ -75,24 +79,26 @@ htmltmpl.prototype.hdlr_listitem_parse = function(def, attrs)
 {
 	var vname;
 
-	if ((this._s.priv.length == 0) || (this._s.priv[0][0].name != "TMPL_LIST"))
+	if ((this._s.priv.length == 0) || (this._s.priv[0].def.name != "TMPL_LIST"))
 		this._throw("%s can be used only inside a TMPL_LIST",
 		  def.name);
 	/* Optional attribute, but must be set for an apply fun. Thus,
 	   set it with default value in any case. */
 	if (attrs.ESCAPE == null)
 		attrs.ESCAPE = def.pafuncs.ESCAPE.call(this, this.p.escape_defval);
-	this._s.parse[0].push([def.name, [ attrs ]]);
+	this._s.parse[0].push({
+	  name: def.name,
+	  data: {attrs: attrs}});
 }
 
-htmltmpl.prototype.hdlr_listitem_apply = function(def, tag)
+htmltmpl.prototype.hdlr_listitem_apply = function(def, data)
 {
 	var attrs;
 	var val;
 
 	val = this._get_data();
 	if (val == null)
-		val = tag[0]["DEFAULT"];
+		val = data.attrs.DEFAULT;
 
 	if (val == null)
 		if (this.p.err_on_no_data)
@@ -100,7 +106,7 @@ htmltmpl.prototype.hdlr_listitem_apply = function(def, tag)
 		else
 			return;
 
-	val = this._escape_tag_attr_val(tag[0].ESCAPE, val);
+	val = this._escape_tag_attr_val(data.attrs.ESCAPE, val);
 	this.out_str += val;
 }
 

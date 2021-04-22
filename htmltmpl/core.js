@@ -170,11 +170,11 @@ htmltmpl.prototype.tmpl_prepare = function()
 			if (m[2] != "")
 				txt = m[2];
 		} else {
-			this._s.parse[0].push(["TEXT", "{%"]);
+			this._s.parse[0].push({name: "TEXT", data: "{%"});
 			txt = chunks[i];
 		}
 		if (txt != null) {
-			this._s.parse[0].push(["TEXT", txt]);
+			this._s.parse[0].push({name: "TEXT", data: txt});
 			pos = -1;
 			while ((pos = txt.indexOf("\n", pos + 1)) >= 0)
 				this.ctx.lineno++;
@@ -395,25 +395,25 @@ htmltmpl.prototype.hdlr_var_parse = function(def, attrs)
 		attrs.ESCAPE = def.pafuncs.ESCAPE.call(this, this.p.escape_defval);
 	if (attrs.NAME == null)
 		this._throw("NAME is a mandatory attribute");
-	this._s.parse[0].push([def.name, [ attrs.NAME, attrs ]]);
+	this._s.parse[0].push({name: def.name, data: {attrs: attrs}});
 }
 
-htmltmpl.prototype.hdlr_var_apply = function(def, tag)
+htmltmpl.prototype.hdlr_var_apply = function(def, data)
 {
 	var attrs;
 	var val;
 
-	val = this._get_data(tag[0]);
+	val = this._get_data(data.attrs.NAME);
 	if (val == null)
-		val = tag[1].DEFAULT;
+		val = data.attrs.DEFAULT;
 
 	if (val == null)
 		if (this.p.err_on_no_data)
-			this._throw("Cann't find var '%s'.", tag[0]);
+			this._throw("Cann't find var '%s'.", data.attrs.NAME);
 		else
 			return;
 
-	val = this._escape_tag_attr_val(tag[1].ESCAPE, val);
+	val = this._escape_tag_attr_val(data.attrs.ESCAPE, val);
 	this.out_str += val;
 }
 
@@ -425,7 +425,7 @@ htmltmpl.prototype.hdlr_loop_parse = function(def, attrs)
 	if (attrs.NAME == null)
 		this._throw("NAME is a mandatory attribute");
 	this._s.parse.unshift([]);
-	this._s.priv.unshift([def, attrs ]);
+	this._s.priv.unshift({def: def, attrs: attrs});
 }
 
 htmltmpl.prototype.hdlr_loop_end_parse = function(def)
@@ -434,22 +434,26 @@ htmltmpl.prototype.hdlr_loop_end_parse = function(def)
 	var loop;
 
 	priv = this._s.priv[0];
-	if (!this.is_tag_match(priv[0], def.start_tag))
+	if (!this.is_tag_match(priv.def, def.start_tag))
 		this._throw("%s was opened, but %s is being closed",
-		  priv[0].name, def.name);
+		  priv.def.name, def.name);
 
 	loop = this._s.parse.shift();
-	this._s.parse[0].push([priv[0].name, [ priv[1].NAME, priv[1], loop ]]);
+	this._s.parse[0].push({
+	  name: priv.def.name,
+	  data: {
+	    attrs: priv.attrs,
+	    loop: loop}});
 	this._s.priv.shift();
 }
 
-htmltmpl.prototype.hdlr_loop_apply = function(def, tag)
+htmltmpl.prototype.hdlr_loop_apply = function(def, data)
 {
 	var attrs;
 	var val;
 	var i;
 
-	val = this._get_data(tag[0]);
+	val = this._get_data(data.attrs.NAME);
 	this._s.v.unshift(Object.assign({}, this._s.v[0], {data_lookup_depth: 2}));
 
 	if ((val != undefined) && (Array.isArray(val))) {
@@ -458,12 +462,12 @@ htmltmpl.prototype.hdlr_loop_apply = function(def, tag)
 			this._s.data[0] = val[i];
 			if (this.p.loop_context_vars)
 				this._s.data[1] = this.create_loop_context_vars(i, val.length);
-			this._apply(tag[2]);
+			this._apply(data.loop);
 		}
 		this._s.data.shift();
 		this._s.data.shift();
 	} else if (this.p.err_on_no_data) {
-		this._throw("Cann't find loop '%s'.", tag[0]);
+		this._throw("Cann't find loop '%s'.", data.attrs.NAME);
 	}
 	this._s.v.shift();
 }
@@ -512,7 +516,7 @@ htmltmpl.prototype.hdlr_if_parse = function(def, attrs)
 	if (attrs.NAME == null)
 		this._throw("NAME is a mandatory attribute");
 	this._s.parse.unshift([]);
-	this._s.priv.unshift([def, attrs ]);
+	this._s.priv.unshift({def: def, attrs: attrs});
 }
 
 htmltmpl.prototype.hdlr_else_parse = function(def)
@@ -520,11 +524,11 @@ htmltmpl.prototype.hdlr_else_parse = function(def)
 	var priv;
 
 	priv = this._s.priv[0];
-	if (!this.is_tag_match(priv[0], def.start_tag))
+	if (!this.is_tag_match(priv.def, def.start_tag))
 		this._throw("parse err: %s was opened, but %s is being closed",
-		  priv[0].name, def.name);
+		  priv.def.name, def.name);
 	this._s.parse.unshift([]);
-	this._s.priv.unshift([def]);
+	this._s.priv.unshift({def: def});
 }
 
 htmltmpl.prototype.hdlr_if_end_parse = function(def)
@@ -533,51 +537,56 @@ htmltmpl.prototype.hdlr_if_end_parse = function(def)
 	var if_, else_;
 
 	priv = this._s.priv.shift();
-	if (!this.is_tag_match(priv[0], def.start_tag))
+	if (!this.is_tag_match(priv.def, def.start_tag))
 		this._throw("%s was opened, but %s is being closed",
-		  priv[0].name, def.name);
-	if (priv[0].name == "TMPL_ELSE") {
+		  priv.def.name, def.name);
+	if (priv.def.name == "TMPL_ELSE") {
 		else_ = this._s.parse.shift();
 		priv = this._s.priv.shift();
 	}
 
 	if_ = this._s.parse.shift();
-	this._s.parse[0].push([priv[0].name, [ priv[1].NAME, priv[1], if_, else_ ]]);
+	this._s.parse[0].push({
+	  name: priv.def.name,
+	  data: {
+	    attrs: priv.attrs,
+	    ifbody: if_,
+	    elsebody: else_}});
 }
 
-htmltmpl.prototype.hdlr_if_apply = function(def, tag)
+htmltmpl.prototype.hdlr_if_apply = function(def, data)
 {
 	var attrs;
 	var val;
 	var i;
 
-	val = this._get_data(tag[0]);
+	val = this._get_data(data.attrs.NAME);
 
 	if (val)
-		this._apply(tag[2]);
-	else if (tag[3] != undefined)
-		this._apply(tag[3]);
+		this._apply(data.ifbody);
+	else if (data.elsebody != null)
+		this._apply(data.elsebody);
 	else if (this.p.err_on_no_data)
-		this._throw("Cann't find var '%s'.", tag[0]);
+		this._throw("Cann't find var '%s'.", data.attrs.NAME);
 }
 
 /**********************************************************************
  * TMPL_UNLESS HANDLERS
  **********************************************************************/
-htmltmpl.prototype.hdlr_unless_apply = function(def, tag)
+htmltmpl.prototype.hdlr_unless_apply = function(def, data)
 {
 	var attrs;
 	var val;
 	var i;
 
-	val = this._get_data(tag[0]);
+	val = this._get_data(data.attrs.NAME);
 
 	if (!val)
-		this._apply(tag[2]);
-	else if (tag[3] != undefined)
-		this._apply(tag[3]);
+		this._apply(data.ifbody);
+	else if (data.elsebody != undefined)
+		this._apply(data.elsebody);
 	else if (this.p.err_on_no_data)
-		this._throw("Cann't find var '%s'.", tag[0]);
+		this._throw("Cann't find var '%s'.", data.attrs.NAME);
 }
 
 /**********************************************************************
@@ -587,31 +596,33 @@ htmltmpl.prototype.hdlr_include_parse = function(def, attrs)
 {
 	if (attrs.NAME == null)
 		this._throw("NAME is a mandatory attribute");
-	this._s.parse[0].push([def.name, [ attrs.VAR, attrs ]]);
+	this._s.parse[0].push({
+	  name: def.name,
+	  data: {attrs: attrs}});
 }
 
-htmltmpl.prototype.hdlr_include_apply = function(def, tag)
+htmltmpl.prototype.hdlr_include_apply = function(def, data)
 {
 	var attrs;
 	var val;
 
-	if (tag[0] != null) {
-		val = this._get_data(tag[0]);
+	if (data.attrs.VAR != null) {
+		val = this._get_data(data.attrs.VAR);
 		if (val == null) {
 			if (this.p.err_on_no_data)
-				this._throw("Cann't find var '%s'.", tag[0]);
+				this._throw("Cann't find var '%s'.", data.attrs.VAR);
 			return;
 		}
 	}
 
-	if (this.tmpls[tag[1].NAME] != null) {
+	if (this.tmpls[data.attrs.NAME] != null) {
 		if (val != null)
 			this._s.data.unshift(val);
-		this._apply(this.tmpls[tag[1].NAME].tmpl_parsed);
+		this._apply(this.tmpls[data.attrs.NAME].tmpl_parsed);
 		if (val != null)
 			this._s.data.shift();
 	} else if (this.p.err_on_no_data)
-		this._throw("Cann't find template '%s'.", tag[1].NAME);
+		this._throw("Cann't find template '%s'.", data.attrs.NAME);
 }
 
 /**********************************************************************
@@ -623,13 +634,13 @@ htmltmpl.prototype._apply = function(tmpl)
 	var found_d;
 
 	for(i = 0; i < tmpl.length; i++) {
-		if (tmpl[i][0] == "TEXT")
-			this.out_str += tmpl[i][1];
-		else if (this.tags[tmpl[i][0]] != undefined)
-			this.tags[tmpl[i][0]].afunc.call(this,
-			  this.tags[tmpl[i][0]], tmpl[i][1]);
+		if (tmpl[i].name == "TEXT")
+			this.out_str += tmpl[i].data;
+		else if (this.tags[tmpl[i].name] != undefined)
+			this.tags[tmpl[i].name].afunc.call(this,
+			  this.tags[tmpl[i].name], tmpl[i].data);
 		else
-			this._throw("_apply err: unknown tag: %s", tmpl[i][0]);
+			this._throw("_apply err: unknown tag: %s", tmpl[i].name);
 	}
 
 	return 1;

@@ -35,7 +35,7 @@ htmltmpl.prototype.hdlr_ifin_parse = function(def, attrs)
 	if (attrs.NAME == null)
 		this._throw("NAME is a mandatory attribute");
 	this._s.parse.unshift([]);
-	this._s.priv.unshift([def, attrs ]);
+	this._s.priv.unshift({def: def, attrs: attrs});
 }
 
 htmltmpl.prototype.hdlr_ifin_end_parse = function(def)
@@ -44,37 +44,42 @@ htmltmpl.prototype.hdlr_ifin_end_parse = function(def)
 	var if_, else_;
 
 	priv = this._s.priv.shift();
-	if (!this.is_tag_match(priv[0], def.start_tag))
+	if (!this.is_tag_match(priv.def, def.start_tag))
 		this._throw("%s was opened, but %s is being closed",
-		  priv[0].name, def.name);
-	if (priv[0].name == "TMPL_ELSE") {
+		  priv.def.name, def.name);
+	if (priv.def.name == "TMPL_ELSE") {
 		else_ = this._s.parse.shift();
 		priv = this._s.priv.shift();
 	}
 
 	if_ = this._s.parse.shift();
-	this._s.parse[0].push([priv[0].name, [ priv[1].NAME, priv[1], if_, else_ ]]);
+	this._s.parse[0].push({
+	  name: priv.def.name,
+	  data: {
+	    attrs: priv.attrs,
+	    ifbody: if_,
+	    elsebody: else_}});
 }
 
-htmltmpl.prototype.hdlr_ifin_apply = function(def, tag)
+htmltmpl.prototype.hdlr_ifin_apply = function(def, data)
 {
 	var val, vals;
 	var i;
 
-	val = this._get_data(tag[0]);
-	vals = tag[1].VALUES;
+	val = this._get_data(data.attrs.NAME);
+	vals = data.attrs.VALUES;
 
 	if ((this.p.err_on_no_data) && (val == null))
-		this._throw("Cann't find var '%s'.", tag[0]);
+		this._throw("Cann't find var '%s'.", data.attrs.NAME);
 
 	for(i = 0; i < vals.length; i++)
 		if (val == vals[i]) {
-			this._apply(tag[2]);
+			this._apply(data.ifbody);
 			return;
 		}
 
-	if (tag[3] != undefined)
-		this._apply(tag[3]);
+	if (data.elsebody != undefined)
+		this._apply(data.elsebody);
 }
 
 

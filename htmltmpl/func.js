@@ -46,22 +46,22 @@ htmltmpl.prototype.hdlr_func_parse = function(def, attrs)
 		attrs.ESCAPE = def.pafuncs.ESCAPE.call(this, this.p.escape_defval);
 	if (attrs.NAME == null)
 		this._throw("NAME is a mandatory attribute");
-	this._s.parse[0].push([def.name, [ attrs ]]);
+	this._s.parse[0].push({name: def.name, data: {attrs: attrs}});
 }
 
-htmltmpl.prototype.hdlr_func_apply = function(def, tag)
+htmltmpl.prototype.hdlr_func_apply = function(def, data)
 {
 	var attrs;
 	var val;
 
-	if (this.funcs[tag[0]["NAME"]] != undefined) {
-		val = this.funcs[tag[0]["NAME"]].apply(this, tag[0]["ARGS"]);
+	if (this.funcs[data.attrs.NAME] != undefined) {
+		val = this.funcs[data.attrs.NAME].apply(this, data.attrs.ARGS);
 		if (val == null)
 			return;
-		val = this._escape_tag_attr_val(tag[0].ESCAPE, val);
+		val = this._escape_tag_attr_val(data.attrs.ESCAPE, val);
 		this.out_str += val;
 	} else if (this.p.err_on_no_data) {
-		this._throw("Cann't find func '%s'.", tag[0]["NAME"]);
+		this._throw("Cann't find func '%s'.", data.attrs.NAME);
 	}
 }
 
@@ -73,7 +73,7 @@ htmltmpl.prototype.hdlr_ifret_parse = function(def, attrs)
 	if (attrs.NAME == null)
 		this._throw("NAME is a mandatory attribute");
 	this._s.parse.unshift([]);
-	this._s.priv.unshift([def, attrs]);
+	this._s.priv.unshift({def: def, attrs: attrs});
 }
 
 htmltmpl.prototype.hdlr_ifret_end_parse = function(def)
@@ -82,42 +82,47 @@ htmltmpl.prototype.hdlr_ifret_end_parse = function(def)
 	var if_, else_;
 
 	priv = this._s.priv.shift();
-	if (!this.is_tag_match(priv[0], def.start_tag))
+	if (!this.is_tag_match(priv.def, def.start_tag))
 		this._throw("%s was opened, but %s is being closed",
-		  priv[0].name, def.name);
-	if (priv[0].name == "TMPL_ELSE") {
+		  priv.def.name, def.name);
+	if (priv.def.name == "TMPL_ELSE") {
 		else_ = this._s.parse.shift();
 		priv = this._s.priv.shift();
 	}
 
 	if_ = this._s.parse.shift();
-	this._s.parse[0].push([priv[0].name, [ priv[1], if_, else_ ]]);
+	this._s.parse[0].push({
+	  name: priv.def.name,
+	  data: {
+	    attrs: priv.attrs,
+	    ifbody: if_,
+	    elsebody: else_}});
 }
 
-htmltmpl.prototype.hdlr_ifret_apply = function(def, tag)
+htmltmpl.prototype.hdlr_ifret_apply = function(def, data)
 {
 	var attrs;
 	var val, val2;
 	var i;
 
-	if (this.funcs[tag[0].NAME] == null)
+	if (this.funcs[data.attrs.NAME] == null)
 		if (this.p.err_on_no_data)
-			this._throw("Cann't find func '%s'.", tag[0]["NAME"]);
+			this._throw("Cann't find func '%s'.", data.attrs.NAME);
 		else
 			return;
 
-	val = this.funcs[tag[0].NAME].apply(this, tag[0].ARGS);
+	val = this.funcs[data.attrs.NAME].apply(this, data.attrs.ARGS);
 	if (val == null) {
 		/* else tmpl */
-		if (tag[2] != null)
-			this._apply(tag[2]);
+		if (data.elsebody != null)
+			this._apply(data.elsebody);
 		return;
 	}
 	if (Array.isArray(val))
 		this._throw("returned value should be an object");
 	this._s.v.unshift(Object.assign({}, this._s.v[0], {data_lookup_depth: 2}));
 	this._s.data.unshift(val);
-	this._apply(tag[1]);
+	this._apply(data.ifbody);
 	this._s.data.shift();
 	this._s.v.shift();
 }
