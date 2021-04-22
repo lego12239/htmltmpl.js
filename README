@@ -34,7 +34,7 @@ with ifin extension:
 {%TMPL_IFIN NAME=var VALUES=[VAL1, ...]%}...{%TMPL_ELSE%}...{%/TMPL_IFIN%}
 
 with func extension:
-{%TMPL_FUNC NAME=func_name ARGS=[arg_1, ...]%}
+{%TMPL_FUNC NAME=func_name ARGS=[arg_1, ...] [ESCAPE=type]%}
 {%TMPL_IFRET NAME=func_name ARGS=[arg_1, ...]%}...{%/TMPL_IFRET%}
 {%TMPL_IFRET NAME=func_name ARGS=[arg_1, ...]%}...{%TMPL_ELSE%}...{%/TMPL_IFRET%}
 
@@ -100,6 +100,21 @@ A template can be a string instead of an html element:
 
 	var tmpl = new htmltmpl("<div>{%TMPL_VAR NAME=var1%}</div>");
 
+Since container element node name and its id are used as a template
+name for an error message, it's useful to assign an id to every template
+container. Or use name parameter of htmltmpl constructor. I.e. for the
+template:
+
+	<div style="display: none" id="tmpl_items_list">
+		{%TMPL_LOOP NAM=loop1%}
+			<div>{%TMPL_VAR NAME=var1%}</div>
+		{%/TMPL_LOOP%}
+	</div>
+
+the template name is DIV#tmpl_items_list and an error message will be:
+
+DIV#tmpl_items_list: line 2: TMPL_LOOP must have NAME attribute
+
 htmltmpl constructor accept an object as a second argument with parameters to
 change it behaviour. Properties names:
 
@@ -133,8 +148,14 @@ change it behaviour. Properties names:
 	string.
 	1 by default.
   escape_defval
-        Default value for ESCAPE attribute.
-        ETEXT by default.
+	Default value for ESCAPE attribute(ETEXT, AVAL or NO).
+	ETEXT by default.
+  name
+	a template name for using in an error message. If null, then
+	use container element name and its id or the first 10 characters
+	of the template string(if a template is a string instead of
+	some element node).
+	null by default.
 
 E.g.:
 
@@ -300,7 +321,7 @@ ifin:
 func:
   TMPL_FUNC
 	{%TMPL_FUNC NAME=func1%}
-	{%TMPL_FUNC NAME=func2 ARGS=[arg_1,...]%}
+	{%TMPL_FUNC NAME=func2 ARGS=[arg_1,...] [ESCAPE=type]%}
 
 	Call a js function with a name pointed in NAME attribute value and use
 	it return value as a replacement text. Optional arguments can be given to
