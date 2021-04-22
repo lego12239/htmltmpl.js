@@ -64,8 +64,6 @@ htmltmpl.prototype.hdlr_ifdef_apply = function(def, data)
 		this._apply(data.ifbody);
 	else if (data.elsebody != undefined)
 		this._apply(data.elsebody);
-	else if (this.p.err_on_no_data)
-		this._throw("Cann't find var '%s'.", data.attrs.NAME);
 }
 
 /**********************************************************************
@@ -83,8 +81,6 @@ htmltmpl.prototype.hdlr_ifndef_apply = function(def, data)
 		this._apply(data.ifbody);
 	else if (data.elsebody != undefined)
 		this._apply(data.elsebody);
-	else if (this.p.err_on_no_data)
-		this._throw("Cann't find var '%s'.", data.attrs.NAME);
 }
 
 htmltmpl.prototype.tags["TMPL_IFDEF"] = {
