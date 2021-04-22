@@ -160,6 +160,11 @@ htmltmpl.prototype.tmpl_prepare = function()
 
 	chunks = this.tmpl.split(/{%/);
 
+	/* The first chunk is always a TEXT chunk, due to split() work. */
+	this._s.parse[0].push({name: "TEXT", data: chunks[0]});
+	this.ctx.lineno += this._count_lines(chunks[0]);
+	chunks.shift();
+
 	for(i = 0; i < chunks.length; i++) {
 		this.ctx.tag_name = null;
 		txt = null;
@@ -175,14 +180,21 @@ htmltmpl.prototype.tmpl_prepare = function()
 		}
 		if (txt != null) {
 			this._s.parse[0].push({name: "TEXT", data: txt});
-			pos = -1;
-			while ((pos = txt.indexOf("\n", pos + 1)) >= 0)
-				this.ctx.lineno++;
+			this.ctx.lineno += this._count_lines(txt);
 		}
 	}
-
-	this._s.parse[0].shift();
 	this.tmpl_parsed = this._s.parse[0];
+}
+
+htmltmpl.prototype._count_lines = function (str)
+{
+	var pos = -1;
+	var cnt = 0;
+
+	while ((pos = str.indexOf("\n", pos + 1)) >= 0)
+		cnt++;
+
+	return cnt;
 }
 
 htmltmpl.prototype.parse_tag = function (tag)
