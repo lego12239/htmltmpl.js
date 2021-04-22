@@ -993,7 +993,17 @@
                     is_err: 1,
                     err_msg: "my tmpl: line 2: TMPL_VAR: NAME is a mandatory attribute",
                     title: "Test tmpl name set with name parameter",
-                    data: {var1: "one", var2: "two"}}];
+                    data: {var1: "one", var2: "two"}},
+                  { id: "unit136",
+                    id_res: "unit136_res",
+                    tmpls: {tmpl1: "unit136_t"},
+                    title: "Test TMPL_INCLUDE",
+                    data: {var1: "one", var2: {var1: "17", var2: 18}}},
+                  { id: "unit137",
+                    id_res: "unit137_res",
+                    tmpls: {tmpl1: "unit137_t"},
+                    title: "Test TMPL_INCLUDE with VAR",
+                    data: {var1: "one", var2: {var1: "17", var2: 18}}}];
     function report_res(test, ret, ex)
     {
         var val, eret;
@@ -1110,6 +1120,10 @@
                     tmpl = new htmltmpl(document.getElementById(tests[i].id), tests[i].prms);
           if (tests[i].funcs != null)
             tmpl.funcs = tests[i].funcs;
+          if (tests[i].tmpls != null) {
+            for(p in tests[i].tmpls)
+              tmpl.tmpls[p] = new htmltmpl(document.getElementById(tests[i].tmpls[p]));
+          }
 	    } catch (ex) {
 		report_res(tests[i], undefined, ex);
                 continue;
@@ -3810,6 +3824,42 @@
   <div id="unit135">q
     {%TMPL_VAR%}z</div>
   <div id="unit135_res"></div>
+
+  <!-- unit 136 -->
+  <div id="unit136">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_INCLUDE NAME=tmpl1%}
+    z</div>
+  <div id="unit136_res">q
+    one
+    q
+    one
+    17
+    z
+    z</div>
+
+  <div id="unit136_t">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_VAR NAME=var2.var1%}
+    z</div>
+
+  <!-- unit 137 -->
+  <div id="unit137">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_INCLUDE NAME=tmpl1 VAR=var2%}
+    z</div>
+  <div id="unit137_res">q
+    one
+    q
+    17
+    18
+    z
+    z</div>
+
+  <div id="unit137_t">q
+    {%TMPL_VAR NAME=var1%}
+    {%TMPL_VAR NAME=var2%}
+    z</div>
 
   </div>
 </body>
