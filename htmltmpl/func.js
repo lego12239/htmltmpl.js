@@ -46,7 +46,10 @@ htmltmpl.prototype.hdlr_func_parse = function(def, attrs)
 		attrs.ESCAPE = def.pafuncs.ESCAPE.call(this, this.p.escape_defval);
 	if (attrs.NAME == null)
 		this._throw("NAME is a mandatory attribute");
-	this._s.parse[0].push({name: def.name, data: {attrs: attrs}});
+	this._s.parse[0].push({
+	  name: def.name,
+	  lineno: this.ctx.lineno,
+	  data: {attrs: attrs}});
 }
 
 htmltmpl.prototype.hdlr_func_apply = function(def, data)
@@ -73,7 +76,7 @@ htmltmpl.prototype.hdlr_ifret_parse = function(def, attrs)
 	if (attrs.NAME == null)
 		this._throw("NAME is a mandatory attribute");
 	this._s.parse.unshift([]);
-	this._s.priv.unshift({def: def, attrs: attrs});
+	this._s.priv.unshift({def: def, attrs: attrs, lineno: this.ctx.lineno});
 }
 
 htmltmpl.prototype.hdlr_ifret_end_parse = function(def)
@@ -93,6 +96,7 @@ htmltmpl.prototype.hdlr_ifret_end_parse = function(def)
 	if_ = this._s.parse.shift();
 	this._s.parse[0].push({
 	  name: priv.def.name,
+	  lineno: priv.lineno,
 	  data: {
 	    attrs: priv.attrs,
 	    ifbody: if_,

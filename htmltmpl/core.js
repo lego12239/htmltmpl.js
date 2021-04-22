@@ -395,7 +395,10 @@ htmltmpl.prototype.hdlr_var_parse = function(def, attrs)
 		attrs.ESCAPE = def.pafuncs.ESCAPE.call(this, this.p.escape_defval);
 	if (attrs.NAME == null)
 		this._throw("NAME is a mandatory attribute");
-	this._s.parse[0].push({name: def.name, data: {attrs: attrs}});
+	this._s.parse[0].push({
+	  name: def.name,
+	  lineno: this.ctx.lineno,
+	  data: {attrs: attrs}});
 }
 
 htmltmpl.prototype.hdlr_var_apply = function(def, data)
@@ -425,7 +428,7 @@ htmltmpl.prototype.hdlr_loop_parse = function(def, attrs)
 	if (attrs.NAME == null)
 		this._throw("NAME is a mandatory attribute");
 	this._s.parse.unshift([]);
-	this._s.priv.unshift({def: def, attrs: attrs});
+	this._s.priv.unshift({def: def, attrs: attrs, lineno: this.ctx.lineno});
 }
 
 htmltmpl.prototype.hdlr_loop_end_parse = function(def)
@@ -441,6 +444,7 @@ htmltmpl.prototype.hdlr_loop_end_parse = function(def)
 	loop = this._s.parse.shift();
 	this._s.parse[0].push({
 	  name: priv.def.name,
+	  lineno: priv.lineno,
 	  data: {
 	    attrs: priv.attrs,
 	    loop: loop}});
@@ -516,7 +520,7 @@ htmltmpl.prototype.hdlr_if_parse = function(def, attrs)
 	if (attrs.NAME == null)
 		this._throw("NAME is a mandatory attribute");
 	this._s.parse.unshift([]);
-	this._s.priv.unshift({def: def, attrs: attrs});
+	this._s.priv.unshift({def: def, attrs: attrs, lineno: this.ctx.lineno});
 }
 
 htmltmpl.prototype.hdlr_else_parse = function(def)
@@ -548,6 +552,7 @@ htmltmpl.prototype.hdlr_if_end_parse = function(def)
 	if_ = this._s.parse.shift();
 	this._s.parse[0].push({
 	  name: priv.def.name,
+	  lineno: priv.lineno,
 	  data: {
 	    attrs: priv.attrs,
 	    ifbody: if_,
@@ -598,6 +603,7 @@ htmltmpl.prototype.hdlr_include_parse = function(def, attrs)
 		this._throw("NAME is a mandatory attribute");
 	this._s.parse[0].push({
 	  name: def.name,
+	  lineno: this.ctx.lineno,
 	  data: {attrs: attrs}});
 }
 
@@ -636,11 +642,16 @@ htmltmpl.prototype._apply = function(tmpl)
 	for(i = 0; i < tmpl.length; i++) {
 		if (tmpl[i].name == "TEXT")
 			this.out_str += tmpl[i].data;
-		else if (this.tags[tmpl[i].name] != undefined)
+		else if (this.tags[tmpl[i].name] != undefined) {
+			this.ctx.lineno = tmpl[i].lineno;
+			this.ctx.tag_name = tmpl[i].name;
 			this.tags[tmpl[i].name].afunc.call(this,
 			  this.tags[tmpl[i].name], tmpl[i].data);
-		else
+		} else {
+			this.ctx.lineno = -1;
+			this.ctx.tag_name = null;
 			this._throw("_apply err: unknown tag: %s", tmpl[i].name);
+		}
 	}
 
 	return 1;

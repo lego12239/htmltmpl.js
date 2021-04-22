@@ -28,7 +28,7 @@ htmltmpl.prototype.hdlr_ifeq_parse = function(def, attrs)
 	if ((attrs.VALUE == null) && (attrs.WITH == null))
 		this._throw("one of VALUE or WITH attribute must be specified");
 	this._s.parse.unshift([]);
-	this._s.priv.unshift({def: def, attrs: attrs});
+	this._s.priv.unshift({def: def, attrs: attrs, lineno: this.ctx.lineno});
 }
 
 htmltmpl.prototype.hdlr_ifeq_end_parse = function(def)
@@ -48,6 +48,7 @@ htmltmpl.prototype.hdlr_ifeq_end_parse = function(def)
 	if_ = this._s.parse.shift();
 	this._s.parse[0].push({
 	  name: priv.def.name,
+	  lineno: priv.lineno,
 	  data: {
 	    attrs: priv.attrs,
 	    ifbody: if_,
