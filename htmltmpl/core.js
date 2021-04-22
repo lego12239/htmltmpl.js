@@ -103,9 +103,6 @@ function htmltmpl(tmpl, prms)
 	this._cb_run(this.cb.init);
 
 	this.tmpl_prepare();
-	/* An indicator of a preparation finish (for _throw())*/
-	this.ctx.lineno = -1;
-	this.ctx.tag_name = null;
 }
 
 htmltmpl.p = {
@@ -149,7 +146,7 @@ htmltmpl.prototype._cb_run = function (cb)
 htmltmpl.prototype.tmpl_prepare = function()
 {
 	var chunks, txt;
-	var i, pos;
+	var i, pos, pi;
 	var rex;
 	var m;
 
@@ -184,6 +181,19 @@ htmltmpl.prototype.tmpl_prepare = function()
 		}
 	}
 	this.tmpl_parsed = this._s.parse[0];
+	/* An indicator of a preparation finish (for _throw())*/
+	this.ctx.lineno = -1;
+	this.ctx.tag_name = null;
+
+	if (this._s.parse.length > 1) {
+		txt = "";
+		for(i = 1; i < this._s.parse.length; i++) {
+			pi = this._s.parse[i][this._s.parse[i].length - 1];
+			txt += this._fmt("\n%s at line %d isn't closed",
+			  pi.name, pi.lineno);
+		}
+		this._throw("%s", txt);
+	}
 }
 
 htmltmpl.prototype._count_lines = function (str)
@@ -346,12 +356,12 @@ htmltmpl.prototype.__get_data = function(obj, name)
 	return obj[name[len]];
 }
 
-htmltmpl.prototype.is_tag_match = function(tag, tags)
+htmltmpl.prototype.is_tag_match = function(tag_name, tags)
 {
 	var i;
 
 	for(i = 0; i < tags.length; i++) {
-		if ( tag.name == tags[i].name )
+		if ( tag_name == tags[i].name )
 			return true;
 	}
 
@@ -439,28 +449,25 @@ htmltmpl.prototype.hdlr_loop_parse = function(def, attrs)
 {
 	if (attrs.NAME == null)
 		this._throw("NAME is a mandatory attribute");
+	this._s.parse[0].push({
+	  name: def.name,
+	  lineno: this.ctx.lineno,
+	  data: {
+	    attrs: attrs}});
 	this._s.parse.unshift([]);
-	this._s.priv.unshift({def: def, attrs: attrs, lineno: this.ctx.lineno});
 }
 
 htmltmpl.prototype.hdlr_loop_end_parse = function(def)
 {
-	var priv;
+	var pi;
 	var loop;
 
-	priv = this._s.priv[0];
-	if (!this.is_tag_match(priv.def, def.start_tag))
-		this._throw("%s was opened, but %s is being closed",
-		  priv.def.name, def.name);
-
 	loop = this._s.parse.shift();
-	this._s.parse[0].push({
-	  name: priv.def.name,
-	  lineno: priv.lineno,
-	  data: {
-	    attrs: priv.attrs,
-	    loop: loop}});
-	this._s.priv.shift();
+	pi = this._s.parse[0][this._s.parse[0].length - 1];
+	if (!this.is_tag_match(pi.name, def.start_tag))
+		this._throw("%s was opened, but %s is being closed",
+		  pi.name, def.name);
+	pi.data.loop = loop;
 }
 
 htmltmpl.prototype.hdlr_loop_apply = function(def, data)
@@ -531,44 +538,46 @@ htmltmpl.prototype.hdlr_if_parse = function(def, attrs)
 {
 	if (attrs.NAME == null)
 		this._throw("NAME is a mandatory attribute");
+	this._s.parse[0].push({
+	  name: def.name,
+	  lineno: this.ctx.lineno,
+	  data: {
+	    attrs: attrs}});
 	this._s.parse.unshift([]);
-	this._s.priv.unshift({def: def, attrs: attrs, lineno: this.ctx.lineno});
 }
 
 htmltmpl.prototype.hdlr_else_parse = function(def)
 {
-	var priv;
+	var pi;
+	var body;
 
-	priv = this._s.priv[0];
-	if (!this.is_tag_match(priv.def, def.start_tag))
+	body = this._s.parse.shift();
+	pi = this._s.parse[0][this._s.parse[0].length - 1];
+	if (!this.is_tag_match(pi.name, def.start_tag))
 		this._throw("parse err: %s was opened, but %s is being closed",
-		  priv.def.name, def.name);
+		  pi.name, def.name);
+	this._s.priv.unshift({name: def.name, prevbody: body});
 	this._s.parse.unshift([]);
-	this._s.priv.unshift({def: def});
 }
 
 htmltmpl.prototype.hdlr_if_end_parse = function(def)
 {
-	var priv;
-	var if_, else_;
+	var pi;
+	var elsebody, ifbody;
 
-	priv = this._s.priv.shift();
-	if (!this.is_tag_match(priv.def, def.start_tag))
+	ifbody = this._s.parse.shift();
+	pi = this._s.parse[0][this._s.parse[0].length - 1];
+	if (!this.is_tag_match(pi.name, def.start_tag))
 		this._throw("%s was opened, but %s is being closed",
-		  priv.def.name, def.name);
-	if (priv.def.name == "TMPL_ELSE") {
-		else_ = this._s.parse.shift();
-		priv = this._s.priv.shift();
+		  pi.name, def.name);
+	if ((this._s.priv.length > 0) && (this._s.priv[0].name == "TMPL_ELSE")) {
+		elsebody = ifbody;
+		ifbody = this._s.priv[0].prevbody;
+		this._s.priv.shift();
 	}
 
-	if_ = this._s.parse.shift();
-	this._s.parse[0].push({
-	  name: priv.def.name,
-	  lineno: priv.lineno,
-	  data: {
-	    attrs: priv.attrs,
-	    ifbody: if_,
-	    elsebody: else_}});
+	pi.data.ifbody = ifbody;
+	pi.data.elsebody = elsebody;
 }
 
 htmltmpl.prototype.hdlr_if_apply = function(def, data)

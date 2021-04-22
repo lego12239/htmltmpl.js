@@ -25,27 +25,26 @@ htmltmpl.prototype.hdlr_list_parse = function(def, attrs)
 {
 	if (attrs.NAME == null)
 		this._throw("NAME is a mandatory attribute");
+	this._s.parse[0].push({
+	  name: def.name,
+	  lineno: this.ctx.lineno,
+	  data: {
+	    attrs: attrs}});
 	this._s.parse.unshift([]);
-	this._s.priv.unshift({def: def, attrs: attrs, lineno: this.ctx.lineno});
 }
 
 htmltmpl.prototype.hdlr_list_end_parse = function(def)
 {
-	var priv;
-	var list;
+	var pi;
+	var body;
 
-	priv = this._s.priv.shift();
-	if (!this.is_tag_match(priv.def, def.start_tag))
+	body = this._s.parse.shift();
+	pi = this._s.parse[0][this._s.parse[0].length - 1];
+	if (!this.is_tag_match(pi.name, def.start_tag))
 		this._throw("%s was opened, but %s is being closed",
-		  priv.def.name, def.name);
+		  pi.name, def.name);
 
-	list = this._s.parse.shift();
-	this._s.parse[0].push({
-	  name: priv.def.name,
-	  lineno: priv.lineno,
-	  data: {
-	    attrs: priv.attrs,
-	    body: list}});
+	pi.data.body = body;
 }
 
 htmltmpl.prototype.hdlr_list_apply = function(def, data)
@@ -80,15 +79,16 @@ htmltmpl.prototype.hdlr_listitem_parse = function(def, attrs)
 {
 	var vname;
 
-	if ((this._s.priv.length == 0) || (this._s.priv[0].def.name != "TMPL_LIST"))
-		this._throw("%s can be used only inside a TMPL_LIST",
-		  def.name);
+	if ((this._s.parse.length < 2) ||
+	    (this._s.parse[1][this._s.parse[1].length - 1].name != "TMPL_LIST"))
+		this._throw("%s can be used only inside a TMPL_LIST", def.name);
 	/* Optional attribute, but must be set for an apply fun. Thus,
 	   set it with default value in any case. */
 	if (attrs.ESCAPE == null)
 		attrs.ESCAPE = def.pafuncs.ESCAPE.call(this, this.p.escape_defval);
 	this._s.parse[0].push({
 	  name: def.name,
+	  lineno: this.ctx.lineno,
 	  data: {attrs: attrs}});
 }
 

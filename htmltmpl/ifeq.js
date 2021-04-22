@@ -27,32 +27,32 @@ htmltmpl.prototype.hdlr_ifeq_parse = function(def, attrs)
 		this._throw("NAME is a mandatory attribute");
 	if ((attrs.VALUE == null) && (attrs.WITH == null))
 		this._throw("one of VALUE or WITH attribute must be specified");
+	this._s.parse[0].push({
+	  name: def.name,
+	  lineno: this.ctx.lineno,
+	  data: {
+	    attrs: attrs}});
 	this._s.parse.unshift([]);
-	this._s.priv.unshift({def: def, attrs: attrs, lineno: this.ctx.lineno});
 }
 
 htmltmpl.prototype.hdlr_ifeq_end_parse = function(def)
 {
-	var priv;
-	var if_, else_;
+	var pi;
+	var elsebody, ifbody;
 
-	priv = this._s.priv.shift();
-	if (!this.is_tag_match(priv.def, def.start_tag))
+	ifbody = this._s.parse.shift();
+	pi = this._s.parse[0][this._s.parse[0].length - 1];
+	if (!this.is_tag_match(pi.name, def.start_tag))
 		this._throw("%s was opened, but %s is being closed",
-		  priv.def.name, def.name);
-	if (priv.def.name == "TMPL_ELSE") {
-		else_ = this._s.parse.shift();
-		priv = this._s.priv.shift();
+		  pi.name, def.name);
+	if ((this._s.priv.length > 0) && (this._s.priv[0].name == "TMPL_ELSE")) {
+		elsebody = ifbody;
+		ifbody = this._s.priv[0].prevbody;
+		this._s.priv.shift();
 	}
 
-	if_ = this._s.parse.shift();
-	this._s.parse[0].push({
-	  name: priv.def.name,
-	  lineno: priv.lineno,
-	  data: {
-	    attrs: priv.attrs,
-	    ifbody: if_,
-	    elsebody: else_}});
+	pi.data.ifbody = ifbody;
+	pi.data.elsebody = elsebody;
 }
 
 htmltmpl.prototype.hdlr_ifeq_apply = function(def, data)
