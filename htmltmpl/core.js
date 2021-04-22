@@ -180,14 +180,14 @@ htmltmpl.prototype.tmpl_prepare = function()
 			this.ctx.lineno += this._count_lines(txt);
 		}
 	}
-	this.tmpl_parsed = this._s.parse[0];
+	this.tmpl_parsed = this._s.parse.shift();
 	/* An indicator of a preparation finish (for _throw())*/
 	this.ctx.lineno = -1;
 	this.ctx.tag_name = null;
 
-	if (this._s.parse.length > 1) {
+	if (this._s.parse.length > 0) {
 		txt = "";
-		for(i = 1; i < this._s.parse.length; i++) {
+		for(i = 0; i < this._s.parse.length; i++) {
 			pi = this._s.parse[i][this._s.parse[i].length - 1];
 			txt += this._fmt("\n%s at line %d isn't closed",
 			  pi.name, pi.lineno);
