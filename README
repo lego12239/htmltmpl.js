@@ -69,7 +69,11 @@ solid target of Makefile. Do:
 
 	make && make solid
 
-and you get htmltmpl.solid.min.js in the current directory.
+and you get htmltmpl.solid.js in the current directory. Or:
+
+	make && make solid-min
+
+to get htmltmpl.solid.min.js.
 
 Using
 =====
